@@ -26,7 +26,28 @@ Le Black 900 a été évalué puis écarté : il referme trop les contreformes
 (74,3 % d'encre dans le « e », pour un seuil de travail à 72 %). Il reste
 régénérable à tout moment : `python3 tools/build.py 1.6667 900 Black`.
 
-Italiques et largeur Condensed : pas encore fabriquées.
+**Chaque graisse a son italique** : 10 fichiers au total. Largeur Condensed :
+pas encore fabriquée.
+
+## Les italiques
+
+D-DIN ne fournit qu'**un seul italique**, en Regular. Les quatre autres sont
+obtenues par report de l'écart de graisse mesuré sur l'axe romain :
+
+```
+italique(graisse) = italique(400) + cisaillement( romain(graisse) − romain(400) )
+```
+
+avec un cisaillement de `tan(12°)`, l'inclinaison exacte de l'italique d'origine.
+
+C'est important : l'italique de D-DIN **n'est pas un penchage mécanique**. Sur
+169 glyphes comparables, 64 ont été redessinés par le dessinateur — les rondes
+surtout. Le « a » italique est un `ɑ` à un seul étage, une lettre différente du
+« a » à deux étages du romain. Pencher les romains aurait jeté ce travail ; le
+report de l'écart le préserve, seule l'épaisseur change.
+
+Exceptions : `$` et `¢`, dont les contreformes fusionnent dans le gras, sont
+obtenus en penchant le romain à la bonne graisse.
 
 ## Fidélité au dessin d'origine
 
@@ -60,6 +81,7 @@ visuel devient indispensable.
 
 ```bash
 python3 tools/build.py 0.3333 500 Medium
+python3 tools/build_italic.py 1.0 700 "Bold Italic"
 ```
 
 ## Licence

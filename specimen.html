@@ -7,6 +7,12 @@
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
 
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-LightItalic.woff2')format('woff2');font-weight:300;font-style:italic;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Italic.woff2')format('woff2');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-MediumItalic.woff2')format('woff2');font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-BoldItalic.woff2')format('woff2');font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-HeavyItalic.woff2')format('woff2');font-weight:800;font-style:italic;font-display:swap}
+
 :root{
   --ground:#e9ecee; --surface:#fbfcfc; --sunk:#dfe4e7;
   --ink:#14181b; --steel:#5d6971; --faint:#8b969d;
@@ -60,6 +66,7 @@ header{border-bottom:1px solid var(--rule);padding-bottom:28px}
 .rung.flagged{background:var(--warn-soft)}
 .rung-id{font-family:var(--mono);font-size:11px;color:var(--steel);line-height:1.45}
 .rung-id b{display:block;font-size:13px;color:var(--ink);font-weight:600;letter-spacing:.02em}
+.rung-spec em{font-style:italic;color:var(--steel)}
 .rung-spec{font-family:var(--spec);font-size:clamp(30px,5.4vw,52px);line-height:1;
   letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* jauge : une regle graduee, comme sur un pied a coulisse */
@@ -145,30 +152,32 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 <div class="wrap">
 
 <header>
-  <span class="lbl">Applitec Moutier SA · Étape 1 · Planche de contrôle</span>
+  <span class="lbl">Applitec Moutier SA · Étapes 1 et 2 · Planche de contrôle</span>
   <div class="wordmark">Appli-Tec</div>
   <div class="meta">
     <span><b>5</b> graisses</span>
+    <span><b>10</b> fichiers</span>
     <span><b>251</b> glyphes</span>
     <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>v1.001 · 18.09.2026</span>
+    <span>v1.002 · 18.09.2026</span>
   </div>
 </header>
 
 <section>
   <div class="sec-head">
     <h2>01 — L'échelle des graisses</h2>
-    <p class="sec-intro">Seuls le Regular et le Bold existaient. Les quatre autres ont été fabriquées
-    en calculant les dessins intermédiaires, point par point. La jauge à droite mesure l'épaisseur du
-    fût vertical du « I », en unités de la grille de dessin (1000 unités = hauteur du corps).</p>
+    <p class="sec-intro">Seuls le Regular et le Bold existaient. Les autres ont été fabriquées en
+    calculant les dessins intermédiaires, point par point. Chaque ligne montre le romain puis
+    l'italique de la même graisse. La jauge à droite mesure l'épaisseur du fût vertical du « I »,
+    en unités de la grille de dessin (1000 unités = hauteur du corps).</p>
   </div>
   <div class="ladder">
 
     <div class="rung">
       <div class="rung-id"><b>Light</b>300 · fabriquée</div>
-      <div class="rung-spec" style="font-weight:300">Décolletage de précision</div>
+      <div class="rung-spec" style="font-weight:300">Décolletage <em>de précision</em></div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:31.4%"></div></div>
@@ -178,7 +187,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
     <div class="rung">
       <div class="rung-id"><b>Regular</b>400 · d'origine</div>
-      <div class="rung-spec" style="font-weight:400">Décolletage de précision</div>
+      <div class="rung-spec" style="font-weight:400">Décolletage <em>de précision</em></div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:43.2%"></div></div>
@@ -188,7 +197,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
     <div class="rung">
       <div class="rung-id"><b>Medium</b>500 · fabriquée</div>
-      <div class="rung-spec" style="font-weight:500">Décolletage de précision</div>
+      <div class="rung-spec" style="font-weight:500">Décolletage <em>de précision</em></div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:55.0%"></div></div>
@@ -198,7 +207,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
     <div class="rung">
       <div class="rung-id"><b>Bold</b>700 · d'origine</div>
-      <div class="rung-spec" style="font-weight:700">Décolletage de précision</div>
+      <div class="rung-spec" style="font-weight:700">Décolletage <em>de précision</em></div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:77.5%"></div></div>
@@ -208,7 +217,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
     <div class="rung">
       <div class="rung-id"><b>Heavy</b>800 · <span style="color:var(--ok)">retenue</span></div>
-      <div class="rung-spec" style="font-weight:800">Décolletage de précision</div>
+      <div class="rung-spec" style="font-weight:800">Décolletage <em>de précision</em></div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:100%"></div></div>
@@ -221,7 +230,47 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>02 — La correction</h2>
+    <h2>02 — Les italiques</h2>
+    <p class="sec-intro">D-DIN ne fournissait qu'<b>un seul italique</b>, en Regular. La tentation
+    aurait été de pencher les romains de 12°. C'eût été une erreur : sur 169 glyphes comparables,
+    <b>64 avaient été redessinés</b> par le dessinateur après penchage — les rondes surtout. Les
+    pencher mécaniquement aurait jeté ce travail.</p>
+  </div>
+  <div class="verdict">
+    <div class="opt risk">
+      <span class="opt-h">Ce qu'un penchage aurait donné</span>
+      <div class="opt-e" style="font-weight:800;transform:skewX(-12deg)">a</div>
+      <p>Le « a » du romain, à deux étages, simplement incliné. C'est ce que fait le bouton
+      <i>italique</i> de Word quand la police n'a pas de vrai italique.</p>
+    </div>
+    <div class="opt pick">
+      <span class="opt-h">Ce que vous avez</span>
+      <div class="opt-e" style="font-weight:800;font-style:italic">a</div>
+      <p>Le « ɑ » italique à un seul étage, dessiné par Charles Nix pour le Regular, et reporté
+      intact jusqu'au Heavy. Une lettre différente, pas une lettre penchée.</p>
+    </div>
+  </div>
+  <div class="report" style="margin-top:2px">
+    <div class="cell"><div class="n">166</div><div class="k">glyphes par<br>report d'écart</div></div>
+    <div class="cell"><div class="n">64</div><div class="k">retouches du<br>dessinateur gardées</div></div>
+    <div class="cell"><div class="n good">0,3</div><div class="k">écart de fût avec<br>le romain (u)</div></div>
+    <div class="cell"><div class="n good">12,0</div><div class="k">angle, identique<br>partout (deg)</div></div>
+  </div>
+  <ul class="notes">
+    <li><span class="tag info">méthode</span><span><b>italique(graisse) = italique(400) + cisaillement(écart de graisse)</b>.
+      On mesure la variation d'épaisseur sur l'axe romain, entre Regular et Bold, on la penche de 12°,
+      et on l'applique à l'italique existant. Les corrections du dessinateur sont préservées, seule
+      l'épaisseur change.</span></li>
+    <li><span class="tag info">noté</span><span>Deux glyphes font exception, <code>$</code> et
+      <code>¢</code> : leurs contreformes fusionnent dans le gras, ce qui interdit le report. Ils sont
+      obtenus en penchant le romain à la bonne graisse — l'épaisseur est juste, à ~30 unités près du
+      dessin d'origine.</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>03 — La correction</h2>
     <p class="sec-intro">Une première version comportait des creux et des cassures dans les courbes :
     l'algorithme appariait les points des deux dessins en se repérant à la distance parcourue le long
     du contour, un mauvais repère. Un point de la panse du « p » se retrouvait apparié à un point situé
@@ -253,9 +302,9 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>03 — En situation</h2>
+    <h2>04 — En situation</h2>
     <p class="sec-intro">La même page composée avec la famille complète : titre en Heavy, sous-titre
-    en Medium, en-têtes de tableau en Bold, données en Regular, notes en Light.</p>
+    en Medium, note en italique, en-têtes de tableau en Bold, données en Regular, notes en Light.</p>
   </div>
   <div class="sheet">
     <div class="sheet-top">
@@ -263,6 +312,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
       <span class="r" style="font-weight:500">Série AT-12 · Édition 2026</span>
     </div>
     <div class="sheet-sub" style="font-weight:500">Carbure micrograin revêtu — porte-outils Ø 12 à 20 mm</div>
+    <p style="font-style:italic;font-weight:400;font-size:14px;color:var(--steel);margin:-8px 0 16px">Valeurs d'avance données pour un acier de décolletage 11SMnPb30 ; à réduire de 30 % sur inox.</p>
     <div class="tbl-scroll">
     <table>
       <thead><tr>
@@ -288,7 +338,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>04 — Jeu de caractères</h2>
+    <h2>05 — Jeu de caractères</h2>
     <p class="sec-intro">Couverture vérifiée : français, allemand, anglais, italien, espagnol —
     l'intégralité de vos langues de publication. Les symboles techniques usuels sont présents.</p>
   </div>
@@ -297,7 +347,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>05 — Rapport de fabrication</h2>
+    <h2>06 — Rapport de fabrication</h2>
     <p class="sec-intro">Ce que la machine a fait sur chacun des 246 glyphes comparables, pour
     chaque graisse produite.</p>
   </div>
@@ -327,17 +377,23 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <li><span class="tag todo">à faire</span><span>Le <b>crénage d'origine est très pauvre</b> : 22 à 45 paires
       selon la graisse, là où une police professionnelle en compte plusieurs centaines. Sur vos
       références type « AT-1204 », ça se verra. Chantier à part.</span></li>
+    <li><span class="tag fix">corrigé</span><span>Les drapeaux de style OpenType suivaient le poids et
+      non la sous-famille : le Heavy 800 se déclarait « gras », si bien que Word l'aurait proposé
+      comme le gras de sa propre famille. Corrigé sur les 10 fichiers.</span></li>
     <li><span class="tag info">noté</span><span>Le Appli-Tec Regular reproduit le D-DIN Regular à
       <b>1 unité près au maximum</b> (l'arrondi des coordonnées à l'entier), soit 0,0035 mm à 10 pt.
       Le tracé d'origine est donc préservé.</span></li>
-    <li><span class="tag todo">à faire</span><span>Italiques (5), largeur Condensed (5), optimisation de
-      l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
+    <li><span class="tag fix">fait</span><span>Les <b>5 italiques</b> sont livrés, ainsi que la
+      nomenclature OpenType complète : les 10 fichiers se regroupent proprement sous « Appli-Tec »
+      dans les logiciels récents, et se répartissent en sous-familles Windows pour Word.</span></li>
+    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains), crénage, optimisation
+      de l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
   </ul>
 </section>
 
 <section>
   <div class="sec-head">
-    <h2>06 — Le point juridique</h2>
+    <h2>07 — Le point juridique</h2>
     <p class="sec-intro">D-DIN est publiée par Datto Inc. sous licence SIL Open Font License 1.1.
     Voici ce que cette licence vous autorise, et les deux obligations qu'elle impose.</p>
   </div>

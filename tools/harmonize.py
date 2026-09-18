@@ -163,6 +163,23 @@ def _area(c):
     return s / 2.0
 
 
+def replay(contour, journal):
+    """Rejoue sur un troisieme dessin les operations subies par un master.
+
+    Necessaire pour les italiques : le droit-Regular doit etre harmonise
+    d'abord avec l'italique, puis avec le droit-Bold. La seconde passe ajoute
+    des points au droit-Regular ; sans rejeu, l'italique ne serait plus aligne
+    sur lui et les ecarts de graisse s'appliqueraient de travers.
+    """
+    for op in journal:
+        if op[0] == "rotate":
+            r = rotate(contour, op[1])
+            contour["start"], contour["segs"] = r["start"], r["segs"]
+        elif op[0] == "split":
+            insert_anchor(contour, op[1], op[2])
+    return contour
+
+
 def insert_anchor(contour, seg_index, t=0.5):
     segs = contour["segs"]
     p0 = contour["start"] if seg_index == 0 else segs[seg_index - 1][2]
@@ -177,13 +194,15 @@ def _chord(contour, i):
     return math.hypot(p3[0] - p0[0], p3[1] - p0[1])
 
 
-def _grow_span(contour, lo, hi, target):
+def _grow_span(contour, lo, hi, target, journal=None):
     """Amene l'intervalle [lo, hi) a `target` segments en coupant a chaque fois
     le plus long : les points ajoutes tombent au milieu des grandes portions,
     la ou ils manquent effectivement."""
     while hi - lo < target:
         j = max(range(lo, hi), key=lambda i: _chord(contour, i))
         insert_anchor(contour, j)
+        if journal is not None:
+            journal.append(("split", j, 0.5))
         hi += 1
     return hi
 
@@ -246,13 +265,19 @@ def match_features(ca, cb, fa, fb):
     return [(y, x) for x, y in paires] if swap else paires
 
 
-def harmonize_pair(ca, cb):
-    """Rend deux contours structurellement identiques. Modifie sur place."""
+def harmonize_pair(ca, cb, journal=None):
+    """Rend deux contours structurellement identiques. Modifie sur place.
+
+    `journal` : si une liste est fournie, on y consigne les operations subies
+    par `ca`, afin de pouvoir les rejouer sur un dessin parallele (voir replay).
+    """
     fa, fb = feature_indices(ca), feature_indices(cb)
     paires = match_features(ca, cb, fa, fb) if (fa and fb) else None
 
     if paires and len(paires) >= 2:
         ka, kb = paires[0]
+        if journal is not None:
+            journal.append(("rotate", ka))
         ca_r, cb_r = rotate(ca, ka), rotate(cb, kb)
         na, nb = len(ca["segs"]), len(cb["segs"])
         bornes_a = sorted((x - ka) % na for x, _ in paires)
@@ -274,7 +299,7 @@ def harmonize_pair(ca, cb):
         la, ha = bornes_a[i], bornes_a[i + 1]
         lb, hb = bornes_b[i], bornes_b[i + 1]
         cible = max(ha - la, hb - lb)
-        _grow_span(ca, la, ha, cible)
+        _grow_span(ca, la, ha, cible, journal)
         _grow_span(cb, lb, hb, cible)
 
     return len(ca["segs"]) == len(cb["segs"])

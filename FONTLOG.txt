@@ -24,6 +24,16 @@ Coverage: Basic Latin, Latin-1 Supplement, plus the ISO 8859-15 additions.
 This covers French, German, English, Italian and Spanish in full.
 It does NOT cover Central European, Turkish, Greek or Cyrillic.
 
+Styles
+------
+Five weights, each with a matching italic: 10 files in the normal width.
+
+OpenType naming follows the Windows four-style limit: the RIBBI set (Regular,
+Italic, Bold, Bold Italic) sits under the family "Appli-Tec", while Light,
+Medium and Heavy form their own Windows sub-families ("Appli-Tec Light" etc.).
+Name IDs 16/17 carry the typographic family so that modern applications group
+all ten files under a single "Appli-Tec".
+
 Weights
 -------
   Light     300    generated (interpolation factor -0.333)
@@ -35,6 +45,28 @@ Weights
 Black 900 was evaluated and NOT retained: it closes the counters too far
 (74.3% ink coverage in the "e", against a 72% working threshold). It can be
 regenerated at any time with:  python3 tools/build.py 1.6667 900 Black
+
+Italics
+-------
+D-DIN ships ONE italic, in the Regular weight. The other four are derived by
+transferring the weight delta measured on the upright axis:
+
+    italic(w) = italic(400) + shear( upright(w) - upright(400) )
+
+with shear = tan(12 deg) = 0.21256, the exact slant of the original italic
+(measured at 0.2130 on I, H and 1; the designer sheared about y = 254.1).
+
+This matters: the D-DIN italic is NOT a mechanical oblique. Of 169 comparable
+simple glyphs, 64 were redrawn after slanting - the round ones above all
+(a, e, g, s, 0, 2, 3). The italic "a" is a single-storey form, a different
+letter from the upright's two-storey "a". Slanting the uprights would have
+discarded that work. Transferring the delta preserves it: only the thickness
+changes.
+
+Two glyphs are the exception. "dollar" and "cent" have their counters merged
+in the upright Bold, which makes the delta undefined; they are produced by
+shearing the upright at the target weight instead. Their weight is correct;
+they sit about 30 units from the designer's italic drawing.
 
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------
@@ -53,6 +85,18 @@ Known limitations
 
 ChangeLog
 ---------
+2026-09-18  v1.002  Added the five italics (Light, Regular, Medium, Bold,
+                    Heavy) by weight-delta transfer onto the original italic.
+                    Rewrote OpenType naming: style bits now follow the
+                    sub-family rather than the absolute weight - Heavy 800 was
+                    declaring itself Bold, so Word would have offered it as
+                    the bold of its own family. Name ID 2 was also carrying
+                    "Light"/"Medium"/"Heavy" where Windows requires one of
+                    Regular/Italic/Bold/Bold Italic.
+                    Verified: the regenerated Italic reproduces the original
+                    D-DIN Italic to within 1.01 units; italic stems match
+                    their uprights to within 0.3 units at every weight.
+
 2026-09-18  v1.001  Fixed outline distortion affecting 33 glyphs (dents in
                     the bowls of p, d, g; broken curves on h, m, 2, 5, 9).
                     Root cause: points of the two masters were paired by
@@ -66,8 +110,7 @@ ChangeLog
                     D-DIN Regular to within 1 unit (integer rounding).
                     Black 900 dropped in favour of Heavy 800.
 
-2026-09-18  v1.000  Step 1. Six upright weights in the normal width.
-                    Italics and the Condensed width are not yet built.
+2026-09-18  v1.000  Step 1. Upright weights in the normal width.
 
 Acknowledgements
 ----------------

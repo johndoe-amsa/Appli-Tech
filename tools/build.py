@@ -19,10 +19,7 @@ from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import glyph_to_contours, harmonize_pair, match_contours
-
-FAMILY = "Appli-Tec"
-VENDOR = "Applitec Moutier SA"
-
+import naming
 
 def lerp(a, b, t):
     return a + (b - a) * t
@@ -199,41 +196,7 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
         ga[name].recalcBounds(ga)
     fa["head"].recalcBounds = 1
 
-    # --- metadonnees ---
-    os2 = fa["OS/2"]
-    os2.usWeightClass = weight_class
-    sub = subfamily or ("Regular" if style in ("Regular", "Italic") else style)
-    full = f"{FAMILY}{(' ' + width_name) if width_name else ''}"
-    ps = (full + "-" + style).replace(" ", "")
-
-    copyright_ = ("Copyright (c) 2017 Datto Inc. (D-DIN, SIL OFL 1.1). "
-                  f"Modifications copyright (c) 2026 {VENDOR}. "
-                  "This Font Software is licensed under the SIL Open Font "
-                  "License, Version 1.1. Reserved Font Name 'Appli-Tec'.")
-    nm = fa["name"]
-    nm.names = [n for n in nm.names if n.nameID not in
-                (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17)]
-    for pid, eid, lid in ((3, 1, 0x409), (1, 0, 0)):
-        def setn(i, s):
-            nm.setName(s, i, pid, eid, lid)
-        setn(0, copyright_)
-        setn(1, full if style in ("Regular", "Bold", "Italic", "Bold Italic") else f"{full} {style}")
-        setn(2, sub)
-        setn(3, f"{VENDOR}: {full} {style}: 2026")
-        setn(4, f"{full} {style}")
-        setn(5, "Version 1.000")
-        setn(6, ps)
-        setn(9, "Charles Nix (Monotype), dessin d'origine D-DIN")
-        setn(11, "https://github.com/johndoe-amsa/Appli-Tech")
-        setn(13, "This Font Software is licensed under the SIL Open Font "
-                 "License, Version 1.1. No modification of this font may use "
-                 "the Reserved Font Name 'D-DIN'.")
-        setn(14, "https://scripts.sil.org/OFL")
-        setn(16, full)
-        setn(17, style)
-
-    os2.achVendID = "APTC"
-    fa["post"].underlinePosition = fa["post"].underlinePosition
+    naming.apply(fa, style, weight_class, width_name)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     fa.save(out_path)
     return stats
