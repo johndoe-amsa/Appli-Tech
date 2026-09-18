@@ -1,17 +1,29 @@
 """
-Harmonisation de contours entre deux masters de graisse differente.
+Mise en correspondance structurelle de deux contours de graisses differentes.
 
-Pour interpoler une graisse intermediaire (ex. Medium entre Regular et Bold),
-les deux dessins doivent avoir EXACTEMENT la meme structure de points.
-Dans D-DIN ce n'est vrai que pour 66% des glyphes.
+Pour interpoler une graisse intermediaire, chaque point du Regular doit etre
+apparie au point qui lui correspond VRAIMENT dans le Bold. Un appariement
+approximatif ne produit pas un resultat approximatif : il produit une bosse
+ou un creux, parce qu'un point se met a voyager en travers de la lettre.
 
-Ce module rend les contours compatibles en inserant des points la ou il en
-manque, sans modifier le trace : on coupe une courbe en deux au bon endroit
-(algorithme de De Casteljau), ce qui donne deux courbes dont la reunion est
-rigoureusement identique a la courbe d'origine.
+La methode : on ne se repere pas a la distance parcourue le long du contour
+(deux dessins de graisses differentes ne repartissent pas leurs points de la
+meme facon), mais aux POINTS STRUCTURELS, qui eux sont stables d'une graisse
+a l'autre :
+  - les angles      (rupture de direction : coin d'un fut, amorce d'un jambage)
+  - les extrema     (sommet d'une panse, flanc gauche d'un rond)
+Le haut de la panse du "p" est le haut de la panse dans les deux graisses.
+
+On apparie donc ces reperes, puis on n'ajoute des points qu'A L'INTERIEUR
+d'un intervalle deja apparie. Une erreur eventuelle reste ainsi confinee a un
+petit morceau de lettre, au lieu de traverser le dessin.
 """
+import math
+
 from fontTools.pens.recordingPen import RecordingPen
 from fontTools.pens.qu2cuPen import Qu2CuPen
+
+CORNER_DEG = 20.0   # au-dela, on considere que c'est un angle et non une courbe
 
 
 def _lerp_pt(a, b, t):
@@ -19,7 +31,8 @@ def _lerp_pt(a, b, t):
 
 
 def split_cubic(p0, p1, p2, p3, t):
-    """Coupe une courbe cubique en t. Retourne les deux moities."""
+    """Coupe une cubique en t (De Casteljau). La reunion des deux moities est
+    rigoureusement identique a la courbe d'origine : le trace ne bouge pas."""
     a, b, c = _lerp_pt(p0, p1, t), _lerp_pt(p1, p2, t), _lerp_pt(p2, p3, t)
     d, e = _lerp_pt(a, b, t), _lerp_pt(b, c, t)
     m = _lerp_pt(d, e, t)
@@ -27,12 +40,8 @@ def split_cubic(p0, p1, p2, p3, t):
 
 
 def glyph_to_contours(glyph, glyf_table):
-    """Convertit un glyphe TrueType (quadratique) en contours cubiques.
-
-    Chaque contour = {"start": point, "segs": [(p1, p2, p3), ...]}
-    Toutes les portions sont des cubiques : une ligne droite est encodee
-    comme une cubique dont les controles sont sur le segment.
-    """
+    """Glyphe TrueType (quadratique) -> contours cubiques.
+    contour = {"start": point, "segs": [(ctrl1, ctrl2, arrivee), ...]}"""
     rec = RecordingPen()
     glyph.draw(Qu2CuPen(rec, max_err=0.05, all_cubic=True), glyf_table)
 
@@ -58,32 +67,103 @@ def glyph_to_contours(glyph, glyf_table):
                                         _lerp_pt(pos, end, 2 / 3.0), end))
                 contours.append(cur)
             cur = None
-    # On ecarte les contours degeneres (surface nulle) : ce sont des scories
-    # laissees dans le dessin d'origine, invisibles a l'impression, mais qui
-    # faussent la comparaison de structure entre les deux masters.
+    # contours degeneres (surface nulle) : scories du dessin d'origine
     return [c for c in contours if len(c["segs"]) > 1]
 
 
-def _anchor_positions(contour):
-    """Position normalisee [0,1] de chaque point d'ancrage, par longueur de corde."""
-    pts = [contour["start"]] + [s[2] for s in contour["segs"]]
-    lens, total = [], 0.0
-    for i in range(len(pts) - 1):
-        dx, dy = pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]
-        d = (dx * dx + dy * dy) ** 0.5
-        lens.append(d)
-        total += d
-    if total == 0:
-        return [0.0] * len(contour["segs"])
-    out, acc = [], 0.0
-    for d in lens:
-        acc += d
-        out.append(acc / total)
-    return out  # une position par segment (celle de son point d'arrivee)
+# --------------------------------------------------------------------------
+# reperes structurels
+# --------------------------------------------------------------------------
+
+def anchors(c):
+    """Les points d'ancrage (on-curve) du contour, dans l'ordre."""
+    return [c["start"]] + [s[2] for s in c["segs"][:-1]]
 
 
-def insert_anchor(contour, seg_index, t):
-    """Coupe le segment seg_index en t, ajoutant un point d'ancrage."""
+def _tangents(c, j):
+    """Directions d'arrivee et de depart au point d'ancrage j."""
+    segs, n = c["segs"], len(c["segs"])
+    a = anchors(c)[j]
+    si, so = segs[(j - 1) % n], segs[j]
+    p = si[1] if si[1] != a else si[0]
+    q = so[0] if so[0] != a else so[1]
+    return (a[0] - p[0], a[1] - p[1]), (q[0] - a[0], q[1] - a[1])
+
+
+def feature_type(c, j):
+    """None si le point est 'au milieu d'une courbe', sinon son type."""
+    tin, tout = _tangents(c, j)
+    ni, no = math.hypot(*tin), math.hypot(*tout)
+    if ni < 1e-9 or no < 1e-9:
+        return "corner"
+    cosang = max(-1.0, min(1.0, (tin[0] * tout[0] + tin[1] * tout[1]) / (ni * no)))
+    if math.degrees(math.acos(cosang)) > CORNER_DEG:
+        return "corner"
+    # Extremum : changement de signe de la tangente, OU tangente parallele a
+    # l'axe. Au sommet d'un ovale la tangente est exactement horizontale, donc
+    # la composante y vaut ZERO des deux cotes : tester le seul changement de
+    # signe laisse passer les quatre extrema de toute contreforme ronde.
+    if tin[1] * tout[1] < 0 or (abs(tin[1]) < 0.08 * ni and abs(tout[1]) < 0.08 * no):
+        return "yext"
+    if tin[0] * tout[0] < 0 or (abs(tin[0]) < 0.08 * ni and abs(tout[0]) < 0.08 * no):
+        return "xext"
+    return None
+
+
+def feature_indices(c):
+    return [j for j in range(len(c["segs"])) if feature_type(c, j)]
+
+
+def rotate(c, k):
+    """Fait demarrer le contour a son point d'ancrage k (trace inchange)."""
+    n = len(c["segs"])
+    k %= n
+    if k == 0:
+        return c
+    return {"start": anchors(c)[k], "segs": c["segs"][k:] + c["segs"][:k]}
+
+
+def _centroid(c):
+    p = anchors(c)
+    return (sum(q[0] for q in p) / len(p), sum(q[1] for q in p) / len(p))
+
+
+def match_contours(ca, cb):
+    """Reordonne cb pour que chaque contour fasse face a son homologue dans ca.
+
+    Necessaire : rien ne garantit que les deux dessins enumerent leurs contours
+    dans le meme ordre. Apparier la panse d'un "o" avec sa contreforme detruit
+    le glyphe.
+    """
+    if len(ca) != len(cb) or len(ca) < 2:
+        return cb
+    libres, out = list(range(len(cb))), []
+    for x in ca:
+        cx, ax = _centroid(x), abs(_area(x))
+        best, bi = None, None
+        for i in libres:
+            y = cb[i]
+            cy, ay = _centroid(y), abs(_area(y))
+            d = math.hypot(cy[0] - cx[0], cy[1] - cx[1])
+            d += 200.0 * abs(ax - ay) / max(ax, ay, 1.0)
+            if best is None or d < best:
+                best, bi = d, i
+        libres.remove(bi)
+        out.append(cb[bi])
+    return out
+
+
+def _area(c):
+    p = anchors(c)
+    s = 0.0
+    for i in range(len(p)):
+        x0, y0 = p[i]
+        x1, y1 = p[(i + 1) % len(p)]
+        s += x0 * y1 - x1 * y0
+    return s / 2.0
+
+
+def insert_anchor(contour, seg_index, t=0.5):
     segs = contour["segs"]
     p0 = contour["start"] if seg_index == 0 else segs[seg_index - 1][2]
     p1, p2, p3 = segs[seg_index]
@@ -91,37 +171,110 @@ def insert_anchor(contour, seg_index, t):
     segs[seg_index:seg_index + 1] = [left[1:], right[1:]]
 
 
-def harmonize_pair(ca, cb):
-    """Rend deux contours structurellement identiques. Modifie sur place.
+def _chord(contour, i):
+    p0 = contour["start"] if i == 0 else contour["segs"][i - 1][2]
+    p3 = contour["segs"][i][2]
+    return math.hypot(p3[0] - p0[0], p3[1] - p0[1])
 
-    Le contour qui a le moins de points recoit des points supplementaires,
-    places a la position (en longueur de corde) qui correspond aux points
-    en trop de l'autre contour.
+
+def _grow_span(contour, lo, hi, target):
+    """Amene l'intervalle [lo, hi) a `target` segments en coupant a chaque fois
+    le plus long : les points ajoutes tombent au milieu des grandes portions,
+    la ou ils manquent effectivement."""
+    while hi - lo < target:
+        j = max(range(lo, hi), key=lambda i: _chord(contour, i))
+        insert_anchor(contour, j)
+        hi += 1
+    return hi
+
+
+def _norm(c):
+    """Ancres ramenees dans un carre unite : compare des formes, pas des tailles.
+    Indispensable, le Bold etant plus large que le Regular."""
+    p = anchors(c)
+    xs = [q[0] for q in p]; ys = [q[1] for q in p]
+    w = max(max(xs) - min(xs), 1.0); h = max(max(ys) - min(ys), 1.0)
+    return [((q[0] - min(xs)) / w, (q[1] - min(ys)) / h) for q in p]
+
+
+def match_features(ca, cb, fa, fb):
+    """Apparie les reperes des deux contours en respectant leur ordre.
+
+    Les deux dessins n'ont pas forcement le meme nombre de reperes : le "g"
+    du Regular a un extremum la ou le Bold a un angle. On retient alors le
+    plus grand sous-ensemble appariable, dans l'ordre, et les reperes en trop
+    redeviennent de simples points interieurs a un intervalle.
     """
-    guard = 0
-    while len(ca["segs"]) != len(cb["segs"]):
-        guard += 1
-        if guard > 60:
-            return False
-        short, long_ = (ca, cb) if len(ca["segs"]) < len(cb["segs"]) else (cb, ca)
-        pos_s, pos_l = _anchor_positions(short), _anchor_positions(long_)
-        # on cherche le point du contour long qui n'a pas de correspondant proche
-        best_i, best_gap = None, -1.0
-        for i, pl in enumerate(pos_l):
-            gap = min(abs(pl - ps) for ps in pos_s) if pos_s else 1.0
-            if gap > best_gap:
-                best_gap, best_i = gap, i
-        target = pos_l[best_i]
-        # dans quel segment du contour court tombe cette position ?
-        seg_i, prev = 0, 0.0
-        for i, ps in enumerate(pos_s):
-            if target <= ps:
-                seg_i = i
-                break
-            prev = ps
-        else:
-            seg_i, prev = len(pos_s) - 1, pos_s[-2] if len(pos_s) > 1 else 0.0
-        span = pos_s[seg_i] - prev
-        t = (target - prev) / span if span > 1e-9 else 0.5
-        insert_anchor(short, seg_i, min(0.92, max(0.08, t)))
-    return True
+    NA, NB = _norm(ca), _norm(cb)
+    swap = len(fa) > len(fb)
+    if swap:
+        fa, fb, NA, NB = fb, fa, NB, NA
+    m, n = len(fa), len(fb)
+    if m == 0 or n == 0:
+        return None
+    cout = [[math.hypot(NA[fa[i]][0] - NB[fb[j]][0],
+                        NA[fa[i]][1] - NB[fb[j]][1]) for j in range(n)]
+            for i in range(m)]
+
+    meilleur = None
+    for r in range(n):                      # fa[0] essaye chaque repere de fb
+        ordre = [(r + k) % n for k in range(n)]
+        INF = float("inf")
+        dp = [[INF] * n for _ in range(m)]
+        prev = [[-1] * n for _ in range(m)]
+        dp[0][0] = cout[0][ordre[0]]
+        for i in range(1, m):
+            best_j, best_v = -1, INF
+            for j in range(i, n):
+                if dp[i - 1][j - 1] < best_v:
+                    best_v, best_j = dp[i - 1][j - 1], j - 1
+                if best_v < INF:
+                    dp[i][j] = best_v + cout[i][ordre[j]]
+                    prev[i][j] = best_j
+        for j in range(m - 1, n):
+            if dp[m - 1][j] < INF and (meilleur is None or dp[m - 1][j] < meilleur[0]):
+                chemin, jj = [], j
+                for i in range(m - 1, -1, -1):
+                    chemin.append(jj)
+                    jj = prev[i][jj] if i else -1
+                chemin.reverse()
+                meilleur = (dp[m - 1][j], [(fa[i], fb[ordre[chemin[i]]])
+                                           for i in range(m)])
+    if meilleur is None:
+        return None
+    paires = meilleur[1]
+    return [(y, x) for x, y in paires] if swap else paires
+
+
+def harmonize_pair(ca, cb):
+    """Rend deux contours structurellement identiques. Modifie sur place."""
+    fa, fb = feature_indices(ca), feature_indices(cb)
+    paires = match_features(ca, cb, fa, fb) if (fa and fb) else None
+
+    if paires and len(paires) >= 2:
+        ka, kb = paires[0]
+        ca_r, cb_r = rotate(ca, ka), rotate(cb, kb)
+        na, nb = len(ca["segs"]), len(cb["segs"])
+        bornes_a = sorted((x - ka) % na for x, _ in paires)
+        bornes_b = sorted((y - kb) % nb for _, y in paires)
+    else:
+        ca_r, cb_r = ca, cb
+        bornes_a, bornes_b = [0], [0]
+
+    ca["start"], ca["segs"] = ca_r["start"], ca_r["segs"]
+    cb["start"], cb["segs"] = cb_r["start"], cb_r["segs"]
+
+    if len(bornes_a) != len(bornes_b) or bornes_a[0] != 0 or bornes_b[0] != 0:
+        bornes_a, bornes_b = [0], [0]
+
+    # du dernier intervalle au premier : couper dans l'un decale les suivants
+    bornes_a = bornes_a + [len(ca["segs"])]
+    bornes_b = bornes_b + [len(cb["segs"])]
+    for i in range(len(bornes_a) - 2, -1, -1):
+        la, ha = bornes_a[i], bornes_a[i + 1]
+        lb, hb = bornes_b[i], bornes_b[i + 1]
+        cible = max(ha - la, hb - lb)
+        _grow_span(ca, la, ha, cible)
+        _grow_span(cb, lb, hb, cible)
+
+    return len(ca["segs"]) == len(cb["segs"])

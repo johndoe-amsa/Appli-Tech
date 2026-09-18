@@ -6,7 +6,6 @@
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Medium.woff2')format('woff2');font-weight:500;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
-@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Black.woff2')format('woff2');font-weight:900;font-display:swap}
 
 :root{
   --ground:#e9ecee; --surface:#fbfcfc; --sunk:#dfe4e7;
@@ -49,7 +48,7 @@ h2{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;
 
 /* ---- en-tete ---- */
 header{border-bottom:1px solid var(--rule);padding-bottom:28px}
-.wordmark{font-family:var(--spec);font-weight:900;font-size:clamp(56px,13vw,132px);
+.wordmark{font-family:var(--spec);font-weight:800;font-size:clamp(56px,13vw,132px);
   line-height:.86;letter-spacing:-.025em;margin:10px 0 14px;color:var(--ink)}
 .meta{display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--mono);font-size:11.5px;color:var(--steel)}
 .meta b{color:var(--ink);font-weight:500}
@@ -92,7 +91,7 @@ header{border-bottom:1px solid var(--rule);padding-bottom:28px}
 .sheet{background:var(--surface);padding:30px 28px;font-family:var(--spec)}
 .sheet-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
   border-bottom:2px solid var(--ink);padding-bottom:10px;flex-wrap:wrap}
-.sheet-top .t{font-weight:900;font-size:clamp(22px,4vw,32px);letter-spacing:-.01em}
+.sheet-top .t{font-weight:800;font-size:clamp(22px,4vw,32px);letter-spacing:-.01em}
 .sheet-top .r{font-weight:500;font-size:13px;color:var(--steel)}
 .sheet-sub{font-weight:500;font-size:15px;color:var(--accent);margin:14px 0 18px;letter-spacing:.01em}
 .tbl-scroll{overflow-x:auto}
@@ -149,12 +148,12 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
   <span class="lbl">Applitec Moutier SA · Étape 1 · Planche de contrôle</span>
   <div class="wordmark">Appli-Tec</div>
   <div class="meta">
-    <span><b>6</b> graisses</span>
+    <span><b>5</b> graisses</span>
     <span><b>251</b> glyphes</span>
-    <span><b>0</b> échec</span>
+    <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>18.09.2026</span>
+    <span>v1.001 · 18.09.2026</span>
   </div>
 </header>
 
@@ -208,22 +207,12 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     </div>
 
     <div class="rung">
-      <div class="rung-id"><b>Heavy</b>800 · fabriquée</div>
+      <div class="rung-id"><b>Heavy</b>800 · <span style="color:var(--ok)">retenue</span></div>
       <div class="rung-spec" style="font-weight:800">Décolletage de précision</div>
       <div class="gauge">
         <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="gauge-track"><div class="gauge-fill" style="width:89.3%"></div></div>
-        <div class="gauge-read"><span>fût</span><b>151 u</b><span>×2.07</span></div>
-      </div>
-    </div>
-
-    <div class="rung flagged">
-      <div class="rung-id"><b>Black</b>900 · à valider</div>
-      <div class="rung-spec" style="font-weight:900">Décolletage de précision</div>
-      <div class="gauge">
-        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="gauge-track"><div class="gauge-fill" style="width:100%"></div></div>
-        <div class="gauge-read"><span>fût</span><b>169 u</b><span>×2.32</span></div>
+        <div class="gauge-read"><span>fût</span><b>151 u</b><span>×2.07</span></div>
       </div>
     </div>
 
@@ -232,40 +221,45 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>02 — La décision qui vous revient</h2>
-    <p class="sec-intro">Au-delà du Bold, on ne calcule plus entre deux dessins : on prolonge la
-    tendance. Les fûts grossissent, mais le trou de la lettre — la contreforme — se referme. Voici
-    les deux candidats, au même corps. Regardez l'œil du « e ».</p>
+    <h2>02 — La correction</h2>
+    <p class="sec-intro">Une première version comportait des creux et des cassures dans les courbes :
+    l'algorithme appariait les points des deux dessins en se repérant à la distance parcourue le long
+    du contour, un mauvais repère. Un point de la panse du « p » se retrouvait apparié à un point situé
+    ailleurs dans la lettre. Il se repère désormais aux angles et aux extrema, qui eux sont stables
+    d'une graisse à l'autre. Voici les lettres qui étaient touchées — zoomez, les courbes doivent être
+    lisses et les panses régulières.</p>
   </div>
-  <div class="verdict">
-    <div class="opt pick">
-      <span class="opt-h">Heavy 800 — sûr</span>
-      <div class="opt-e" style="font-weight:800">e</div>
-      <div class="bar"><i style="width:70.6%"></i></div>
-      <p><b style="color:var(--ink)">70,6 % d'encre</b> dans la boîte de la lettre. La contreforme
-      reste ouverte et lisible, y compris en petit corps et à l'impression, où l'encre a tendance à
-      s'étaler. Aucune retouche nécessaire.</p>
+  <div class="ladder">
+    <div class="rung" style="grid-template-columns:118px 1fr">
+      <div class="rung-id"><b>Light</b>300</div>
+      <div class="rung-spec" style="font-weight:300;font-size:clamp(34px,7vw,64px)">pdghm MNVWy 259</div>
     </div>
-    <div class="opt risk">
-      <span class="opt-h">Black 900 — à retoucher</span>
-      <div class="opt-e" style="font-weight:900">e</div>
-      <div class="bar"><i style="width:74.3%"></i></div>
-      <p><b style="color:var(--ink)">74,3 % d'encre</b> — au-delà du seuil que je me suis fixé (72 %).
-      Plus spectaculaire en titre de couverture, mais la contreforme se bouche. Utilisable en grand
-      corps ; à retoucher à la main avant tout usage en petit.</p>
+    <div class="rung" style="grid-template-columns:118px 1fr">
+      <div class="rung-id"><b>Medium</b>500</div>
+      <div class="rung-spec" style="font-weight:500;font-size:clamp(34px,7vw,64px)">pdghm MNVWy 259</div>
     </div>
+    <div class="rung" style="grid-template-columns:118px 1fr">
+      <div class="rung-id"><b>Heavy</b>800</div>
+      <div class="rung-spec" style="font-weight:800;font-size:clamp(34px,7vw,64px)">pdghm MNVWy 259</div>
+    </div>
+  </div>
+  <div class="report" style="margin-top:2px">
+    <div class="cell"><div class="n">33</div><div class="k">glyphes<br>déformés</div></div>
+    <div class="cell"><div class="n good">0</div><div class="k">après<br>correction</div></div>
+    <div class="cell"><div class="n good">0,78</div><div class="k">écart moyen<br>à l'original (u)</div></div>
+    <div class="cell"><div class="n good">1,00</div><div class="k">écart maximal<br>(0,0035 mm à 10 pt)</div></div>
   </div>
 </section>
 
 <section>
   <div class="sec-head">
     <h2>03 — En situation</h2>
-    <p class="sec-intro">La même page composée avec la famille complète : titre en Black, sous-titre
+    <p class="sec-intro">La même page composée avec la famille complète : titre en Heavy, sous-titre
     en Medium, en-têtes de tableau en Bold, données en Regular, notes en Light.</p>
   </div>
   <div class="sheet">
     <div class="sheet-top">
-      <span class="t" style="font-weight:900">Plaquettes de tournage</span>
+      <span class="t" style="font-weight:800">Plaquettes de tournage</span>
       <span class="r" style="font-weight:500">Série AT-12 · Édition 2026</span>
     </div>
     <div class="sheet-sub" style="font-weight:500">Carbure micrograin revêtu — porte-outils Ø 12 à 20 mm</div>
@@ -315,6 +309,10 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <div class="cell"><div class="n good">0</div><div class="k">échec</div></div>
   </div>
   <ul class="notes">
+    <li><span class="tag fix">corrigé</span><span><b>33 glyphes étaient déformés</b> dans la première
+      version — creux dans les panses du p, d, g, cassures sur h, m, 2, 5, 9. Cause : l'appariement
+      des points se faisait par distance parcourue. Il se fonde désormais sur les points structurels
+      (angles et extrema) et sur un appariement des contours entre eux. Vérifié lettre à lettre.</span></li>
     <li><span class="tag info">trouvé</span><span><b>66 % seulement</b> des glyphes du D-DIN d'origine avaient
       une structure compatible entre Regular et Bold. Les 34 % restants ont été rendus compatibles
       en insérant des points de contrôle sans modifier le tracé.</span></li>
@@ -329,6 +327,9 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <li><span class="tag todo">à faire</span><span>Le <b>crénage d'origine est très pauvre</b> : 22 à 45 paires
       selon la graisse, là où une police professionnelle en compte plusieurs centaines. Sur vos
       références type « AT-1204 », ça se verra. Chantier à part.</span></li>
+    <li><span class="tag info">noté</span><span>Le Appli-Tec Regular reproduit le D-DIN Regular à
+      <b>1 unité près au maximum</b> (l'arrondi des coordonnées à l'entier), soit 0,0035 mm à 10 pt.
+      Le tracé d'origine est donc préservé.</span></li>
     <li><span class="tag todo">à faire</span><span>Italiques (5), largeur Condensed (5), optimisation de
       l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
   </ul>

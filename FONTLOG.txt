@@ -30,8 +30,11 @@ Weights
   Regular   400    original drawing
   Medium    500    generated (+0.333)
   Bold      700    original drawing
-  Heavy     800    generated (+1.333, extrapolated)
-  Black     900    generated (+1.667, extrapolated - see ChangeLog)
+  Heavy     800    generated (+1.333, extrapolated) - retained display weight
+
+Black 900 was evaluated and NOT retained: it closes the counters too far
+(74.3% ink coverage in the "e", against a 72% working threshold). It can be
+regenerated at any time with:  python3 tools/build.py 1.6667 900 Black
 
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------
@@ -45,13 +48,24 @@ Known limitations
 -----------------
 - Kerning inherited from D-DIN is very sparse (22-45 pairs per weight).
   A proper kerning pass is still outstanding.
-- Black 900 closes the counters more than is comfortable (74.3% ink coverage
-  in the "e", against a 72% working threshold). Suitable for display sizes;
-  needs manual correction before use at text sizes. Heavy 800 is the safe
-  alternative and is supplied alongside for comparison.
+- Heavy 800 is the heaviest retained weight (70.6% ink coverage in the "e",
+  within the 72% working threshold).
 
 ChangeLog
 ---------
+2026-09-18  v1.001  Fixed outline distortion affecting 33 glyphs (dents in
+                    the bowls of p, d, g; broken curves on h, m, 2, 5, 9).
+                    Root cause: points of the two masters were paired by
+                    distance travelled along the contour, which is not a
+                    stable reference across weights - a point on the bowl of
+                    the "p" could be paired with a point elsewhere in the
+                    letter. Pairing is now anchored on structural features
+                    (corners and extrema), which are stable across weights,
+                    and contours are matched to each other before comparison.
+                    Verified: the regenerated Regular reproduces the original
+                    D-DIN Regular to within 1 unit (integer rounding).
+                    Black 900 dropped in favour of Heavy 800.
+
 2026-09-18  v1.000  Step 1. Six upright weights in the normal width.
                     Italics and the Condensed width are not yet built.
 

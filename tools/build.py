@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
-from harmonize import glyph_to_contours, harmonize_pair
+from harmonize import glyph_to_contours, harmonize_pair, match_contours
 
 FAMILY = "Appli-Tec"
 VENDOR = "Applitec Moutier SA"
@@ -140,6 +140,9 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
             continue
 
         ca, cb = glyph_to_contours(A, ga), glyph_to_contours(B, gb)
+        # apparier les contours entre eux AVANT toute comparaison : rien ne
+        # garantit que les deux dessins les enumerent dans le meme ordre
+        cb = match_contours(ca, cb)
         if not ca or not cb:
             # Glyphe vide d'un cote : defaut du dessin d'origine (le point
             # median "periodcentered" est vide dans le D-DIN Bold). On le

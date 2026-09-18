@@ -20,10 +20,20 @@ intermédiaires à partir des deux originaux.
 | Regular | 400 | **d'origine** | 73 u | référence |
 | Medium  | 500 | fabriquée | 93 u | |
 | Bold    | 700 | **d'origine** | 131 u | |
-| Heavy   | 800 | fabriquée | 151 u | extrapolée — sûre |
-| Black   | 900 | fabriquée | 169 u | extrapolée — à retoucher avant usage en petit corps |
+| Heavy   | 800 | fabriquée | 151 u | extrapolée — graisse d'affichage retenue |
+
+Le Black 900 a été évalué puis écarté : il referme trop les contreformes
+(74,3 % d'encre dans le « e », pour un seuil de travail à 72 %). Il reste
+régénérable à tout moment : `python3 tools/build.py 1.6667 900 Black`.
 
 Italiques et largeur Condensed : pas encore fabriquées.
+
+## Fidélité au dessin d'origine
+
+Le Appli-Tec Regular est régénéré par la même chaîne que les autres graisses,
+et non recopié. Il reproduit le D-DIN Regular à **1 unité près au maximum**
+(écart moyen 0,78 u), ce qui correspond à l'arrondi des coordonnées à l'entier
+— soit 0,0035 mm à 10 pt. Le tracé d'origine est préservé.
 
 ## Organisation du dépôt
 
