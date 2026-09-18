@@ -63,10 +63,28 @@ letter from the upright's two-storey "a". Slanting the uprights would have
 discarded that work. Transferring the delta preserves it: only the thickness
 changes.
 
-Two glyphs are the exception. "dollar" and "cent" have their counters merged
-in the upright Bold, which makes the delta undefined; they are produced by
-shearing the upright at the target weight instead. Their weight is correct;
-they sit about 30 units from the designer's italic drawing.
+Two traps had to be dealt with.
+
+FIRST: slanting a shape DESTROYS its horizontal extrema. A point with a
+vertical tangent is no longer vertical after a 12-degree shear, so an italic
+and its upright do not expose the same structural features - the "e" shows 13
+on one side and 10 on the other, and nothing lines up. Matching is therefore
+done on the UNSHEARED italic, and the result is re-slanted at the very end.
+
+SECOND: seven glyphs are not the same letter in both styles. The upright "a"
+is two-storey, the italic "a" single-storey; no point-to-point correspondence
+exists, and forcing one produced a spike on the bowl. These are thickened in
+their OWN drawing instead - each point moved perpendicular to the outline,
+with width and height targets taken from the upright's progression so the
+letter still matches its neighbours. The italic form is preserved intact.
+The glyphs: a, bar, brokenbar, ordfeminine, braceright, perthousand, .notdef.
+
+Calibration of the thickener, measured against the real Monotype Bold: about
+27 units of deviation on a 1000-unit grid, against about 1 unit for true
+interpolation. It is a last resort, used only where no correspondence exists.
+
+"dollar" and "cent" are separate again: their counters merge in the upright
+Bold, so they are produced by shearing the upright at the target weight.
 
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------
@@ -85,6 +103,15 @@ Known limitations
 
 ChangeLog
 ---------
+2026-09-18  v1.003  Fixed italic distortion reported on e, s and a. Two
+                    causes, see the Italics section above: features matched
+                    across a shear, and seven glyphs that are different
+                    letters in the two styles.
+                    Verified: x-height dispersion between a/e/o/s down to
+                    1 unit at every weight; italic stems still match their
+                    uprights to within 0.3 units; t=0 still reproduces the
+                    original D-DIN Italic to within 1.01 units.
+
 2026-09-18  v1.002  Added the five italics (Light, Regular, Medium, Bold,
                     Heavy) by weight-delta transfer onto the original italic.
                     Rewrote OpenType naming: style bits now follow the

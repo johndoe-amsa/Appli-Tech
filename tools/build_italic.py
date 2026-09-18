@@ -31,12 +31,31 @@ from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
-                       replay)
+                       replay, anchors)
 from build import interp_contours, interp_mismatched
+from epaissir import epaissir, _bornes_x, _bornes_y
 import naming
 
 SLANT = math.tan(math.radians(12.0))     # 0.21256
 ORIGINE = 254.1   # hauteur autour de laquelle le dessinateur a penche (mesuree)
+SEUIL_RESIDU = 45.0   # au-dela, romain et italique ne sont plus la meme lettre
+
+
+def redresser(contours):
+    """Inverse de `pencher` : ramene l'italique a la verticale.
+
+    Indispensable AVANT tout appariement avec le romain. Le cisaillement
+    detruit les extrema horizontaux - un point a tangente verticale ne l'est
+    plus une fois penche de 12 degres - si bien qu'un italique et son romain
+    n'exposent pas les memes reperes structurels. Compares tels quels, le "e"
+    affiche 13 reperes d'un cote et 10 de l'autre, et rien ne s'aligne.
+    Redresse, il en montre autant des deux cotes.
+    """
+    def f(p):
+        return (p[0] - SLANT * (p[1] - ORIGINE), p[1])
+    return [{"start": f(c["start"]),
+             "segs": [tuple(f(q) for q in sg) for sg in c["segs"]]}
+            for c in contours]
 
 
 def pencher(contours):
@@ -71,10 +90,45 @@ def draw_contours(contours, pen):
 
 
 def _report(pu, pb, pi, t):
-    """italique + cisaillement(t x ecart de graisse)"""
+    """Composites : l'ecart d'un decalage de composant se penche lineairement."""
     dx = (pb[0] - pu[0]) * t
     dy = (pb[1] - pu[1]) * t
     return (pi[0] + dx + SLANT * dy, pi[1] + dy)
+
+
+def _ecart(pu, pb, pi, t):
+    """Repere droit : italique redresse + t x ecart de graisse du romain."""
+    return (pi[0] + (pb[0] - pu[0]) * t, pi[1] + (pb[1] - pu[1]) * t)
+
+
+def _largeur(contours):
+    a, b = _bornes_x(contours)
+    return b - a
+
+
+def _cible(bornes, cI, cU, cB, t):
+    """Etendue visee : on applique a l'italique la meme PROPORTION de
+    croissance que le romain entre son Regular et la graisse demandee."""
+    au, bu = bornes(cU); ab, bb = bornes(cB)
+    lu, lb = bu - au, bb - ab
+    if lu < 1e-6:
+        return None
+    ratio = (lu + (lb - lu) * t) / lu
+    a, b = bornes(cI)
+    centre, demi = (a + b) / 2.0, (b - a) * ratio / 2.0
+    return (centre - demi, centre + demi)
+
+
+def residu(cU, cI):
+    """Ecart median entre l'italique redresse et le romain, apres appariement.
+    Eleve = les deux dessins ne representent pas la meme lettre (le "a" romain
+    a deux etages, l'italique un seul) : le report d'ecart n'a alors aucun sens.
+    """
+    d = []
+    for u, i in zip(cU, cI):
+        for pu, pi in zip(anchors(u), anchors(i)):
+            d.append(math.hypot(pi[0] - pu[0], pi[1] - pu[1]))
+    return sorted(d)[len(d) // 2] if d else 0.0
 
 
 def aligner(cU, cB, cI):
@@ -99,6 +153,13 @@ def build_italic(t, weight_class, style, out_path,
                  bold="sources/upstream-d-din/D-DIN-Bold.ttf",
                  italic="sources/upstream-d-din/D-DIN-Italic.ttf"):
     U, B, I = TTFont(upright), TTFont(bold), TTFont(italic)
+    # calibrage de l'epaississeur : demi-ecart de fut entre Regular et Bold
+    from fontTools.pens.boundsPen import BoundsPen
+    def _fut(f):
+        gs = f.getGlyphSet(); bp = BoundsPen(gs)
+        gs[f.getBestCmap()[ord("I")]].draw(bp)
+        return bp.bounds[2] - bp.bounds[0]
+    demi_ecart = (_fut(B) - _fut(U)) / 2.0
     gU, gB, gI = U["glyf"], B["glyf"], I["glyf"]
     hU, hB, hI = U["hmtx"], B["hmtx"], I["hmtx"]
 
@@ -134,9 +195,25 @@ def build_italic(t, weight_class, style, out_path,
 
         cU = glyph_to_contours(A, gU)
         cB = match_contours(cU, glyph_to_contours(Bg, gB))
-        cI = match_contours(cU, glyph_to_contours(Ig, gI))
+        cI = match_contours(cU, redresser(glyph_to_contours(Ig, gI)))
 
-        if not aligner(cU, cB, cI):
+        alignable = aligner(cU, cB, cI)
+        if alignable and residu(cU, cI) > SEUIL_RESIDU:
+            # Romain et italique ne sont pas la meme lettre (le "a" romain a
+            # deux etages, l'italique un seul). Aucune correspondance n'existe :
+            # on epaissit le dessin italique lui-meme, ce qui preserve sa forme.
+            d = demi_ecart * t
+            pen = TTGlyphPen(None)
+            draw_contours(pencher(epaissir(
+                cI, d,
+                _cible(_bornes_x, cI, cU, cB, t),
+                _cible(_bornes_y, cI, cU, cB, t))), pen)
+            neufs[name] = pen.glyph()
+            largeurs[name] = (aw, hI[name][1])
+            stats["epaissi"] = stats.get("epaissi", 0) + 1
+            continue
+
+        if not alignable:
             # Repli : on prend le DROIT a la bonne graisse et on le penche.
             # On perd les retouches du dessinateur sur ce glyphe, mais on garde
             # la bonne epaisseur - ce qui compte davantage a cote d'un texte gras.
@@ -157,15 +234,15 @@ def build_italic(t, weight_class, style, out_path,
                 largeurs[name] = hI[name]
             continue
 
-        sortie = []
+        droite = []
         for u, b, i in zip(cU, cB, cI):
-            start = _report(u["start"], b["start"], i["start"], t)
-            segs = [tuple(_report(pu, pb, pi, t) for pu, pb, pi in zip(su, sb, si))
+            start = _ecart(u["start"], b["start"], i["start"], t)
+            segs = [tuple(_ecart(pu, pb, pi, t) for pu, pb, pi in zip(su, sb, si))
                     for su, sb, si in zip(u["segs"], b["segs"], i["segs"])]
-            sortie.append({"start": start, "segs": segs})
+            droite.append({"start": start, "segs": segs})
 
         pen = TTGlyphPen(None)
-        draw_contours(sortie, pen)
+        draw_contours(pencher(droite), pen)
         neufs[name] = pen.glyph()
         largeurs[name] = (aw, hI[name][1])
         stats["report"] += 1
@@ -208,6 +285,8 @@ if __name__ == "__main__":
     print(f"  {style:<14} t={t:+.3f}  poids={wc}")
     print(f"     report d'ecart        : {s['report']}")
     print(f"     composites (accents)  : {s['composite']}")
+    if s.get("epaissi"):
+        print(f"     epaissis (autre lettre): {s['epaissi']}")
     if s.get("penche"):
         print(f"     penches depuis le droit: {s['penche']}")
     if s.get("repare"):

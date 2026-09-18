@@ -46,8 +46,27 @@ surtout. Le « a » italique est un `ɑ` à un seul étage, une lettre différen
 « a » à deux étages du romain. Pencher les romains aurait jeté ce travail ; le
 report de l'écart le préserve, seule l'épaisseur change.
 
-Exceptions : `$` et `¢`, dont les contreformes fusionnent dans le gras, sont
-obtenus en penchant le romain à la bonne graisse.
+### Deux pièges
+
+**Pencher une lettre détruit ses extrema horizontaux.** Un point à tangente
+verticale ne l'est plus après 12° d'inclinaison, si bien qu'un italique et son
+romain n'exposent pas les mêmes repères structurels — le « e » en montre 13
+d'un côté et 10 de l'autre. L'appariement se fait donc sur l'italique
+**redressé**, et le résultat n'est repenché qu'à la fin.
+
+**Sept glyphes ne sont pas la même lettre** dans les deux styles. Le « a »
+romain a deux étages, le « ɑ » italique un seul : aucune correspondance point
+à point n'existe. Ceux-là sont épaissis dans leur propre dessin
+(`tools/epaissir.py`), chaque point déplacé perpendiculairement au tracé, avec
+des consignes de largeur et de hauteur calquées sur la progression du romain.
+La forme italique est conservée intacte.
+
+Calibrage de l'épaississeur, mesuré contre le vrai Bold de Monotype : environ
+27 unités d'écart sur la grille de 1000, contre environ 1 unité pour une vraie
+interpolation. C'est un pis-aller, réservé aux cas sans correspondance.
+
+Exceptions encore à part : `$` et `¢`, dont les contreformes fusionnent dans le
+gras, sont obtenus en penchant le romain à la bonne graisse.
 
 ## Fidélité au dessin d'origine
 
