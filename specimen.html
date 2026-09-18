@@ -1,0 +1,363 @@
+<title>Appli-Tec — Planche de contrôle</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Light.woff2')format('woff2');font-weight:300;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
+@font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Black.woff2')format('woff2');font-weight:900;font-display:swap}
+
+:root{
+  --ground:#e9ecee; --surface:#fbfcfc; --sunk:#dfe4e7;
+  --ink:#14181b; --steel:#5d6971; --faint:#8b969d;
+  --rule:#c8d0d5; --hair:#dbe1e4;
+  --accent:#12657f; --accent-soft:#d3e6ec;
+  --warn:#a8510d; --warn-soft:#f4e3d2;
+  --ok:#2c6540; --ok-soft:#d8e8dd;
+  --spec:'Appli-Tec','DIN Alternate','Oswald',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --serif:'IBM Plex Serif',Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#12161a; --surface:#1a2025; --sunk:#0d1114;
+  --ink:#e8edf0; --steel:#96a3ab; --faint:#6b777e;
+  --rule:#333d44; --hair:#252d33;
+  --accent:#5cb9d6; --accent-soft:#16333d;
+  --warn:#e09149; --warn-soft:#3a2716;
+  --ok:#6fbb88; --ok-soft:#17301f;
+}}
+:root[data-theme="dark"]{
+  --ground:#12161a; --surface:#1a2025; --sunk:#0d1114;
+  --ink:#e8edf0; --steel:#96a3ab; --faint:#6b777e;
+  --rule:#333d44; --hair:#252d33;
+  --accent:#5cb9d6; --accent-soft:#16333d;
+  --warn:#e09149; --warn-soft:#3a2716;
+  --ok:#6fbb88; --ok-soft:#17301f;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--serif);
+  padding-inline:20px;padding-block:0;margin:0;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin-inline:auto;padding-block:48px 72px;display:flex;flex-direction:column;gap:64px}
+
+.lbl{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--faint)}
+h2{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 4px;text-wrap:balance}
+.sec-intro{font-size:15px;color:var(--steel);margin:0;max-width:64ch}
+.sec-head{border-top:2px solid var(--ink);padding-top:14px;margin-bottom:28px}
+
+/* ---- en-tete ---- */
+header{border-bottom:1px solid var(--rule);padding-bottom:28px}
+.wordmark{font-family:var(--spec);font-weight:900;font-size:clamp(56px,13vw,132px);
+  line-height:.86;letter-spacing:-.025em;margin:10px 0 14px;color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--mono);font-size:11.5px;color:var(--steel)}
+.meta b{color:var(--ink);font-weight:500}
+
+/* ---- echelle des graisses ---- */
+.ladder{display:flex;flex-direction:column;gap:2px}
+.rung{background:var(--surface);padding:20px 22px;display:grid;
+  grid-template-columns:118px 1fr 168px;gap:22px;align-items:center}
+.rung.flagged{background:var(--warn-soft)}
+.rung-id{font-family:var(--mono);font-size:11px;color:var(--steel);line-height:1.45}
+.rung-id b{display:block;font-size:13px;color:var(--ink);font-weight:600;letter-spacing:.02em}
+.rung-spec{font-family:var(--spec);font-size:clamp(30px,5.4vw,52px);line-height:1;
+  letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* jauge : une regle graduee, comme sur un pied a coulisse */
+.gauge{display:flex;flex-direction:column;gap:5px}
+.gauge-track{height:16px;background:var(--sunk);position:relative;overflow:hidden}
+.gauge-fill{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.rung.flagged .gauge-fill{background:var(--warn)}
+.gauge-ticks{display:flex;justify-content:space-between;height:5px}
+.gauge-ticks i{width:1px;background:var(--rule)}
+.gauge-read{font-family:var(--mono);font-size:10.5px;color:var(--steel);
+  display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.gauge-read b{color:var(--ink);font-weight:600}
+
+/* ---- decision ---- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.opt{background:var(--surface);padding:26px 24px;display:flex;flex-direction:column;gap:14px}
+.opt.pick{background:var(--ok-soft)}
+.opt.risk{background:var(--warn-soft)}
+.opt-e{font-family:var(--spec);font-size:150px;line-height:.78;text-align:center;
+  color:var(--ink);letter-spacing:-.03em}
+.opt-h{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.opt.pick .opt-h{color:var(--ok)} .opt.risk .opt-h{color:var(--warn)}
+.opt p{margin:0;font-size:14px;color:var(--steel)}
+.bar{height:7px;background:var(--sunk);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;display:block}
+.opt.pick .bar i{background:var(--ok)} .opt.risk .bar i{background:var(--warn)}
+
+/* ---- mise en situation ---- */
+.sheet{background:var(--surface);padding:30px 28px;font-family:var(--spec)}
+.sheet-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  border-bottom:2px solid var(--ink);padding-bottom:10px;flex-wrap:wrap}
+.sheet-top .t{font-weight:900;font-size:clamp(22px,4vw,32px);letter-spacing:-.01em}
+.sheet-top .r{font-weight:500;font-size:13px;color:var(--steel)}
+.sheet-sub{font-weight:500;font-size:15px;color:var(--accent);margin:14px 0 18px;letter-spacing:.01em}
+.tbl-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
+th{font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+  text-align:left;padding:9px 12px 9px 0;border-bottom:1px solid var(--ink);color:var(--ink)}
+td{font-weight:400;font-size:14.5px;padding:9px 12px 9px 0;border-bottom:1px solid var(--hair)}
+td.ref{font-weight:500}
+tr:last-child td{border-bottom:none}
+.sheet-note{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:16px;line-height:1.5}
+
+/* ---- jeu de caracteres ---- */
+.glyphs{background:var(--surface);padding:24px;font-family:var(--spec);font-weight:400;
+  font-size:26px;line-height:1.75;word-spacing:.22em;color:var(--ink)}
+.glyphs .grp{display:block;margin-bottom:12px}
+.glyphs .grp:last-child{margin-bottom:0}
+
+/* ---- rapport ---- */
+.report{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:2px}
+.cell{background:var(--surface);padding:18px 20px}
+.cell .n{font-family:var(--spec);font-weight:700;font-size:38px;line-height:1;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.cell .n.good{color:var(--ok)}
+.cell .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--faint);margin-top:7px;line-height:1.45}
+ul.notes{margin:22px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+ul.notes li{display:grid;grid-template-columns:auto 1fr;gap:12px;font-size:14.5px;color:var(--steel)}
+ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
+  padding:1px 6px;color:var(--ink)}
+.tag{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 7px;height:fit-content;white-space:nowrap}
+.tag.fix{background:var(--ok-soft);color:var(--ok)}
+.tag.info{background:var(--accent-soft);color:var(--accent)}
+.tag.todo{background:var(--warn-soft);color:var(--warn)}
+
+/* ---- juridique ---- */
+.legal{background:var(--surface);padding:26px 24px;display:flex;flex-direction:column;gap:16px}
+.legal-row{display:grid;grid-template-columns:26px 1fr;gap:14px;align-items:start}
+.legal-row .m{font-family:var(--mono);font-weight:600;font-size:15px;line-height:1.35}
+.legal-row.y .m{color:var(--ok)} .legal-row.n .m{color:var(--warn)}
+.legal-row p{margin:0;font-size:14.5px;color:var(--steel)}
+.legal-row b{color:var(--ink);font-weight:600}
+
+@media (max-width:760px){
+  .rung{grid-template-columns:1fr;gap:12px}
+  .verdict{grid-template-columns:1fr}
+  .opt-e{font-size:110px}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="lbl">Applitec Moutier SA · Étape 1 · Planche de contrôle</span>
+  <div class="wordmark">Appli-Tec</div>
+  <div class="meta">
+    <span><b>6</b> graisses</span>
+    <span><b>251</b> glyphes</span>
+    <span><b>0</b> échec</span>
+    <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
+    <span>licence <b>SIL OFL 1.1</b></span>
+    <span>18.09.2026</span>
+  </div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <h2>01 — L'échelle des graisses</h2>
+    <p class="sec-intro">Seuls le Regular et le Bold existaient. Les quatre autres ont été fabriquées
+    en calculant les dessins intermédiaires, point par point. La jauge à droite mesure l'épaisseur du
+    fût vertical du « I », en unités de la grille de dessin (1000 unités = hauteur du corps).</p>
+  </div>
+  <div class="ladder">
+
+    <div class="rung">
+      <div class="rung-id"><b>Light</b>300 · fabriquée</div>
+      <div class="rung-spec" style="font-weight:300">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:31.4%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>53 u</b><span>×0.73</span></div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-id"><b>Regular</b>400 · d'origine</div>
+      <div class="rung-spec" style="font-weight:400">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:43.2%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>73 u</b><span>×1.00</span></div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-id"><b>Medium</b>500 · fabriquée</div>
+      <div class="rung-spec" style="font-weight:500">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:55.0%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>93 u</b><span>×1.27</span></div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-id"><b>Bold</b>700 · d'origine</div>
+      <div class="rung-spec" style="font-weight:700">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:77.5%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>131 u</b><span>×1.79</span></div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-id"><b>Heavy</b>800 · fabriquée</div>
+      <div class="rung-spec" style="font-weight:800">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:89.3%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>151 u</b><span>×2.07</span></div>
+      </div>
+    </div>
+
+    <div class="rung flagged">
+      <div class="rung-id"><b>Black</b>900 · à valider</div>
+      <div class="rung-spec" style="font-weight:900">Décolletage de précision</div>
+      <div class="gauge">
+        <div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:100%"></div></div>
+        <div class="gauge-read"><span>fût</span><b>169 u</b><span>×2.32</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>02 — La décision qui vous revient</h2>
+    <p class="sec-intro">Au-delà du Bold, on ne calcule plus entre deux dessins : on prolonge la
+    tendance. Les fûts grossissent, mais le trou de la lettre — la contreforme — se referme. Voici
+    les deux candidats, au même corps. Regardez l'œil du « e ».</p>
+  </div>
+  <div class="verdict">
+    <div class="opt pick">
+      <span class="opt-h">Heavy 800 — sûr</span>
+      <div class="opt-e" style="font-weight:800">e</div>
+      <div class="bar"><i style="width:70.6%"></i></div>
+      <p><b style="color:var(--ink)">70,6 % d'encre</b> dans la boîte de la lettre. La contreforme
+      reste ouverte et lisible, y compris en petit corps et à l'impression, où l'encre a tendance à
+      s'étaler. Aucune retouche nécessaire.</p>
+    </div>
+    <div class="opt risk">
+      <span class="opt-h">Black 900 — à retoucher</span>
+      <div class="opt-e" style="font-weight:900">e</div>
+      <div class="bar"><i style="width:74.3%"></i></div>
+      <p><b style="color:var(--ink)">74,3 % d'encre</b> — au-delà du seuil que je me suis fixé (72 %).
+      Plus spectaculaire en titre de couverture, mais la contreforme se bouche. Utilisable en grand
+      corps ; à retoucher à la main avant tout usage en petit.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>03 — En situation</h2>
+    <p class="sec-intro">La même page composée avec la famille complète : titre en Black, sous-titre
+    en Medium, en-têtes de tableau en Bold, données en Regular, notes en Light.</p>
+  </div>
+  <div class="sheet">
+    <div class="sheet-top">
+      <span class="t" style="font-weight:900">Plaquettes de tournage</span>
+      <span class="r" style="font-weight:500">Série AT-12 · Édition 2026</span>
+    </div>
+    <div class="sheet-sub" style="font-weight:500">Carbure micrograin revêtu — porte-outils Ø 12 à 20 mm</div>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr>
+        <th style="font-weight:700">Référence</th>
+        <th style="font-weight:700">Ø queue</th>
+        <th style="font-weight:700">Rayon de bec</th>
+        <th style="font-weight:700">Tolérance</th>
+        <th style="font-weight:700">Angle</th>
+        <th style="font-weight:700">Avance f</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="ref" style="font-weight:500">AT-1204.02</td><td>Ø 12 mm</td><td>R 0,02</td><td>± 5 µm</td><td>93°</td><td>0,04 mm/tr</td></tr>
+        <tr><td class="ref" style="font-weight:500">AT-1604.04</td><td>Ø 16 mm</td><td>R 0,04</td><td>± 5 µm</td><td>93°</td><td>0,06 mm/tr</td></tr>
+        <tr><td class="ref" style="font-weight:500">AT-1608.08</td><td>Ø 16 mm</td><td>R 0,08</td><td>± 8 µm</td><td>80°</td><td>0,08 mm/tr</td></tr>
+        <tr><td class="ref" style="font-weight:500">AT-2012.12</td><td>Ø 20 mm</td><td>R 0,12</td><td>± 10 µm</td><td>80°</td><td>0,12 mm/tr</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="sheet-note" style="font-family:var(--mono)">Exemple de mise en page — références et valeurs fictives,
+    destinées uniquement à juger le rendu typographique. Ne pas diffuser comme document technique.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>04 — Jeu de caractères</h2>
+    <p class="sec-intro">Couverture vérifiée : français, allemand, anglais, italien, espagnol —
+    l'intégralité de vos langues de publication. Les symboles techniques usuels sont présents.</p>
+  </div>
+  <div class="glyphs"><span class="grp">ABCDEFGHIJKLMNOPQRSTUVWXYZ</span><span class="grp">abcdefghijklmnopqrstuvwxyz</span><span class="grp">0123456789</span><span class="grp">ÀÂÄÇÈÉÊËÎÏÔÖÙÛÜßŒŸàâäçèéêëîïôöùûüœÿ</span><span class="grp">Øø±°µ×½¼¾²³¹,.:;!?()[]-/%+=<>#&@§®™€$£·«»“”</span></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>05 — Rapport de fabrication</h2>
+    <p class="sec-intro">Ce que la machine a fait sur chacun des 246 glyphes comparables, pour
+    chaque graisse produite.</p>
+  </div>
+  <div class="report">
+    <div class="cell"><div class="n">112</div><div class="k">interpolés<br>directement</div></div>
+    <div class="cell"><div class="n">54</div><div class="k">après<br>harmonisation</div></div>
+    <div class="cell"><div class="n">77</div><div class="k">composites<br>(accents)</div></div>
+    <div class="cell"><div class="n">2</div><div class="k">topologie<br>divergente</div></div>
+    <div class="cell"><div class="n good">0</div><div class="k">échec</div></div>
+  </div>
+  <ul class="notes">
+    <li><span class="tag info">trouvé</span><span><b>66 % seulement</b> des glyphes du D-DIN d'origine avaient
+      une structure compatible entre Regular et Bold. Les 34 % restants ont été rendus compatibles
+      en insérant des points de contrôle sans modifier le tracé.</span></li>
+    <li><span class="tag fix">corrigé</span><span>Le glyphe <code>periodcentered</code> (le point médian « · »)
+      est <b>vide dans le D-DIN Bold d'origine</b> — un défaut amont. Il a été reconstruit à partir
+      du point final.</span></li>
+    <li><span class="tag fix">corrigé</span><span>Contours parasites de surface nulle dans
+      <code>$</code>, <code>:</code> et <code>;</code> — scories du dessin d'origine, écartées.</span></li>
+    <li><span class="tag info">noté</span><span>Dans <code>$</code> et <code>¢</code>, les contreformes
+      fusionnent entre Regular et Bold. Elles sont désormais refermées progressivement, comme le
+      ferait un dessinateur.</span></li>
+    <li><span class="tag todo">à faire</span><span>Le <b>crénage d'origine est très pauvre</b> : 22 à 45 paires
+      selon la graisse, là où une police professionnelle en compte plusieurs centaines. Sur vos
+      références type « AT-1204 », ça se verra. Chantier à part.</span></li>
+    <li><span class="tag todo">à faire</span><span>Italiques (5), largeur Condensed (5), optimisation de
+      l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>06 — Le point juridique</h2>
+    <p class="sec-intro">D-DIN est publiée par Datto Inc. sous licence SIL Open Font License 1.1.
+    Voici ce que cette licence vous autorise, et les deux obligations qu'elle impose.</p>
+  </div>
+  <div class="legal">
+    <div class="legal-row y"><span class="m">OUI</span><p><b>Modifier la police.</b> La licence autorise
+      explicitement d'ajouter, supprimer et redessiner. Fabriquer des graisses est un usage prévu.</p></div>
+    <div class="legal-row y"><span class="m">OUI</span><p><b>Usage commercial.</b> Catalogues, fiches
+      produits, site, emballages, signalétique : aucune restriction, aucune redevance.</p></div>
+    <div class="legal-row y"><span class="m">OUI</span><p><b>Vos documents vous appartiennent.</b> La clause 5
+      est explicite : l'obligation de rester en OFL <b>ne s'applique pas aux documents créés avec la
+      police</b>. Vos PDF et catalogues ne sont pas « contaminés ».</p></div>
+    <div class="legal-row y"><span class="m">OUI</span><p><b>Diffuser.</b> Postes internes, agence,
+      imprimeur, site web, dépôt GitHub public — tout est autorisé.</p></div>
+    <div class="legal-row n"><span class="m">MAIS</span><p><b>Le nom « D-DIN » est réservé.</b> Clause 3 :
+      une version modifiée ne peut pas le porter. D'où <b>Appli-Tec</b>. C'est obligatoire, pas
+      cosmétique. Le mot « DIN » est par ailleurs une marque du Deutsches Institut für Normung :
+      s'en écarter est doublement prudent.</p></div>
+    <div class="legal-row n"><span class="m">MAIS</span><p><b>La police reste sous OFL</b> et le fichier de
+      licence doit l'accompagner partout, y compris chez votre imprimeur. Elle ne peut pas être
+      vendue seule — vendre des produits composés avec elle ne pose aucun problème.</p></div>
+  </div>
+</section>
+
+</div>

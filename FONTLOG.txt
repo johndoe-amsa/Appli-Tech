@@ -1,0 +1,61 @@
+FONTLOG for the Appli-Tec family
+================================
+
+Basic Font Information
+----------------------
+Appli-Tec is the corporate typeface of Applitec Moutier SA, used for technical
+documentation: product catalogues, data sheets, office documents and the web.
+
+It is a derivative of D-DIN, copyright (c) 2017 Datto Inc., released by Datto
+under the SIL Open Font License v1.1. D-DIN was designed by Charles Nix
+(Monotype) and is itself an adaptation of DIN 1451, the typeface defined by the
+Deutsches Institut fuer Normung in 1931 for industrial and traffic signage.
+
+D-DIN ships with two weights only (Regular 400 and Bold 700). Appli-Tec extends
+the family with the intermediate and extreme weights required by Applitec's
+documents. The additional weights are computed from the two original drawings
+by point-to-point interpolation and extrapolation; no outline was redrawn from
+scratch.
+
+As required by clause 3 of the SIL Open Font License, this derivative does NOT
+use the Reserved Font Name "D-DIN". "Appli-Tec" is reserved in turn.
+
+Coverage: Basic Latin, Latin-1 Supplement, plus the ISO 8859-15 additions.
+This covers French, German, English, Italian and Spanish in full.
+It does NOT cover Central European, Turkish, Greek or Cyrillic.
+
+Weights
+-------
+  Light     300    generated (interpolation factor -0.333)
+  Regular   400    original drawing
+  Medium    500    generated (+0.333)
+  Bold      700    original drawing
+  Heavy     800    generated (+1.333, extrapolated)
+  Black     900    generated (+1.667, extrapolated - see ChangeLog)
+
+Fixes applied to defects inherited from D-DIN
+---------------------------------------------
+- "periodcentered" (U+00B7) is an EMPTY glyph in D-DIN Bold. Rebuilt from the
+  period glyph.
+- Zero-area stray contours in "dollar", "colon" and "semicolon" removed.
+- "dollar" and "cent" have different contour topology between Regular and Bold
+  (counters merge in the Bold). Counters are now closed progressively.
+
+Known limitations
+-----------------
+- Kerning inherited from D-DIN is very sparse (22-45 pairs per weight).
+  A proper kerning pass is still outstanding.
+- Black 900 closes the counters more than is comfortable (74.3% ink coverage
+  in the "e", against a 72% working threshold). Suitable for display sizes;
+  needs manual correction before use at text sizes. Heavy 800 is the safe
+  alternative and is supplied alongside for comparison.
+
+ChangeLog
+---------
+2026-09-18  v1.000  Step 1. Six upright weights in the normal width.
+                    Italics and the Condensed width are not yet built.
+
+Acknowledgements
+----------------
+Original D-DIN design: Charles Nix (Monotype), commissioned and open-sourced
+by Datto Inc. Appli-Tec weight extension: Applitec Moutier SA, 2026.
