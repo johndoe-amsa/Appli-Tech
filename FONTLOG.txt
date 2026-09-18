@@ -71,20 +71,33 @@ and its upright do not expose the same structural features - the "e" shows 13
 on one side and 10 on the other, and nothing lines up. Matching is therefore
 done on the UNSHEARED italic, and the result is re-slanted at the very end.
 
-SECOND: seven glyphs are not the same letter in both styles. The upright "a"
-is two-storey, the italic "a" single-storey; no point-to-point correspondence
-exists, and forcing one produced a spike on the bowl. These are thickened in
-their OWN drawing instead - each point moved perpendicular to the outline,
-with width and height targets taken from the upright's progression so the
-letter still matches its neighbours. The italic form is preserved intact.
-The glyphs: a, bar, brokenbar, ordfeminine, braceright, perthousand, .notdef.
+SECOND: micro-features. The terminal of the upright "e" carries two vertical
+stubs 3 and 5 units long, artefacts of the drawing rather than articulations
+of the letter; the italic, whose terminal is cut at a different angle, has
+none. Two things went wrong there. Features closer together than 15 units are
+now merged, a corner winning over an extremum. And when a span needs extra
+points to match the other master, they are inserted AT THE POSITION THEY
+OCCUPY in that master, no longer by splitting the longest segment in half -
+which used to drop them at the bottom of the curve, 120 units from where they
+belonged, and let the terminal's weight delta carve a notch. Residuals: "e"
+123 -> 29 units, "c" 129 -> 28, "s" 127 -> 24.
 
-Calibration of the thickener, measured against the real Monotype Bold: about
-27 units of deviation on a 1000-unit grid, against about 1 unit for true
-interpolation. It is a last resort, used only where no correspondence exists.
+Nine glyphs are sheared from the upright at the target weight rather than
+derived from the italic: a, dollar, cent, bar, brokenbar, ordfeminine,
+braceright, perthousand, .notdef. For dollar and cent the counters merge in
+the upright Bold, which leaves the delta undefined. For the others - "a"
+above all, whose italic is a single-storey letter against the upright's
+two-storey one - no correspondence exists at all.
 
-"dollar" and "cent" are separate again: their counters merge in the upright
-Bold, so they are produced by shearing the upright at the target weight.
+For "a" this is a deliberate, provisional choice by the client: a shear now,
+a proper redrawing of the single-storey italic form later. It follows that
+Appli-Tec Italic 400 differs from the original D-DIN Italic on these nine
+glyphs, and matches it to within 1.01 units on all the others.
+
+tools/epaissir.py remains in the tree, unwired. It thickens an outline
+without any reference master, and was measured at about 27 units of deviation
+against the real Monotype Bold (against about 1 unit for true interpolation).
+It is the starting point should the single-storey italic "a" be taken up.
 
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------
@@ -103,6 +116,16 @@ Known limitations
 
 ChangeLog
 ---------
+2026-09-18  v1.004  Fixed the notch reported on the italic e, c and s:
+                    micro-features were being matched across designs, and
+                    filler points were inserted by halving the longest
+                    segment instead of at their corresponding position.
+                    The italic "a" now follows the upright, sheared, by
+                    client decision.
+                    Verified: uprights still reproduce D-DIN Regular to
+                    within 1.00 unit; italics reproduce D-DIN Italic to
+                    within 1.01 units on the 81 glyphs not sheared.
+
 2026-09-18  v1.003  Fixed italic distortion reported on e, s and a. Two
                     causes, see the Italics section above: features matched
                     across a shear, and seven glyphs that are different

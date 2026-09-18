@@ -46,34 +46,41 @@ surtout. Le « a » italique est un `ɑ` à un seul étage, une lettre différen
 « a » à deux étages du romain. Pencher les romains aurait jeté ce travail ; le
 report de l'écart le préserve, seule l'épaisseur change.
 
-### Deux pièges
+### Les pièges rencontrés
 
 **Pencher une lettre détruit ses extrema horizontaux.** Un point à tangente
-verticale ne l'est plus après 12° d'inclinaison, si bien qu'un italique et son
-romain n'exposent pas les mêmes repères structurels — le « e » en montre 13
-d'un côté et 10 de l'autre. L'appariement se fait donc sur l'italique
-**redressé**, et le résultat n'est repenché qu'à la fin.
+verticale ne l'est plus après 12° d'inclinaison. L'appariement se fait donc
+sur l'italique **redressé**, et n'est repenché qu'à la fin.
 
-**Sept glyphes ne sont pas la même lettre** dans les deux styles. Le « a »
-romain a deux étages, le « ɑ » italique un seul : aucune correspondance point
-à point n'existe. Ceux-là sont épaissis dans leur propre dessin
-(`tools/epaissir.py`), chaque point déplacé perpendiculairement au tracé, avec
-des consignes de largeur et de hauteur calquées sur la progression du romain.
-La forme italique est conservée intacte.
+**Les micro-repères.** Le terminal du « e » romain porte deux ergots verticaux
+de 3 et 5 unités — un artefact du tracé, pas une articulation de la lettre —
+que l'italique n'a pas. Les repères distants de moins de 15 unités sont
+désormais fusionnés, l'angle l'emportant sur l'extremum.
 
-Calibrage de l'épaississeur, mesuré contre le vrai Bold de Monotype : environ
-27 unités d'écart sur la grille de 1000, contre environ 1 unité pour une vraie
-interpolation. C'est un pis-aller, réservé aux cas sans correspondance.
+**L'insertion des points de remplissage.** Quand un intervalle doit recevoir
+des points pour égaler l'autre dessin, ils sont insérés **à la position qu'ils
+occupent** dans celui-ci, et non en coupant le plus long segment en deux — ce
+qui les envoyait au fond de la courbe, à 120 unités de leur place, et laissait
+l'écart de graisse du terminal y creuser une encoche. Résidus ramenés de 123 à
+29 unités sur le « e », de 129 à 28 sur le « c », de 127 à 24 sur le « s ».
 
-Exceptions encore à part : `$` et `¢`, dont les contreformes fusionnent dans le
-gras, sont obtenus en penchant le romain à la bonne graisse.
+### Neuf glyphes penchés depuis le romain
 
-## Fidélité au dessin d'origine
+`a` `$` `¢` `|` `¦` `ª` `}` `‰` et `.notdef` ne sont pas déduits de l'italique
+mais obtenus en penchant le romain à la graisse voulue. Pour `$` et `¢`, leurs
+contreformes fusionnent dans le gras. Pour les autres — le `a` surtout, dont
+l'italique est une lettre à un seul étage face au romain à deux étages —
+aucune correspondance n'existe.
 
-Le Appli-Tec Regular est régénéré par la même chaîne que les autres graisses,
-et non recopié. Il reproduit le D-DIN Regular à **1 unité près au maximum**
-(écart moyen 0,78 u), ce qui correspond à l'arrondi des coordonnées à l'entier
-— soit 0,0035 mm à 10 pt. Le tracé d'origine est préservé.
+Pour le `a`, c'est un **choix provisoire** : un penchage maintenant, un
+redessin de la forme italique propre plus tard. Conséquence assumée :
+l'Italic 400 diffère du D-DIN Italic d'origine sur ces neuf glyphes, et le
+reproduit à 1,01 unité près sur tous les autres.
+
+`tools/epaissir.py` reste dans le dépôt, débranché : il épaissit un contour
+sans master de référence, à ~27 unités d'écart du vrai Bold de Monotype
+(contre ~1 unité pour une vraie interpolation). C'est le point de départ si
+l'on reprend le `a` italique.
 
 ## Organisation du dépôt
 

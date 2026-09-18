@@ -110,8 +110,39 @@ def feature_type(c, j):
     return None
 
 
+RANG = {"corner": 2, "yext": 1, "xext": 1}
+ECART_MINI = 15.0   # unites ; en-deca, deux reperes n'en font qu'un
+
+
 def feature_indices(c):
-    return [j for j in range(len(c["segs"])) if feature_type(c, j)]
+    """Reperes structurels du contour, debarrasses des micro-reperes.
+
+    Un bord de terminal quasi vertical produit un extremum a 3 unites de
+    l'angle voisin : c'est un artefact du trace, pas une articulation de la
+    lettre. L'italique, dont le terminal est coupe autrement, n'a pas le sien
+    au meme endroit - l'apparieur mariait alors ces faux reperes a des points
+    situes ailleurs dans la lettre, d'ou l'encoche observee sur le "e" et le
+    "c". On fusionne donc les reperes distants de moins de 15 unites, en
+    gardant le plus fort : un angle l'emporte sur un extremum.
+    """
+    bruts = [j for j in range(len(c["segs"])) if feature_type(c, j)]
+    if len(bruts) < 2:
+        return bruts
+    A = anchors(c)
+    gardes = []
+    for j in bruts:
+        if gardes and math.dist(A[j], A[gardes[-1]]) < ECART_MINI:
+            if RANG[feature_type(c, j)] > RANG[feature_type(c, gardes[-1])]:
+                gardes[-1] = j
+            continue
+        gardes.append(j)
+    # le contour est ferme : verifier aussi le voisinage dernier / premier
+    if len(gardes) > 2 and math.dist(A[gardes[0]], A[gardes[-1]]) < ECART_MINI:
+        if RANG[feature_type(c, gardes[0])] >= RANG[feature_type(c, gardes[-1])]:
+            gardes.pop()
+        else:
+            gardes.pop(0)
+    return gardes
 
 
 def rotate(c, k):
@@ -194,15 +225,58 @@ def _chord(contour, i):
     return math.hypot(p3[0] - p0[0], p3[1] - p0[1])
 
 
-def _grow_span(contour, lo, hi, target, journal=None):
-    """Amene l'intervalle [lo, hi) a `target` segments en coupant a chaque fois
-    le plus long : les points ajoutes tombent au milieu des grandes portions,
-    la ou ils manquent effectivement."""
+def _jalons(contour, lo, hi):
+    """Positions normalisees (0..1) des points d'ancrage internes a l'intervalle."""
+    L = [_chord(contour, k) for k in range(lo, hi)]
+    tot = sum(L)
+    if tot <= 0 or len(L) < 2:
+        return []
+    out, acc = [], 0.0
+    for k in range(len(L) - 1):
+        acc += L[k]
+        out.append(acc / tot)
+    return out
+
+
+def _localiser(contour, lo, hi, p):
+    """Segment et parametre local correspondant a la position normalisee p."""
+    L = [_chord(contour, k) for k in range(lo, hi)]
+    tot = sum(L)
+    if tot <= 0:
+        return lo, 0.5
+    cible, acc = p * tot, 0.0
+    for m, l in enumerate(L):
+        if acc + l >= cible or m == len(L) - 1:
+            t = (cible - acc) / l if l > 1e-9 else 0.5
+            return lo + m, min(0.9, max(0.1, t))
+        acc += l
+    return hi - 1, 0.5
+
+
+def _grow_span(contour, lo, hi, target, journal=None, ref=None, rlo=0, rhi=0):
+    """Amene l'intervalle [lo, hi) a `target` segments.
+
+    Les points ajoutes sont places A LA POSITION QU'ILS OCCUPENT dans l'autre
+    master, et non au milieu du plus long segment. La difference n'est pas
+    theorique : le terminal du "e" romain porte deux ergots verticaux de 3 et
+    5 unites que l'italique n'a pas. Couper "le plus long au milieu" envoyait
+    ces deux points au fond de la courbe, a 120 unites de leur place, et
+    l'ecart de graisse destine au terminal y creusait une encoche.
+    """
     while hi - lo < target:
-        j = max(range(lo, hi), key=lambda i: _chord(contour, i))
-        insert_anchor(contour, j)
+        jalons_ref = _jalons(ref, rlo, rhi) if ref is not None else []
+        if jalons_ref:
+            miens = _jalons(contour, lo, hi)
+            # la position de reference la plus mal couverte par les miennes
+            p = max(jalons_ref,
+                    key=lambda x: min((abs(x - q) for q in miens), default=1.0))
+            j, t = _localiser(contour, lo, hi, p)
+        else:
+            j = max(range(lo, hi), key=lambda k: _chord(contour, k))
+            t = 0.5
+        insert_anchor(contour, j, t)
         if journal is not None:
-            journal.append(("split", j, 0.5))
+            journal.append(("split", j, t))
         hi += 1
     return hi
 
@@ -299,7 +373,7 @@ def harmonize_pair(ca, cb, journal=None):
         la, ha = bornes_a[i], bornes_a[i + 1]
         lb, hb = bornes_b[i], bornes_b[i + 1]
         cible = max(ha - la, hb - lb)
-        _grow_span(ca, la, ha, cible, journal)
-        _grow_span(cb, lb, hb, cible)
+        _grow_span(ca, la, ha, cible, journal, ref=cb, rlo=lb, rhi=hb)
+        _grow_span(cb, lb, hb, cible, None, ref=ca, rlo=la, rhi=ha)
 
     return len(ca["segs"]) == len(cb["segs"])

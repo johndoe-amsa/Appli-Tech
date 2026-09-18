@@ -7,6 +7,7 @@
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
 
+@font-face{font-family:'D-DIN-origine';src:url('fonts/woff2/_D-DIN-Italic-origine.woff2')format('woff2');font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-LightItalic.woff2')format('woff2');font-weight:300;font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Italic.woff2')format('woff2');font-weight:400;font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-MediumItalic.woff2')format('woff2');font-weight:500;font-style:italic;font-display:swap}
@@ -161,7 +162,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>v1.003 · 18.09.2026</span>
+    <span>v1.004 · 18.09.2026</span>
   </div>
 </header>
 
@@ -237,42 +238,46 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     pencher mécaniquement aurait jeté ce travail.</p>
   </div>
   <div class="verdict">
-    <div class="opt risk">
-      <span class="opt-h">Ce qu'un penchage aurait donné</span>
-      <div class="opt-e" style="font-weight:800;transform:skewX(-12deg)">a</div>
-      <p>Le « a » du romain, à deux étages, simplement incliné. C'est ce que fait le bouton
-      <i>italique</i> de Word quand la police n'a pas de vrai italique.</p>
-    </div>
     <div class="opt pick">
-      <span class="opt-h">Ce que vous avez</span>
+      <span class="opt-h">Retenu pour l'instant — penchage</span>
       <div class="opt-e" style="font-weight:800;font-style:italic">a</div>
-      <p>Le « ɑ » italique à un seul étage, dessiné par Charles Nix pour le Regular, et reporté
-      intact jusqu'au Heavy. Une lettre différente, pas une lettre penchée.</p>
+      <p>Le « a » du romain, incliné de 12°. Propre, cohérent d'une graisse à l'autre, disponible
+      tout de suite. C'est ce que contiennent les fichiers livrés.</p>
+    </div>
+    <div class="opt risk">
+      <span class="opt-h">À reprendre — forme italique propre</span>
+      <div class="opt-e" style="font-family:'D-DIN-origine',var(--spec);font-weight:400;font-style:italic">a</div>
+      <p>Le « a » à un seul étage dessiné par Charles Nix (rendu ci-dessus avec le D-DIN Italic d'origine) pour le Regular. Le conserver aux autres
+      graisses demande de le <b>redessiner</b>, pas de le calculer : aucune correspondance n'existe
+      avec le « a » romain à deux étages. Chantier ouvert.</p>
     </div>
   </div>
   <div class="report" style="margin-top:2px">
-    <div class="cell"><div class="n">159</div><div class="k">par report<br>d'écart</div></div>
-    <div class="cell"><div class="n">7</div><div class="k">épaissis<br>(autre lettre)</div></div>
+    <div class="cell"><div class="n">157</div><div class="k">par report<br>d'écart</div></div>
+    <div class="cell"><div class="n">9</div><div class="k">penchés depuis<br>le romain</div></div>
+    <div class="cell"><div class="n good">1,01</div><div class="k">écart à l'original<br>à t=0 (u)</div></div>
     <div class="cell"><div class="n good">0,3</div><div class="k">écart de fût avec<br>le romain (u)</div></div>
-    <div class="cell"><div class="n good">1</div><div class="k">dispersion de<br>hauteur d'x (u)</div></div>
   </div>
   <ul class="notes">
     <li><span class="tag info">méthode</span><span><b>italique(graisse) = italique(400) + écart de graisse du romain</b>.
-      On mesure la variation d'épaisseur sur l'axe romain, entre Regular et Bold, et on l'applique à
-      l'italique existant. Les corrections du dessinateur sont préservées, seule l'épaisseur change.</span></li>
-    <li><span class="tag fix">corrigé</span><span><b>Le piège du cisaillement.</b> Une première version
-      cassait le « e » et le « s ». Cause : pencher une lettre <b>détruit ses extrema horizontaux</b> —
-      un point à tangente verticale ne l'est plus après 12° d'inclinaison. L'appariement cherchait donc
-      dans l'italique des repères que le penchage avait effacés : 13 repères d'un côté, 10 de l'autre.
-      L'appariement se fait désormais sur l'italique <b>redressé</b>, et n'est repenché qu'à la fin.</span></li>
-    <li><span class="tag fix">corrigé</span><span><b>Sept lettres n'en sont pas.</b> Le « a » romain a
-      deux étages, le « ɑ » italique un seul : aucune correspondance point à point n'existe entre eux, et
-      le report d'écart produisait une pointe parasite. Ces sept glyphes sont désormais <b>épaissis
-      dans leur propre dessin</b>, perpendiculairement au tracé, avec une consigne de largeur et de
-      hauteur calquée sur la progression du romain. La forme italique est conservée intacte.</span></li>
-    <li><span class="tag info">noté</span><span>Deux glyphes restent à part, <code>$</code> et
-      <code>¢</code> : leurs contreformes fusionnent dans le gras. Ils sont obtenus en penchant le
-      romain à la bonne graisse — épaisseur juste, à ~30 unités du dessin d'origine.</span></li>
+      On mesure la variation d'épaisseur sur l'axe romain et on l'applique à l'italique existant :
+      les corrections du dessinateur sont préservées, seule l'épaisseur change.</span></li>
+    <li><span class="tag fix">corrigé</span><span><b>Le piège du cisaillement.</b> Pencher une lettre
+      détruit ses extrema horizontaux — un point à tangente verticale ne l'est plus à 12°.
+      L'appariement cherchait donc dans l'italique des repères que le penchage avait effacés.
+      Il se fait désormais sur l'italique <b>redressé</b>.</span></li>
+    <li><span class="tag fix">corrigé</span><span><b>Les micro-repères, et l'encoche du « e ».</b>
+      Le terminal du « e » romain porte deux ergots verticaux de 3 et 5 unités, absents de
+      l'italique. Pour égaliser les structures, le code coupait « le segment le plus long au
+      milieu » — et plaçait donc ces deux points au fond de la courbe, à 120 unités de leur place.
+      L'écart destiné au terminal y creusait une encoche. Les points ajoutés sont maintenant
+      insérés <b>à la position qu'ils occupent</b> dans l'autre dessin. Résidu du « e » ramené de
+      123 à 29 unités, du « c » de 129 à 28, du « s » de 127 à 24.</span></li>
+    <li><span class="tag todo">à reprendre</span><span>Neuf glyphes sont penchés depuis le romain :
+      <code>a</code>, <code>$</code>, <code>¢</code>, <code>|</code>, <code>¦</code>, <code>ª</code>,
+      <code>}</code>, <code>‰</code> et <code>.notdef</code>. Pour le « a », c'est une décision
+      d'atelier : la forme italique propre demande un redessin, remis à plus tard. Conséquence
+      assumée : l'Italic 400 diffère du D-DIN Italic d'origine sur ces glyphes.</span></li>
   </ul>
 </section>
 

@@ -33,7 +33,6 @@ from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
                        replay, anchors)
 from build import interp_contours, interp_mismatched
-from epaissir import epaissir, _bornes_x, _bornes_y
 import naming
 
 SLANT = math.tan(math.radians(12.0))     # 0.21256
@@ -99,24 +98,6 @@ def _report(pu, pb, pi, t):
 def _ecart(pu, pb, pi, t):
     """Repere droit : italique redresse + t x ecart de graisse du romain."""
     return (pi[0] + (pb[0] - pu[0]) * t, pi[1] + (pb[1] - pu[1]) * t)
-
-
-def _largeur(contours):
-    a, b = _bornes_x(contours)
-    return b - a
-
-
-def _cible(bornes, cI, cU, cB, t):
-    """Etendue visee : on applique a l'italique la meme PROPORTION de
-    croissance que le romain entre son Regular et la graisse demandee."""
-    au, bu = bornes(cU); ab, bb = bornes(cB)
-    lu, lb = bu - au, bb - ab
-    if lu < 1e-6:
-        return None
-    ratio = (lu + (lb - lu) * t) / lu
-    a, b = bornes(cI)
-    centre, demi = (a + b) / 2.0, (b - a) * ratio / 2.0
-    return (centre - demi, centre + demi)
 
 
 def residu(cU, cI):
@@ -198,22 +179,14 @@ def build_italic(t, weight_class, style, out_path,
         cI = match_contours(cU, redresser(glyph_to_contours(Ig, gI)))
 
         alignable = aligner(cU, cB, cI)
-        if alignable and residu(cU, cI) > SEUIL_RESIDU:
-            # Romain et italique ne sont pas la meme lettre (le "a" romain a
-            # deux etages, l'italique un seul). Aucune correspondance n'existe :
-            # on epaissit le dessin italique lui-meme, ce qui preserve sa forme.
-            d = demi_ecart * t
-            pen = TTGlyphPen(None)
-            draw_contours(pencher(epaissir(
-                cI, d,
-                _cible(_bornes_x, cI, cU, cB, t),
-                _cible(_bornes_y, cI, cU, cB, t))), pen)
-            neufs[name] = pen.glyph()
-            largeurs[name] = (aw, hI[name][1])
-            stats["epaissi"] = stats.get("epaissi", 0) + 1
-            continue
-
-        if not alignable:
+        if not alignable or residu(cU, cI) > SEUIL_RESIDU:
+            # Soit les topologies divergent ($ et cent, dont les contreformes
+            # fusionnent dans le gras), soit romain et italique ne sont pas la
+            # meme lettre (le "a" romain a deux etages, l'italique un seul).
+            # Dans les deux cas on prend le ROMAIN a la bonne graisse et on le
+            # penche. Choix de l'atelier : on renonce provisoirement a la forme
+            # italique propre de ces glyphes, quitte a la redessiner plus tard.
+            # tools/epaissir.py reste disponible pour cette reprise.
             # Repli : on prend le DROIT a la bonne graisse et on le penche.
             # On perd les retouches du dessinateur sur ce glyphe, mais on garde
             # la bonne epaisseur - ce qui compte davantage a cote d'un texte gras.
@@ -285,8 +258,6 @@ if __name__ == "__main__":
     print(f"  {style:<14} t={t:+.3f}  poids={wc}")
     print(f"     report d'ecart        : {s['report']}")
     print(f"     composites (accents)  : {s['composite']}")
-    if s.get("epaissi"):
-        print(f"     epaissis (autre lettre): {s['epaissi']}")
     if s.get("penche"):
         print(f"     penches depuis le droit: {s['penche']}")
     if s.get("repare"):
