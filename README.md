@@ -88,10 +88,35 @@ l'on reprend le `a` italique.
 fonts/ttf/            polices à installer sur les postes (Windows, macOS)
 fonts/woff2/          polices pour le web
 sources/upstream-d-din/   les dessins d'origine de Datto, intacts
-tools/build.py        générateur de graisses
+tools/build.py        générateur de graisses romaines
+tools/build_italic.py générateur d'italiques
 tools/harmonize.py    mise en compatibilité des contours
+tools/crenage.py      mesure du blanc entre lettres
+tools/appliquer_crenage.py  écriture de la table GPOS
+tools/naming.py       nomenclature OpenType
+tools/tout_construire.sh    reconstruction complète, dans l'ordre
 specimen.html         planche de contrôle
 ```
+
+## Le crénage
+
+D-DIN ne comptait que **122 paires de crénage**, et aucune pour A, T, V, W, Y
+ni P. Sur 39 paires critiques dans vos documents, 37 manquaient — dont `AT` et
+`T-`, qui sont le format même de vos références.
+
+Appli-Tec en porte environ **5 600 par fichier**, écrites en GPOS par classes.
+La méthode mesure le blanc entre deux lettres à chaque hauteur et le ramène à
+la valeur que le dessinateur a lui-même fixée sur des paires comme « nn » ou
+« HH » — lesquelles ressortent donc à zéro sur les dix fichiers.
+
+Le point dur est de distinguer le blanc qui appartient à la lettre de celui
+qui appartient à l'intervalle. Un écrêtage à profondeur fixe les confond : il
+bouche le coin ouvert d'un « AV » aussi bien que l'échancrure d'un « E ». Un
+**cône de visibilité** les sépare : l'encre ne masque le blanc que dans un
+cône.
+
+La valeur de référence est mesurée graisse par graisse, et descend de 166
+unités en Light à 102 en Heavy.
 
 ## Fabriquer une graisse
 
@@ -108,6 +133,15 @@ visuel devient indispensable.
 ```bash
 python3 tools/build.py 0.3333 500 Medium
 python3 tools/build_italic.py 1.0 700 "Bold Italic"
+```
+
+**Attention à l'ordre** : le crénage est écrit *dans* les fichiers produits par
+les générateurs. Relancer un générateur seul efface le crénage de la graisse
+concernée — il faut repasser `appliquer_crenage.py` dessus. Pour tout
+reconstruire proprement :
+
+```bash
+./tools/tout_construire.sh
 ```
 
 ## Licence

@@ -107,15 +107,50 @@ Fixes applied to defects inherited from D-DIN
 - "dollar" and "cent" have different contour topology between Regular and Bold
   (counters merge in the Bold). Counters are now closed progressively.
 
+Kerning
+-------
+D-DIN ships 122 kerning pairs, oddly distributed: 30 for "R", 20 for "Z",
+15 for "E", two for the ii-diaeresis pair - and none at all for A, T, V, W,
+Y or P. Of 39 pairs that matter in Applitec's documents, 37 were missing,
+"AT" and "T-" among them, which is the shape of their part numbers.
+
+Appli-Tec carries about 5,600 pairs per file, generated and written as
+class-based GPOS (tools/crenage.py, tools/appliquer_crenage.py).
+
+The method measures the white between two letters at every height and
+corrects it to the value the designer set himself on pairs such as "nn" or
+"HH" - which must therefore come out at zero, and do, on all ten files.
+
+The hard part is telling white that belongs to the letter from white that
+belongs to the gap. A fixed-depth clip confuses them: it filled the open
+wedge of an "AV" as readily as the notch of an "E", so "AV" came out needing
+no kerning at all. A visibility cone separates them - ink only masks white
+within a cone - which closes the E's notch but leaves the AV's wedge open.
+
+The reference value is measured per weight and falls from 166 units in Light
+to 102 in Heavy: a bolder face is set tighter. The model found that on its
+own.
+
 Known limitations
 -----------------
 - Kerning inherited from D-DIN is very sparse (22-45 pairs per weight).
   A proper kerning pass is still outstanding.
 - Heavy 800 is the heaviest retained weight (70.6% ink coverage in the "e",
   within the 72% working threshold).
+- Kerning is a matter of eye, not of measurement. The values were fitted
+  against the designer's own spacing and checked on rendered text, but they
+  have had no review by a typographer.
 
 ChangeLog
 ---------
+2026-09-18  v1.005  Kerning: 122 pairs -> about 5,600 per file, class-based
+                    GPOS, registered under both DFLT and latn (without latn,
+                    several applications apply no kerning at all).
+                    Also fixed: writing the kern feature through feaLib was
+                    dropping GSUB and GDEF, and with them the ligature,
+                    fraction and superior features inherited from D-DIN.
+                    Build order now matters, see tools/tout_construire.sh.
+
 2026-09-18  v1.004  Fixed the notch reported on the italic e, c and s:
                     micro-features were being matched across designs, and
                     filler points were inserted by halving the longest

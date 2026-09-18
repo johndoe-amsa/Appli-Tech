@@ -7,6 +7,7 @@
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
 
+@font-face{font-family:'sans-crenage';src:url('fonts/woff2/_Appli-Tec-Regular-sans-crenage.woff2')format('woff2');font-display:swap}
 @font-face{font-family:'D-DIN-origine';src:url('fonts/woff2/_D-DIN-Italic-origine.woff2')format('woff2');font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-LightItalic.woff2')format('woff2');font-weight:300;font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Italic.woff2')format('woff2');font-weight:400;font-style:italic;font-display:swap}
@@ -68,6 +69,13 @@ header{border-bottom:1px solid var(--rule);padding-bottom:28px}
 .rung-id{font-family:var(--mono);font-size:11px;color:var(--steel);line-height:1.45}
 .rung-id b{display:block;font-size:13px;color:var(--ink);font-weight:600;letter-spacing:.02em}
 .rung-spec em{font-style:italic;color:var(--steel)}
+.kpair{background:var(--surface);padding:18px 22px;display:grid;
+  grid-template-columns:104px 1fr;gap:20px;align-items:center}
+.kpair .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--faint)}
+.kpair .s{font-family:var(--spec);font-size:clamp(26px,5vw,46px);line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpair.avant .s{font-family:'sans-crenage',var(--spec);color:var(--steel)}
 .rung-spec{font-family:var(--spec);font-size:clamp(30px,5.4vw,52px);line-height:1;
   letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* jauge : une regle graduee, comme sur un pied a coulisse */
@@ -162,7 +170,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>v1.004 · 18.09.2026</span>
+    <span>v1.005 · 18.09.2026</span>
   </div>
 </header>
 
@@ -403,14 +411,53 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <li><span class="tag fix">fait</span><span>Les <b>5 italiques</b> sont livrés, ainsi que la
       nomenclature OpenType complète : les 10 fichiers se regroupent proprement sous « Appli-Tec »
       dans les logiciels récents, et se répartissent en sous-familles Windows pour Word.</span></li>
-    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains), crénage, optimisation
-      de l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
+    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains), optimisation de
+      l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
   </ul>
 </section>
 
 <section>
   <div class="sec-head">
-    <h2>07 — Le point juridique</h2>
+    <h2>07 — Le crénage</h2>
+    <p class="sec-intro">Le crénage corrige l'espace entre deux lettres voisines. D-DIN n'en comptait
+    que <b>122 paires</b>, distribuées de façon étrange : 30 pour le « R », 20 pour le « Z », mais
+    rien pour A, T, V, W, Y ni P. Sur 39 paires critiques pour vos documents, <b>37 étaient absentes</b>
+    — dont <code>AT</code> et <code>T-</code>, qui sont le format même de vos références produit.</p>
+  </div>
+  <div class="ladder">
+    <div class="kpair avant"><span class="k">avant</span><span class="s">Type AT-1204.08</span></div>
+    <div class="kpair"><span class="k">après</span><span class="s">Type AT-1204.08</span></div>
+    <div class="kpair avant"><span class="k">avant</span><span class="s">Avantage — Ø12 ±0,005</span></div>
+    <div class="kpair"><span class="k">après</span><span class="s">Avantage — Ø12 ±0,005</span></div>
+  </div>
+  <div class="report" style="margin-top:2px">
+    <div class="cell"><div class="n">122</div><div class="k">paires<br>d'origine</div></div>
+    <div class="cell"><div class="n good">5 635</div><div class="k">paires<br>désormais</div></div>
+    <div class="cell"><div class="n good">10</div><div class="k">fichiers<br>traités</div></div>
+    <div class="cell"><div class="n good">0</div><div class="k">crénage sur les<br>paires de référence</div></div>
+  </div>
+  <ul class="notes">
+    <li><span class="tag info">méthode</span><span>Pour chaque hauteur, on relève le bord droit de la
+      première lettre et le bord gauche de la seconde. Le crénage est la correction qui ramène le blanc
+      perçu à la valeur que <b>le dessinateur a lui-même fixée</b> sur des paires comme « nn » ou
+      « HH » — lesquelles doivent donc ressortir à zéro, et c'est le cas sur les 10 fichiers.</span></li>
+    <li><span class="tag info">le point dur</span><span>Distinguer le blanc qui appartient à la lettre
+      de celui qui appartient à l'intervalle. Un écrêtage à profondeur fixe les confond : il bouchait
+      le coin ouvert d'un « AV » aussi bien que l'échancrure d'un « E », si bien que « AV » ressortait
+      comme n'ayant pas besoin de crénage. Un <b>cône de visibilité</b> les sépare : l'encre ne masque
+      le blanc que dans un cône, ce qui ferme l'échancrure du E mais laisse le coin du AV ouvert.</span></li>
+    <li><span class="tag info">noté</span><span>La valeur de référence est mesurée graisse par graisse
+      et descend de <b>166 unités en Light à 102 en Heavy</b> : un gras s'espace plus serré. Le modèle
+      l'a trouvé seul, sans qu'on le lui indique.</span></li>
+    <li><span class="tag todo">à vérifier</span><span>Le crénage est un jugement d'œil, pas un calcul.
+      Regardez surtout <code>±0,005</code> et <code>1204.</code> en gras, où le point et la virgule
+      sont les plus serrés — dites-moi si c'est trop.</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>08 — Le point juridique</h2>
     <p class="sec-intro">D-DIN est publiée par Datto Inc. sous licence SIL Open Font License 1.1.
     Voici ce que cette licence vous autorise, et les deux obligations qu'elle impose.</p>
   </div>
