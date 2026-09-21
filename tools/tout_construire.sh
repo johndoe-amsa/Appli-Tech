@@ -1,9 +1,10 @@
 #!/bin/sh
 # Reconstruit la famille Appli-Tec entiere, dans l'ordre.
 #
-# L'ordre compte : le crenage est ecrit DANS les fichiers produits par les deux
-# generateurs. Relancer un generateur seul efface le crenage de la graisse
-# concernee - il faut alors repasser appliquer_crenage.py dessus.
+# L'ordre compte : le crenage puis le hinting sont ecrits DANS les fichiers
+# produits par les deux generateurs. Relancer un generateur seul efface les
+# deux pour la graisse concernee - il faut alors repasser appliquer_crenage.py
+# et appliquer_hinting.py dessus.
 set -e
 cd "$(dirname "$0")/.."
 
@@ -23,6 +24,9 @@ python3 tools/build_italic.py  1.3333 800 "Heavy Italic"
 
 echo "== crenage =="
 python3 tools/appliquer_crenage.py fonts/ttf/*.ttf
+
+echo "== hinting (affichage ecran) =="
+python3 tools/appliquer_hinting.py fonts/ttf/*.ttf
 
 echo "== formats web =="
 python3 - <<'PY'

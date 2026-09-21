@@ -170,7 +170,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>v1.005 · 18.09.2026</span>
+    <span>v1.006 · 21.09.2026</span>
   </div>
 </header>
 
@@ -411,8 +411,15 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
     <li><span class="tag fix">fait</span><span>Les <b>5 italiques</b> sont livrés, ainsi que la
       nomenclature OpenType complète : les 10 fichiers se regroupent proprement sous « Appli-Tec »
       dans les logiciels récents, et se répartissent en sous-familles Windows pour Word.</span></li>
-    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains), optimisation de
-      l'affichage écran sous Windows, et formats OTF pour l'imprimeur.</span></li>
+    <li><span class="tag fix">corrigé</span><span><b>L'affichage écran.</b> D-DIN portait des
+      instructions de hinting sur 237 de ses 251 glyphes ; reconstruire les contours pour fabriquer
+      les graisses les avait toutes détruites, en laissant les programmes globaux en place sans plus
+      rien à piloter. Régénérées sur les 10 fichiers, ~210 glyphes chacun. Ça ne concerne que
+      l'écran — à l'impression, rien ne change — mais vos postes sont sous Windows dans Word, autour
+      de 10-11 pt, et c'est exactement là que ça se voit. Métriques verticales inchangées :
+      l'interligne de vos documents existants ne bouge pas.</span></li>
+    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains) et formats OTF
+      pour l'imprimeur.</span></li>
   </ul>
 </section>
 

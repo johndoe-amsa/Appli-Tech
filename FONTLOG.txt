@@ -131,6 +131,33 @@ The reference value is measured per weight and falls from 166 units in Light
 to 102 in Heavy: a bolder face is set tighter. The model found that on its
 own.
 
+Screen rendering (hinting)
+--------------------------
+At small sizes on screen a letter is drawn on a coarse pixel grid. A vertical
+stem 1.4 pixels wide straddles two pixels, both come out grey, and the letter
+looks blurred. Hinting is a set of instructions buried in the font telling the
+system to snap that stem onto a whole pixel.
+
+macOS ignores them - Apple prefers staying faithful to the drawing even when
+it blurs. Windows relies on them, and that is where Applitec's machines are,
+in Word, around 10-11 pt.
+
+D-DIN carried instructions on 237 of its 251 glyphs. Rebuilding the outlines
+to make the weights destroyed them, leaving the global hinting programs
+(fpgm, prep, cvt) in place with nothing left to drive. They are regenerated
+with ttfautohint, about 210 glyphs per file; the remaining 41 are composites,
+driven through their components.
+
+Settings: fallback_script='latn', without which glyphs whose script
+ttfautohint cannot guess receive no instructions at all; windows_compatibility,
+so tall glyphs are not clipped in Office; and the Regular as reference file,
+so every weight snaps to the same x-height and baseline. Stem width modes are
+ttfautohint's own defaults - strong for Windows GDI ClearType, quantized in
+grayscale, where strong makes the colour of the text uneven.
+
+Vertical metrics are untouched, so line spacing in existing documents does not
+move.
+
 Known limitations
 -----------------
 - Kerning inherited from D-DIN is very sparse (22-45 pairs per weight).
@@ -143,6 +170,11 @@ Known limitations
 
 ChangeLog
 ---------
+2026-09-21  v1.006  Screen rendering: regenerated the hinting lost when the
+                    outlines were rebuilt (0 instructed glyphs per file, back
+                    to about 210). Vertical metrics, kerning, GSUB and GDEF
+                    all verified unchanged.
+
 2026-09-18  v1.005  Kerning: 122 pairs -> about 5,600 per file, class-based
                     GPOS, registered under both DFLT and latn (without latn,
                     several applications apply no kerning at all).

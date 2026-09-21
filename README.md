@@ -93,6 +93,7 @@ tools/build_italic.py générateur d'italiques
 tools/harmonize.py    mise en compatibilité des contours
 tools/crenage.py      mesure du blanc entre lettres
 tools/appliquer_crenage.py  écriture de la table GPOS
+tools/appliquer_hinting.py  optimisation de l'affichage écran
 tools/naming.py       nomenclature OpenType
 tools/tout_construire.sh    reconstruction complète, dans l'ordre
 specimen.html         planche de contrôle
@@ -118,6 +119,26 @@ cône.
 La valeur de référence est mesurée graisse par graisse, et descend de 166
 unités en Light à 102 en Heavy.
 
+## L'affichage écran (hinting)
+
+À l'écran en petit corps, un fût vertical de 1,4 pixel de large tombe à cheval
+sur deux pixels : les deux ressortent gris et la lettre paraît floue. Le
+hinting est un jeu d'instructions, enfouies dans la police, qui disent au
+système de caler ce fût sur un pixel entier.
+
+macOS les ignore ; **Windows s'appuie dessus**, et c'est là que travaillent les
+postes d'Applitec, dans Word, autour de 10-11 pt. À l'impression, en revanche,
+ça ne change rien.
+
+D-DIN en portait sur 237 de ses 251 glyphes. Reconstruire les contours pour
+fabriquer les graisses les a détruites — en laissant les programmes globaux
+(`fpgm`, `prep`, `cvt`) en place, sans plus rien à piloter. Elles sont
+régénérées avec `ttfautohint`, environ 210 glyphes par fichier ; les 41
+restants sont des composites, pilotés par leurs composants.
+
+Les métriques verticales sont inchangées : l'interligne de vos documents
+existants ne bouge pas.
+
 ## Fabriquer une graisse
 
 ```bash
@@ -135,10 +156,10 @@ python3 tools/build.py 0.3333 500 Medium
 python3 tools/build_italic.py 1.0 700 "Bold Italic"
 ```
 
-**Attention à l'ordre** : le crénage est écrit *dans* les fichiers produits par
-les générateurs. Relancer un générateur seul efface le crénage de la graisse
-concernée — il faut repasser `appliquer_crenage.py` dessus. Pour tout
-reconstruire proprement :
+**Attention à l'ordre** : le crénage puis le hinting sont écrits *dans* les
+fichiers produits par les générateurs. Relancer un générateur seul efface les
+deux pour la graisse concernée — il faut repasser `appliquer_crenage.py` et
+`appliquer_hinting.py` dessus. Pour tout reconstruire proprement :
 
 ```bash
 ./tools/tout_construire.sh
