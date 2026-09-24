@@ -7,6 +7,12 @@
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
 
+@font-face{font-family:'Appli-Tec Cond';src:url('fonts/woff2/Appli-Tec-Condensed-Light.woff2')format('woff2');font-weight:300;font-display:swap}
+@font-face{font-family:'Appli-Tec Cond';src:url('fonts/woff2/Appli-Tec-Condensed-Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Appli-Tec Cond';src:url('fonts/woff2/Appli-Tec-Condensed-Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Appli-Tec Cond';src:url('fonts/woff2/Appli-Tec-Condensed-Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Appli-Tec Cond';src:url('fonts/woff2/Appli-Tec-Condensed-Heavy.woff2')format('woff2');font-weight:800;font-display:swap}
+
 @font-face{font-family:'sans-crenage';src:url('fonts/woff2/_Appli-Tec-Regular-sans-crenage.woff2')format('woff2');font-display:swap}
 @font-face{font-family:'D-DIN-origine';src:url('fonts/woff2/_D-DIN-Italic-origine.woff2')format('woff2');font-style:italic;font-display:swap}
 @font-face{font-family:'Appli-Tec';src:url('fonts/woff2/Appli-Tec-LightItalic.woff2')format('woff2');font-weight:300;font-style:italic;font-display:swap}
@@ -23,6 +29,7 @@
   --warn:#a8510d; --warn-soft:#f4e3d2;
   --ok:#2c6540; --ok-soft:#d8e8dd;
   --spec:'Appli-Tec','DIN Alternate','Oswald',system-ui,sans-serif;
+  --cond:'Appli-Tec Cond','Appli-Tec',system-ui,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,monospace;
   --serif:'IBM Plex Serif',Georgia,serif;
 }
@@ -69,6 +76,8 @@ header{border-bottom:1px solid var(--rule);padding-bottom:28px}
 .rung-id{font-family:var(--mono);font-size:11px;color:var(--steel);line-height:1.45}
 .rung-id b{display:block;font-size:13px;color:var(--ink);font-weight:600;letter-spacing:.02em}
 .rung-spec em{font-style:italic;color:var(--steel)}
+.rung.cond .rung-spec{font-family:var(--cond)}
+.sheet.cond{font-family:var(--cond)}
 .kpair{background:var(--surface);padding:18px 22px;display:grid;
   grid-template-columns:104px 1fr;gap:20px;align-items:center}
 .kpair .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
@@ -164,13 +173,14 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
   <span class="lbl">Applitec Moutier SA · Étapes 1 et 2 · Planche de contrôle</span>
   <div class="wordmark">Appli-Tec</div>
   <div class="meta">
+    <span><b>2</b> largeurs</span>
     <span><b>5</b> graisses</span>
-    <span><b>10</b> fichiers</span>
+    <span><b>15</b> fichiers</span>
     <span><b>251</b> glyphes</span>
     <span><b>0</b> glyphe cassé</span>
     <span>dérivé de <b>D-DIN</b> · Datto Inc.</span>
     <span>licence <b>SIL OFL 1.1</b></span>
-    <span>v1.006 · 21.09.2026</span>
+    <span>v1.007 · 24.09.2026</span>
   </div>
 </header>
 
@@ -291,7 +301,53 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>03 — La correction</h2>
+    <h2>03 — Le Condensed</h2>
+    <p class="sec-intro">Une seconde largeur, <b>24 % plus étroite</b>, pour les tableaux de
+    références et les colonnes de cotes — là où il faut faire tenir beaucoup de chiffres dans peu de
+    place. Cinq graisses romaines, dérivées des deux masters condensés d'origine par la même méthode
+    que la largeur normale. Pas d'italique : il n'en existe aucun dans D-DIN, et il ne sert
+    pratiquement jamais dans un catalogue technique.</p>
+  </div>
+  <div class="ladder">
+    <div class="rung cond"><div class="rung-id"><b>Light</b>300</div>
+      <div class="rung-spec" style="font-weight:300">Décolletage de précision</div>
+      <div class="gauge"><div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:39.6%"></div></div>
+      <div class="gauge-read"><span>fût</span><b>55 u</b><span>×0.76</span></div></div></div>
+    <div class="rung cond"><div class="rung-id"><b>Regular</b>400 · d'origine</div>
+      <div class="rung-spec" style="font-weight:400">Décolletage de précision</div>
+      <div class="gauge"><div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:51.8%"></div></div>
+      <div class="gauge-read"><span>fût</span><b>72 u</b><span>×1.00</span></div></div></div>
+    <div class="rung cond"><div class="rung-id"><b>Medium</b>500</div>
+      <div class="rung-spec" style="font-weight:500">Décolletage de précision</div>
+      <div class="gauge"><div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:64.0%"></div></div>
+      <div class="gauge-read"><span>fût</span><b>89 u</b><span>×1.24</span></div></div></div>
+    <div class="rung cond"><div class="rung-id"><b>Bold</b>700 · d'origine</div>
+      <div class="rung-spec" style="font-weight:700">Décolletage de précision</div>
+      <div class="gauge"><div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:87.8%"></div></div>
+      <div class="gauge-read"><span>fût</span><b>122 u</b><span>×1.69</span></div></div></div>
+    <div class="rung cond"><div class="rung-id"><b>Heavy</b>800</div>
+      <div class="rung-spec" style="font-weight:800">Décolletage de précision</div>
+      <div class="gauge"><div class="gauge-ticks"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:100%"></div></div>
+      <div class="gauge-read"><span>fût</span><b>139 u</b><span>×1.93</span></div></div></div>
+  </div>
+  <ul class="notes">
+    <li><span class="tag info">noté</span><span>Le Condensed est volontairement <b>un peu plus fin</b>
+      que la normale au même nom de graisse — 122 unités contre 131 en Bold. C'est le choix du
+      dessinateur, et il est juste : une lettre étroite paraît plus grasse à épaisseur égale. Les
+      valeurs sont interpolées entre ses deux masters, donc cette relation est préservée.</span></li>
+    <li><span class="tag fix">corrigé</span><span>Deux bugs de fond découverts en fabriquant cette
+      largeur, tous deux présents depuis le début et invisibles jusque-là. Voir la section 07.</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>04 — La correction</h2>
     <p class="sec-intro">Une première version comportait des creux et des cassures dans les courbes :
     l'algorithme appariait les points des deux dessins en se repérant à la distance parcourue le long
     du contour, un mauvais repère. Un point de la panse du « p » se retrouvait apparié à un point situé
@@ -323,7 +379,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>04 — En situation</h2>
+    <h2>05 — En situation</h2>
     <p class="sec-intro">La même page composée avec la famille complète : titre en Heavy, sous-titre
     en Medium, note en italique, en-têtes de tableau en Bold, données en Regular, notes en Light.</p>
   </div>
@@ -359,7 +415,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>05 — Jeu de caractères</h2>
+    <h2>06 — Jeu de caractères</h2>
     <p class="sec-intro">Couverture vérifiée : français, allemand, anglais, italien, espagnol —
     l'intégralité de vos langues de publication. Les symboles techniques usuels sont présents.</p>
   </div>
@@ -368,7 +424,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>06 — Rapport de fabrication</h2>
+    <h2>07 — Rapport de fabrication</h2>
     <p class="sec-intro">Ce que la machine a fait sur chacun des 246 glyphes comparables, pour
     chaque graisse produite.</p>
   </div>
@@ -418,14 +474,31 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
       l'écran — à l'impression, rien ne change — mais vos postes sont sous Windows dans Word, autour
       de 10-11 pt, et c'est exactement là que ça se voit. Métriques verticales inchangées :
       l'interligne de vos documents existants ne bouge pas.</span></li>
-    <li><span class="tag todo">à faire</span><span>Largeur Condensed (5 romains) et formats OTF
-      pour l'imprimeur.</span></li>
+    <li><span class="tag fix">corrigé</span><span><b>Les glyphes assemblés ressortaient vides.</b>
+      Mon extracteur de contours ne décomposait pas les glyphes construits par assemblage : il
+      rendait zéro contour au lieu du dessin. Le défaut est resté invisible tant que les deux
+      masters assemblaient de la même façon — le Condensed est le premier cas où l'un dessine ce
+      que l'autre assemble. Il aurait cassé les fractions <code>¼ ½ ¾</code> et, plus grave, la
+      ligature <code>fi</code>, qui sort dans chaque « fiche », « profil », « définition ».</span></li>
+    <li><span class="tag fix">corrigé</span><span><b>La croix du « ± » devenait un moulin à vent.</b>
+      Le générateur ne réalignait les contours que si les nombres de points différaient ; quand ils
+      coïncidaient, il supposait la correspondance bonne. Or rien ne garantit que les deux masters
+      commencent leur contour au même endroit. Sur une forme à symétrie d'ordre 4, chaque point se
+      retrouvait apparié à son voisin d'un quart de tour : déplacement faible — donc invisible à
+      toutes mes mesures de distance — mais l'interpolation faisait pivoter la forme. Touchait
+      <code>±</code>, <code>+</code>, <code>*</code>, <code>Q</code>, <code>`</code>.</span></li>
+    <li><span class="tag info">garde-fou</span><span><code>tools/verifier.py</code> balaie désormais
+      les 15 fichiers avant livraison : hinting, GSUB, GDEF, crénage, écritures déclarées, drapeaux
+      de style, métriques verticales, progression des fûts — et surtout <b>l'encre de chaque glyphe
+      comparée à l'interpolation des masters</b>, qui est le seul contrôle capable d'attraper le
+      moulin à vent.</span></li>
+    <li><span class="tag todo">à faire</span><span>Formats OTF pour l'imprimeur.</span></li>
   </ul>
 </section>
 
 <section>
   <div class="sec-head">
-    <h2>07 — Le crénage</h2>
+    <h2>08 — Le crénage</h2>
     <p class="sec-intro">Le crénage corrige l'espace entre deux lettres voisines. D-DIN n'en comptait
     que <b>122 paires</b>, distribuées de façon étrange : 30 pour le « R », 20 pour le « Z », mais
     rien pour A, T, V, W, Y ni P. Sur 39 paires critiques pour vos documents, <b>37 étaient absentes</b>
@@ -464,7 +537,7 @@ ul.notes code{font-family:var(--mono);font-size:13px;background:var(--sunk);
 
 <section>
   <div class="sec-head">
-    <h2>08 — Le point juridique</h2>
+    <h2>09 — Le point juridique</h2>
     <p class="sec-intro">D-DIN est publiée par Datto Inc. sous licence SIL Open Font License 1.1.
     Voici ce que cette licence vous autorise, et les deux obligations qu'elle impose.</p>
   </div>

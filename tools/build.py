@@ -156,8 +156,15 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
             stats["topologie"] = stats.get("topologie", 0) + 1
             continue
 
+        # On realigne TOUJOURS, meme quand les deux masters ont deja le meme
+        # nombre de points. Rien ne garantit qu'ils commencent leur contour au
+        # meme endroit : sur une forme symetrique comme le "±", dont la croix
+        # se retrouve un quart de tour en avance d'un cote, chaque point est
+        # alors apparie a son voisin. Le deplacement reste faible - donc
+        # invisible aux mesures - mais l'interpolation fait pivoter la forme,
+        # et la croix devient un moulin a vent.
         needed = any(len(x["segs"]) != len(y["segs"]) for x, y in zip(ca, cb))
-        if needed and not all(harmonize_pair(x, y) for x, y in zip(ca, cb)):
+        if not all(harmonize_pair(x, y) for x, y in zip(ca, cb)):
             stats["echec"].append(name)
             new_glyphs[name] = A
             new_hmtx[name] = (hma[name][0], hma[name][1])
@@ -202,15 +209,26 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
     return stats
 
 
+MASTERS = {
+    "": ("D-DIN.ttf", "D-DIN-Bold.ttf"),
+    "Condensed": ("D-DINCondensed.ttf", "D-DINCondensed-Bold.ttf"),
+    "Exp": ("D-DINExp.ttf", "D-DINExp-Bold.ttf"),
+}
+
+
 if __name__ == "__main__":
-    R = "sources/upstream-d-din/D-DIN.ttf"
-    B = "sources/upstream-d-din/D-DIN-Bold.ttf"
-    t = float(sys.argv[1]) if len(sys.argv) > 1 else 0.3333
-    wc = int(sys.argv[2]) if len(sys.argv) > 2 else 500
-    style = sys.argv[3] if len(sys.argv) > 3 else "Medium"
-    out = sys.argv[4] if len(sys.argv) > 4 else f"fonts/ttf/Appli-Tec-{style}.ttf"
-    s = build_instance(R, B, t, wc, style, out)
-    print(f"  {style:<10} t={t:+.3f}  poids={wc}")
+    t = float(sys.argv[1])
+    wc = int(sys.argv[2])
+    style = sys.argv[3]
+    largeur = sys.argv[4] if len(sys.argv) > 4 else ""
+    if largeur not in MASTERS:
+        sys.exit(f"largeur inconnue : {largeur!r} (connues : {sorted(MASTERS)})")
+    reg, bold = (f"sources/upstream-d-din/{f}" for f in MASTERS[largeur])
+    nom = f"Appli-Tec{'-' + largeur if largeur else ''}-{style.replace(' ', '')}"
+    out = f"fonts/ttf/{nom}.ttf"
+    s = build_instance(reg, bold, t, wc, style, out, width_name=largeur)
+    etiquette = f"{largeur + ' ' if largeur else ''}{style}"
+    print(f"  {etiquette:<22} t={t:+.3f}  poids={wc}")
     print(f"     interpolation directe : {s['interp']}")
     print(f"     apres harmonisation   : {s['harmonise']}")
     print(f"     composites (accents)  : {s['composite']}")

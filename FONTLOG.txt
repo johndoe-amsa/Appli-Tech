@@ -26,7 +26,15 @@ It does NOT cover Central European, Turkish, Greek or Cyrillic.
 
 Styles
 ------
-Five weights, each with a matching italic: 10 files in the normal width.
+Five weights, each with a matching italic, in the normal width, plus five
+upright weights in a condensed width: 15 files.
+
+The condensed is about 24% narrower, meant for reference tables and columns
+of dimensions. It carries no italic: D-DIN has none in that width, and a
+condensed italic is next to useless in a technical catalogue. It is also
+deliberately a little lighter than the normal width at the same weight name -
+122 units against 131 in Bold - which is the designer's own choice, and the
+right one: a narrow letter looks heavier at equal thickness.
 
 OpenType naming follows the Windows four-style limit: the RIBBI set (Regular,
 Italic, Bold, Bold Italic) sits under the family "Appli-Tec", while Light,
@@ -170,6 +178,23 @@ Known limitations
 
 ChangeLog
 ---------
+2026-09-21  v1.007  Added the condensed width, five upright weights.
+                    Two long-standing engine bugs surfaced while building it,
+                    both present from the start:
+                    - composite glyphs came back EMPTY from the outline
+                      extractor, which never showed while both masters built
+                      their glyphs the same way. It would have broken the
+                      fractions and the fi ligature.
+                    - contours were only realigned when the two masters had
+                      different point counts. On a four-fold symmetric shape
+                      such as "±", each point was paired with its neighbour a
+                      quarter turn away: small displacement, invisible to
+                      every distance measure, but interpolation rotated the
+                      shape into a pinwheel. Affected ± + * Q and the grave.
+                    tools/verifier.py now sweeps all 15 files before delivery
+                    and compares each glyph's ink against the masters, which
+                    is the only check that catches the pinwheel.
+
 2026-09-21  v1.006  Screen rendering: regenerated the hinting lost when the
                     outlines were rebuilt (0 instructed glyphs per file, back
                     to about 210). Vertical metrics, kerning, GSUB and GDEF

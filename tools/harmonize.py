@@ -22,6 +22,7 @@ import math
 
 from fontTools.pens.recordingPen import RecordingPen
 from fontTools.pens.qu2cuPen import Qu2CuPen
+from fontTools.pens.transformPen import TransformPen
 
 CORNER_DEG = 20.0   # au-dela, on considere que c'est un angle et non une courbe
 
@@ -39,11 +40,30 @@ def split_cubic(p0, p1, p2, p3, t):
     return (p0, a, d, m), (m, e, c, p3)
 
 
+def _tracer(glyph, glyf_table, pen):
+    """Trace un glyphe en DECOMPOSANT ses composants.
+
+    Indispensable : un stylo qui sait enregistrer les composants - et c'est le
+    cas du stylo d'enregistrement - se voit confier l'appel `addComponent`
+    plutot que le trace lui-meme. Un glyphe assemble ressortait donc vide, et
+    le generateur le comptait en echec. Le defaut est reste invisible tant que
+    les deux masters assemblaient leurs glyphes de la meme facon ; il apparait
+    des que l'un dessine ce que l'autre assemble - le Condensed, par exemple,
+    trace ses fractions a la main la ou son gras les assemble.
+    """
+    if glyph.isComposite():
+        for comp in glyph.components:
+            nom, transfo = comp.getComponentInfo()
+            _tracer(glyf_table[nom], glyf_table, TransformPen(pen, transfo))
+    else:
+        glyph.draw(pen, glyf_table)
+
+
 def glyph_to_contours(glyph, glyf_table):
     """Glyphe TrueType (quadratique) -> contours cubiques.
     contour = {"start": point, "segs": [(ctrl1, ctrl2, arrivee), ...]}"""
     rec = RecordingPen()
-    glyph.draw(Qu2CuPen(rec, max_err=0.05, all_cubic=True), glyf_table)
+    _tracer(glyph, glyf_table, Qu2CuPen(rec, max_err=0.05, all_cubic=True))
 
     contours, cur, pos = [], None, None
     for op, args in rec.value:

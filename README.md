@@ -26,8 +26,21 @@ Le Black 900 a été évalué puis écarté : il referme trop les contreformes
 (74,3 % d'encre dans le « e », pour un seuil de travail à 72 %). Il reste
 régénérable à tout moment : `python3 tools/build.py 1.6667 900 Black`.
 
-**Chaque graisse a son italique** : 10 fichiers au total. Largeur Condensed :
-pas encore fabriquée.
+**Chaque graisse a son italique** en largeur normale, et le **Condensed**
+ajoute cinq romains : 15 fichiers au total.
+
+## Le Condensed
+
+Une seconde largeur, environ **24 % plus étroite**, pour les tableaux de
+références et les colonnes de cotes. Cinq graisses romaines, dérivées des deux
+masters condensés d'origine par la même méthode que la largeur normale.
+
+Pas d'italique : D-DIN n'en fournit aucun dans cette largeur, et il ne sert
+pratiquement jamais dans un catalogue technique.
+
+Le Condensed est volontairement un peu plus fin que la normale au même nom de
+graisse — 122 unités contre 131 en Bold. C'est le choix du dessinateur, et il
+est juste : une lettre étroite paraît plus grasse à épaisseur égale.
 
 ## Les italiques
 
@@ -95,6 +108,7 @@ tools/crenage.py      mesure du blanc entre lettres
 tools/appliquer_crenage.py  écriture de la table GPOS
 tools/appliquer_hinting.py  optimisation de l'affichage écran
 tools/naming.py       nomenclature OpenType
+tools/verifier.py     balayage complet avant livraison
 tools/tout_construire.sh    reconstruction complète, dans l'ordre
 specimen.html         planche de contrôle
 ```
@@ -164,6 +178,18 @@ deux pour la graisse concernée — il faut repasser `appliquer_crenage.py` et
 ```bash
 ./tools/tout_construire.sh
 ```
+
+## Vérifier avant de livrer
+
+```bash
+python3 tools/verifier.py
+```
+
+Balaie les 15 fichiers : hinting, GSUB, GDEF, crénage, écritures déclarées,
+drapeaux de style, métriques verticales, progression des fûts, et l'encre de
+chaque glyphe comparée à l'interpolation des masters. Ce dernier contrôle est
+le seul capable d'attraper un appariement de points décalé d'un cran, qui ne
+se voit sur aucune mesure de distance.
 
 ## Licence
 

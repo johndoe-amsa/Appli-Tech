@@ -22,11 +22,21 @@ python3 tools/build_italic.py  0.3333 500 "Medium Italic"
 python3 tools/build_italic.py  1.0    700 "Bold Italic"
 python3 tools/build_italic.py  1.3333 800 "Heavy Italic"
 
+echo "== romains condenses =="
+python3 tools/build.py -0.3333 300 Light   Condensed
+python3 tools/build.py  0.0    400 Regular Condensed
+python3 tools/build.py  0.3333 500 Medium  Condensed
+python3 tools/build.py  1.0    700 Bold    Condensed
+python3 tools/build.py  1.3333 800 Heavy   Condensed
+
 echo "== crenage =="
 python3 tools/appliquer_crenage.py fonts/ttf/*.ttf
 
 echo "== hinting (affichage ecran) =="
 python3 tools/appliquer_hinting.py fonts/ttf/*.ttf
+
+echo "== verification =="
+python3 tools/verifier.py
 
 echo "== formats web =="
 python3 - <<'PY'
