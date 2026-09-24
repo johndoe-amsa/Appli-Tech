@@ -1,0 +1,66 @@
+APPLI-TEC — JEU DE CARACTERES COMPLET
+231 caractères, identiques dans les 15 fichiers de la famille
+
+Majuscules (26)
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+Majuscules accentuées et composées (34)
+ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞŒŠŸŽ
+
+Minuscules (26)
+abcdefghijklmnopqrstuvwxyz
+
+Minuscules accentuées et composées (36)
+ßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿıœšž
+
+Ligatures (2)
+ﬁﬂ
+
+Chiffres (10)
+0123456789
+
+Fractions, exposants et ordinaux (8)
+ª²³¹º¼½¾
+
+Ponctuation (24)
+!#&*,./:;?@\_|¡¦§¶·¿†‡•…
+
+Guillemets et apostrophes (12)
+"'«»‘’‚“”„‹›
+
+Tirets (3)
+-–—
+
+Parenthèses et crochets (6)
+()[]{}
+
+Mathématiques et technique (13)
+%+<=>~¬°±µ×÷‰
+
+Monnaies (7)
+$¢£¤¥ƒ€
+
+Symboles divers (3)
+©®™
+
+Accents isolés (11)
+^`¨¯´¸ˆˇ˙˚˜
+
+Invisibles (10) — présents mais sans dessin visible :
+  retour chariot · espace · espace insécable · trait d'union conditionnel
+  accents combinants : grave · aigu · circonflexe · tilde · tréma · rond en chef
+  (un accent combinant se colle au caractère qui le précède : collé seul dans
+  InDesign il ne montrera rien, ou se greffera sur la lettre d'avant)
+
+Sans caractère associé (17) — non copiables, accessibles
+uniquement par le panneau Glyphes d'InDesign, ou par une fonctionnalité
+OpenType (frac pour les fractions, sups pour les exposants, dlig pour tt) :
+  t_t (ligature tt)  zero.dnom  one.dnom  two.dnom  three.dnom  four.dnom  zero.numr  one.numr  two.numr  three.numr  four.numr  zero.sups  one.sups  two.sups  three.sups  four.sups  glyph249 (barre de fraction)
+
+Total : 221 visibles + 10 invisibles = 231 caractères
+
+Remarque : les fractions ¼ ½ ¾ existent en glyphes tout faits. Pour les autres
+(3/8, 7/16…), activez la fonctionnalité « Fractions » dans InDesign : elle
+assemble les chiffres numérateurs, la barre et les dénominateurs listés
+ci-dessus. Les exposants ¹ ² ³ existent aussi tels quels ; ⁰ et ⁴ ne sont
+accessibles que par la fonctionnalité « Exposant ».
