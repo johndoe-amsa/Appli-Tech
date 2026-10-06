@@ -110,6 +110,19 @@ def _tangents(c, j):
     return (a[0] - p[0], a[1] - p[1]), (q[0] - a[0], q[1] - a[1])
 
 
+def _droit(c, i):
+    """Le segment i est-il un trait droit (poignees alignees sur la corde) ?"""
+    segs = c["segs"]
+    i %= len(segs)
+    p0 = c["start"] if i == 0 else segs[i - 1][2]
+    p1, p2, p3 = segs[i]
+    dx, dy = p3[0] - p0[0], p3[1] - p0[1]
+    L = math.hypot(dx, dy)
+    if L < 1e-9:
+        return True
+    return all(abs((q[0] - p0[0]) * dy - (q[1] - p0[1]) * dx) / L < 0.5 for q in (p1, p2))
+
+
 def feature_type(c, j):
     """None si le point est 'au milieu d'une courbe', sinon son type."""
     tin, tout = _tangents(c, j)
@@ -119,6 +132,13 @@ def feature_type(c, j):
     cosang = max(-1.0, min(1.0, (tin[0] * tout[0] + tin[1] * tout[1]) / (ni * no)))
     if math.degrees(math.acos(cosang)) > CORNER_DEG:
         return "corner"
+    # Un point pose entre deux segments droits n'articule rien : c'est le
+    # milieu d'un trait. Le fut du "E" de "OE" Regular porte ainsi un
+    # decrochement d'une unite (x 543 -> 544) que rien ne distingue d'un
+    # extremum ; le coin de la barre du Bold s'y accrochait au lieu du vrai
+    # coin, et le Heavy biseautait la jonction de la barre et du fut.
+    if _droit(c, j - 1) and _droit(c, j):
+        return None
     # Extremum : changement de signe de la tangente, OU tangente parallele a
     # l'axe. Au sommet d'un ovale la tangente est exactement horizontale, donc
     # la composante y vaut ZERO des deux cotes : tester le seul changement de
@@ -352,6 +372,7 @@ def match_features(ca, cb, fa, fb):
     redeviennent de simples points interieurs a un intervalle.
     """
     NA, NB = _norm(ca), _norm(cb)
+    NA0, NB0, fa0, fb0 = NA, NB, fa, fb
     swap = len(fa) > len(fb)
     if swap:
         fa, fb, NA, NB = fb, fa, NB, NA
@@ -389,7 +410,78 @@ def match_features(ca, cb, fa, fb):
     if meilleur is None:
         return None
     paires = meilleur[1]
-    return [(y, x) for x, y in paires] if swap else paires
+    paires = [(y, x) for x, y in paires] if swap else paires
+    if max(_cout(NA0, NB0, x, y) for x, y in paires) > PAIRE_MAX:
+        trous = _apparier_avec_trous(ca, cb, fa0, fb0, NA0, NB0)
+        if trous and len(trous) >= 2:
+            return trous
+    return paires
+
+
+PAIRE_MAX = 0.45   # distance normalisee ; au-dela, deux reperes ne se repondent pas
+GAIN = 0.45        # ce que rapporte une paire, diminue de son cout
+
+
+def _cout(NA, NB, x, y):
+    return math.hypot(NA[x][0] - NB[y][0], NA[x][1] - NB[y][1])
+
+
+def _apparier_avec_trous(ca, cb, fa, fb, NA, NB):
+    """Appariement ordonne ou chaque repere peut rester seul.
+
+    L'appariement ordinaire marie tous les reperes du contour qui en a le
+    moins. Quand les deux dessins ont autant de reperes mais pas les memes,
+    il est force de marier des points sans rapport. Le contre-poincon du "e"
+    de "ae" en est le cas type : le romain a un extremum en bout de barre, a
+    droite, l'italique un extremum sur le flanc, a gauche. Tous deux en
+    comptent quatre ; apparies de force, ils se decalaient d'un rang, et le
+    coin gauche de la barre etait marie au coin droit, 234 unites plus loin.
+    Epaissi, l'italique creusait un coin effile dans la contreforme.
+
+    Ici, une paire rapporte GAIN moins sa distance, et deux reperes de types
+    differents (angle contre extremum) coutent un supplement : un repere sans
+    homologue credible reste seul et redevient un point interieur.
+    """
+    m, n = len(fa), len(fb)
+    if m == 0 or n == 0:
+        return None
+    ta = [feature_type(ca, x) for x in fa]
+    tb = [feature_type(cb, y) for y in fb]
+
+    def gain(i, j):
+        g = GAIN - _cout(NA, NB, fa[i], fb[j])
+        if ta[i] != tb[j]:
+            g -= 0.15 if "corner" in (ta[i], tb[j]) else 0.08
+        return g
+
+    meilleur = None
+    for r in range(n):
+        ordre = [(r + k) % n for k in range(n)]
+        S = [[0.0] * (n + 1) for _ in range(m + 1)]
+        T = [[0] * (n + 1) for _ in range(m + 1)]   # 0 diag, 1 haut, 2 gauche
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                best, t = S[i - 1][j], 1
+                if S[i][j - 1] > best:
+                    best, t = S[i][j - 1], 2
+                g = gain(i - 1, ordre[j - 1])
+                if g > 0 and S[i - 1][j - 1] + g > best:
+                    best, t = S[i - 1][j - 1] + g, 0
+                S[i][j], T[i][j] = best, t
+        paires, i, j = [], m, n
+        while i > 0 and j > 0:
+            if T[i][j] == 0:
+                paires.append((fa[i - 1], fb[ordre[j - 1]])); i -= 1; j -= 1
+            elif T[i][j] == 1:
+                i -= 1
+            else:
+                j -= 1
+        paires.reverse()
+        cle = (len(paires), S[m][n])
+        if meilleur is None or cle > meilleur[0]:
+            meilleur = (cle, paires)
+    paires = meilleur[1]
+    return paires if len(paires) >= 2 else None
 
 
 def harmonize_pair(ca, cb, journal=None):

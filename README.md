@@ -88,6 +88,23 @@ a un homologue au même endroit. Couper une courbe ne change pas son tracé.
 Le même correctif lisse `C` `Ç` `G` `S` `6` `9` `@` `&` `¶` `Þ` et les
 autres rondes touchées à des degrés moindres.
 
+**Des repères qui n'ont pas d'homologue.** Deux dessins peuvent compter
+autant de repères sans que ce soient les mêmes : dans le « e » de `æ`, le
+romain a un extremum au bout de la barre, l'italique sur le flanc opposé.
+Forcé de tout marier, l'apparieur décalait les points d'un rang, et le
+Heavy Italic creusait un coin effilé dans la contreforme. Un repère sans
+homologue crédible reste désormais seul. De même, un point posé au milieu
+d'un trait droit n'est plus un repère : le fût du E de `Œ` Regular porte un
+décrochement d'une unité qui attirait à lui le coin de la barre du Bold, et
+le Heavy biseautait la jonction.
+
+**Le `$` et le `¢`.** Dans le Regular, la barre traverse la lettre et ferme
+de petites contreformes ; dans le Bold, elle se réduit à deux ergots. Ce
+sont deux dessins, pas deux graisses. Le Bold est traduit dans le dessin du
+Regular (barre prolongée, par opération booléenne) pour l'interpolation ;
+le Bold reste le dessin d'origine à l'identique, et le Heavy l'épaissit
+de 10 unités par flanc avec `tools/epaissir.py`.
+
 ### Huit glyphes penchés depuis le romain
 
 `a` `$` `¢` `|` `¦` `ª` `}` et `.notdef` ne sont pas déduits de l'italique
@@ -120,7 +137,7 @@ tools/appliquer_crenage.py  écriture de la table GPOS
 tools/appliquer_hinting.py  optimisation de l'affichage écran
 tools/naming.py       nomenclature OpenType
 tools/verifier.py     balayage complet avant livraison
-tools/comparer.py     planche avant / après, glyphe par glyphe
+tools/revue.py        visionneur de revue, glyphe par glyphe
 tools/tout_construire.sh    reconstruction complète, dans l'ordre
 specimen.html         planche de contrôle
 ```
@@ -203,23 +220,32 @@ chaque glyphe comparée à l'interpolation des masters. Ce dernier contrôle est
 le seul capable d'attraper un appariement de points décalé d'un cran, qui ne
 se voit sur aucune mesure de distance.
 
-## Contrôler une correction, lettre par lettre
+## Passer la police en revue, glyphe par glyphe
 
 ```bash
-python3 tools/comparer.py            # contre le dernier commit
-python3 tools/comparer.py 9a46589    # contre une version précise
+python3 tools/revue.py            # différences contre le dernier commit
+python3 tools/revue.py 9a46589    # contre une version précise
 ```
 
-Produit `comparaison.html`, à ouvrir dans un navigateur. Pour chaque fichier,
-les glyphes dont le dessin a changé, du plus touché au moins touché : le
-dessin d'avant, celui d'après, et les deux superposés avec la zone modifiée
-en jaune. Un clic agrandit la lettre ; les flèches passent à la suivante.
-Les boutons « Bon » et « À revoir » gardent votre verdict dans le
-navigateur.
+Produit `revue.html`, à ouvrir dans un navigateur : tous les glyphes des
+15 styles, un par un, en grand.
 
-L'écart est mesuré en unités (1 000 par cadratin) : la surface qui diffère,
-rapportée à la longueur du contour. Sous 0,1 unité, c'est le bruit de
-conversion des courbes, et le glyphe n'est pas listé.
+| Touche | Action |
+|---|---|
+| ← → | glyphe précédent / suivant |
+| ↑ ↓ | style précédent / suivant, même glyphe |
+| 1 2 3 | Normal, Contour (avec les points), Différence |
+| F | plein écran |
+| R | marquer « à revoir » |
+| G | grille de tous les glyphes du style |
+| M | seulement les glyphes modifiés |
+| L | liste à revoir, avec remarques, à copier |
+
+Le mode Différence superpose la version de référence et colorie la zone qui
+a changé. L'écart est mesuré en unités (1 000 par cadratin) : la surface qui
+diffère, rapportée à la longueur du contour. Sous 0,1 unité, c'est le bruit
+de conversion des courbes, et le glyphe est tenu pour inchangé. En bas, la
+bande montre le glyphe courant dans les 15 styles.
 
 ## Licence
 

@@ -38,6 +38,7 @@ import naming
 SLANT = math.tan(math.radians(12.0))     # 0.21256
 ORIGINE = 254.1   # hauteur autour de laquelle le dessinateur a penche (mesuree)
 SEUIL_RESIDU = 45.0   # au-dela, romain et italique ne sont plus la meme lettre
+SEUIL_PIRE = 120.0    # ecart du point le plus mal apparie ; meme sens
 
 
 def redresser(contours):
@@ -112,6 +113,16 @@ def residu(cU, cI):
     return sorted(d)[len(d) // 2] if d else 0.0
 
 
+def pire(cU, cI):
+    """Ecart du point le plus mal apparie. La mediane ne suffit pas : le "ª"
+    italique (un etage) et le romain (deux etages) partagent assez de points
+    pour une mediane basse, mais la panse du romain n'a pas d'homologue, a
+    180 unites de la, et l'epaississement en faisait un pate."""
+    d = [math.hypot(pi[0] - pu[0], pi[1] - pu[1])
+         for u, i in zip(cU, cI) for pu, pi in zip(anchors(u), anchors(i))]
+    return max(d) if d else 0.0
+
+
 def aligner(cU, cB, cI):
     """Amene les trois jeux de contours a une structure de points commune."""
     if not (len(cU) == len(cB) == len(cI)) or not cU:
@@ -179,7 +190,8 @@ def build_italic(t, weight_class, style, out_path,
         cI = match_contours(cU, redresser(glyph_to_contours(Ig, gI)))
 
         alignable = aligner(cU, cB, cI)
-        if not alignable or residu(cU, cI) > SEUIL_RESIDU:
+        if (not alignable or residu(cU, cI) > SEUIL_RESIDU
+                or pire(cU, cI) > SEUIL_PIRE):
             # Soit les topologies divergent ($ et cent, dont les contreformes
             # fusionnent dans le gras), soit romain et italique ne sont pas la
             # meme lettre (le "a" romain a deux etages, l'italique un seul).

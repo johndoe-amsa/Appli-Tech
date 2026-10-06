@@ -12,7 +12,7 @@ Base sur D-DIN (c) 2017 Datto Inc., sous licence SIL OFL 1.1.
 Conformement a la clause 3 de cette licence, la famille derivee porte un
 nom different du nom reserve "D-DIN".
 """
-import sys, os
+import sys, os, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fontTools.ttLib import TTFont
@@ -48,15 +48,121 @@ def _shrink(c, f):
             "segs": [tuple(sc(p) for p in sg) for sg in c["segs"]]}
 
 
+def _vers_chemin(contours):
+    import pathops
+    p = pathops.Path()
+    pen = p.getPen()
+    for c in contours:
+        pen.moveTo(c["start"])
+        for p1, p2, p3 in c["segs"]:
+            pen.curveTo(p1, p2, p3)
+        pen.closePath()
+    return p
+
+
+def _depuis_chemin(p):
+    """Chemin pathops -> contours cubiques, par le meme convertisseur que les
+    glyphes, pour que harmonize y trouve les memes reperes."""
+    from fontTools.pens.ttGlyphPen import TTGlyphPen as _P
+    from fontTools.ttLib.tables._g_l_y_f import table__g_l_y_f
+    pen = _P(None)
+    q = Cu2QuPen(pen, max_err=0.05, reverse_direction=False)
+    p.draw(q)
+    g = pen.glyph()
+    return glyph_to_contours(g, table__g_l_y_f())
+
+
+def _rect(x0, y0, x1, y1):
+    import pathops
+    r = pathops.Path()
+    pen = r.getPen()
+    pen.moveTo((x0, y0)); pen.lineTo((x0, y1)); pen.lineTo((x1, y1)); pen.lineTo((x1, y0))
+    pen.closePath()
+    return r
+
+
+def _barre(contours):
+    """Abscisses de la barre verticale du $ ou du cent : le bord haut de
+    l'ergot superieur, plat, au sommet du glyphe."""
+    pts = [p for c in contours for p in [c["start"]] + [sg[2] for sg in c["segs"]]]
+    haut = max(y for _, y in pts)
+    xs = [x for x, y in pts if y >= haut - 1]
+    if len(xs) < 2 or max(xs) - min(xs) < 10:
+        return None
+    return min(xs), max(xs), min(y for _, y in pts), haut
+
+
+def _avec_barre(cb):
+    """Prolonge les ergots en barre pleine hauteur : dessin a barre traversante."""
+    import pathops
+    bb = _barre(cb)
+    if not bb:
+        return None
+    x0, x1, y0, y1 = bb
+    pb = pathops.op(_vers_chemin(cb), _rect(x0, y0 - 5, x1, y1 + 5),
+                    pathops.PathOp.UNION, clockwise=True)
+    # la barre ajoutee ne doit pas depasser la hauteur du glyphe
+    pb = pathops.op(pb, _rect(-2000, y0, 4000, y1), pathops.PathOp.INTERSECTION,
+                    clockwise=True)
+    return _depuis_chemin(pb)
+
+
+def interp_barre(ca, cb, t):
+    """$ et cent : la barre traverse la lettre dans le Regular, pas dans le Bold.
+
+    Dans le Regular, la barre coupe les ouvertures du S (ou du c) et y
+    enferme de petites contreformes ; dans le Bold, elle se reduit a deux
+    ergots. Ce ne sont pas deux graisses d'un meme dessin, mais deux dessins :
+    aucun appariement de points ne les relie, et l'ancienne methode - retrecir
+    les contreformes orphelines - laissait des contreformes fantomes jusque
+    dans le Bold et des ergots parasites dans les graisses extrapolees.
+
+    On traduit le Bold dans le dessin du Regular (barre prolongee sur toute
+    la hauteur, par operation booleenne), et l'on interpole entre ces deux
+    dessins de meme structure. Puis :
+      - avant le Bold (Light, Regular, Medium) : barre traversante, telle quelle ;
+      - au Bold : le dessin d'origine, a l'identique ;
+      - au-dela (Heavy) : le Bold d'origine, epaissi (voir plus bas).
+    """
+    if _barre(ca) is None or _barre(cb) is None:
+        return None
+    if t == 1.0:
+        return copy.deepcopy(cb)
+    A, B = copy.deepcopy(ca), _avec_barre(cb)
+    if B is None:
+        return None
+    B = match_contours(A, B)
+    if len(A) != len(B) or not all(harmonize_pair(x, y) for x, y in zip(A, B)):
+        return None
+    out = interp_contours(A, B, t)
+    if t > 1.0:
+        # Au-dela du Bold, on epaissit le Bold d'origine, de l'ecart de fut
+        # mesure sur la barre elle-meme, et on lui donne la largeur du dessin
+        # extrapole. Ni extrapolation point a point (elle amplifiait un
+        # decrochement de quelques unites que le Bold d'origine porte au flanc
+        # du S, et en faisait un bec), ni decoupe de la barre apres coup (sur
+        # une forme deja grasse, les contreformes sont trop petites pour la
+        # guider, et la coupe taillait des biseaux).
+        from epaissir import epaissir
+        ba, bb = _barre(ca), _barre(cb)
+        d = (t - 1.0) * ((bb[1] - bb[0]) - (ba[1] - ba[0])) / 2.0
+        xs = [p[0] for c in out for p in [c["start"]] + [q for sg in c["segs"] for q in sg]]
+        out = epaissir(copy.deepcopy(cb), d, largeur_cible=(min(xs), max(xs)))
+    return out
+
+
 def interp_mismatched(ca, cb, t):
     """Contours de topologie differente entre les deux masters.
 
-    Cas reel dans D-DIN : le $ et le cent voient leurs contreformes fusionner
-    dans le Bold. On apparie alors les contours par surface decroissante, on
+    Le $ et le cent passent d'abord par interp_barre. Repli pour les autres
+    cas, s'il s'en presente : on apparie les contours par surface decroissante, on
     interpole les paires, et on retrecit progressivement les contours
     orphelins - ce qui reproduit fidelement ce que fait le dessinateur quand
     une contreforme se referme a mesure que la graisse augmente.
     """
+    barre = interp_barre(ca, cb, t)
+    if barre is not None:
+        return barre
     A = sorted(ca, key=_area, reverse=True)
     B = sorted(cb, key=_area, reverse=True)
     out = []

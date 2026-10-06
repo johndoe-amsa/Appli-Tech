@@ -178,6 +178,25 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-06          Fixed three more outline defects reported in review:
+                    - "ae" (bold and heavy italics): a sharp wedge cut into
+                      the counter of the "e". Upright and italic each had
+                      four landmarks there, but not the same four; forced to
+                      pair them all, the matcher shifted the points by one.
+                      A landmark with no credible counterpart now stays
+                      unpaired.
+                    - "OE" (heavy weights): bevelled joint between the middle
+                      arm and the stem. A one-unit jog on the Regular stem
+                      was taken for a landmark; a point between two straight
+                      segments no longer counts as one.
+                    - "dollar" and "cent": in the Regular the bar crosses
+                      the letter, in the Bold it is reduced to two stubs.
+                      The Bold now comes out identical to its original
+                      drawing (it previously carried ghost counters), the
+                      lighter weights keep the crossing bar without spurs,
+                      and the Heavy is the original Bold thickened.
+                    Replaced the before/after sheet by tools/revue.py, a
+                    glyph-by-glyph viewer across all 15 styles.
 2026-10-06          Fixed the notch on the upper terminal of "C" in Bold
                     Italic and Heavy Italic. The Regular and Bold masters
                     carry their intermediate curve points at different places
@@ -188,7 +207,6 @@ ChangeLog
                     at the same place. Same fix smooths G, S, 6, 9, @, &,
                     pilcrow and Thorn. The italic per mille now keeps the
                     italic drawing instead of a slanted upright.
-                    Added tools/comparer.py, a before/after proof sheet.
 2026-09-21  v1.007  Added the condensed width, five upright weights.
                     Two long-standing engine bugs surfaced while building it,
                     both present from the start:
