@@ -1,0 +1,268 @@
+<title>Appli-Tec avant/après</title>
+<style>
+/* Planche de contrôle : barre des graisses en tête, grille de glyphes, loupe en surimpression */
+@font-face { font-family: "Appli-Tec"; font-weight: 400; src: url(data:font/woff2;base64,/*POLICE_REGULAR*/) format("woff2"); }
+@font-face { font-family: "Appli-Tec"; font-weight: 700; src: url(data:font/woff2;base64,/*POLICE_BOLD*/) format("woff2"); }
+:root {
+  --fond: #f3f4f2;
+  --carte: #ffffff;
+  --encre: #15171a;
+  --doux: #5d636b;
+  --trait: #d9dcd8;
+  --avant: #c8372d;
+  --apres: #1f5fbf;
+  --diff: #e8a400;
+  --ok: #2d7a46;
+  --revoir: #b5650d;
+  --texte: "Appli-Tec", "DIN Alternate", "Bahnschrift", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #141619; --carte: #1d2024; --encre: #eceeec; --doux: #9aa1a8; --trait: #33373c;
+    --avant: #ff6b5e; --apres: #6ea8ff; --diff: #f5b800; --ok: #5cc27e; --revoir: #f0a040; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #141619; --carte: #1d2024; --encre: #eceeec; --doux: #9aa1a8; --trait: #33373c;
+  --avant: #ff6b5e; --apres: #6ea8ff; --diff: #f5b800; --ok: #5cc27e; --revoir: #f0a040; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--encre); font-family: var(--texte); font-size: 15px; padding: 0 16px 48px; }
+.page { max-width: 1280px; margin: 0 auto; }
+header { padding-block: 24px 12px; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between; }
+h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.ref { color: var(--doux); font-size: 14px; }
+.ref code { font-family: var(--mono); font-size: 13px; color: var(--encre); }
+.barre { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--fond); padding-block: 10px; border-bottom: 1px solid var(--trait); display: flex; flex-direction: column; gap: 10px; }
+.styles { display: flex; flex-wrap: wrap; gap: 6px; }
+.style { font: inherit; font-size: 14px; border: 1px solid var(--trait); background: var(--carte); color: var(--encre); padding: 6px 10px; border-radius: 4px; cursor: pointer; display: inline-flex; gap: 6px; align-items: baseline; }
+.style .n { font-variant-numeric: tabular-nums; color: var(--doux); font-size: 12px; }
+.style[aria-pressed="true"] { background: var(--encre); color: var(--fond); border-color: var(--encre); }
+.style[aria-pressed="true"] .n { color: var(--fond); opacity: .7; }
+.style:disabled { opacity: .45; cursor: default; }
+.outils { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 14px; }
+.outils input[type=search] { font: inherit; padding: 6px 10px; border: 1px solid var(--trait); border-radius: 4px; background: var(--carte); color: var(--encre); width: 14em; max-width: 100%; }
+.seg { display: inline-flex; border: 1px solid var(--trait); border-radius: 4px; overflow: hidden; }
+.seg button { font: inherit; font-size: 13px; border: 0; background: var(--carte); color: var(--encre); padding: 6px 10px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--encre); color: var(--fond); }
+.legende { display: inline-flex; gap: 12px; color: var(--doux); font-size: 13px; }
+.legende i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--apres); outline-offset: 2px; }
+.resume { color: var(--doux); font-size: 14px; padding-block: 14px 6px; }
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.grille.dense { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.grille.dense .tete .nom { display: none; }
+.carte { background: var(--carte); border: 1px solid var(--trait); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px; cursor: zoom-in; position: relative; }
+.carte.ok { border-color: var(--ok); }
+.carte.revoir { border-color: var(--revoir); box-shadow: 0 0 0 1px var(--revoir); }
+.tete { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-width: 0; }
+.tete b { font-size: 18px; }
+.tete .nom { font-family: var(--mono); font-size: 12px; color: var(--doux); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ecart { font-family: var(--mono); font-size: 12px; color: var(--doux); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vues { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+.vues.une { grid-template-columns: 1fr; }
+.vue { display: flex; flex-direction: column; gap: 2px; align-items: center; min-width: 0; }
+.vue span { font-size: 11px; color: var(--doux); text-transform: uppercase; letter-spacing: .06em; }
+svg.g { width: 100%; height: auto; display: block; }
+.verdict { display: flex; gap: 6px; }
+.verdict button { font: inherit; font-size: 12px; flex: 1; border: 1px solid var(--trait); background: transparent; color: var(--doux); padding: 4px; border-radius: 3px; cursor: pointer; }
+.verdict button.on-ok { background: var(--ok); color: var(--carte); border-color: var(--ok); }
+.verdict button.on-revoir { background: var(--revoir); color: var(--carte); border-color: var(--revoir); }
+.vide { padding: 48px 0; color: var(--doux); text-align: center; }
+dialog { border: 1px solid var(--trait); border-radius: 8px; background: var(--carte); color: var(--encre); padding: 0; width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+dialog::backdrop { background: rgba(0,0,0,.55); }
+.loupe { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.loupe .tete b { font-size: 22px; }
+.loupe .grand { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.loupe .grand .vue { border: 1px solid var(--trait); border-radius: 4px; padding: 6px; }
+.loupe .grand.une { grid-template-columns: 1fr; }
+.loupe .bas { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
+.loupe .bas .verdict { min-width: 220px; }
+.fermer { font: inherit; border: 1px solid var(--trait); background: transparent; color: var(--encre); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.aide { color: var(--doux); font-size: 13px; }
+@media (max-width: 640px) {
+  .loupe .grand { grid-template-columns: 1fr; }
+  h1 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .carte { transition: border-color .15s; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <h1>Appli-Tec · avant / après</h1>
+    <div class="ref" id="ref"></div>
+  </header>
+  <div class="barre">
+    <div class="styles" id="styles" role="group" aria-label="Graisse"></div>
+    <div class="outils">
+      <input type="search" id="filtre" placeholder="Lettre ou nom (C, three…)" aria-label="Filtrer les glyphes">
+      <div class="seg" role="group" aria-label="Affichage">
+        <button type="button" id="m-trois" aria-pressed="true">Avant · Après · Superposé</button>
+        <button type="button" id="m-super" aria-pressed="false">Superposé seul</button>
+      </div>
+      <span class="legende"><span><i style="background:var(--avant)"></i>avant</span><span><i style="background:var(--apres)"></i>après</span><span><i style="background:var(--diff)"></i>zone modifiée</span></span>
+    </div>
+  </div>
+  <div class="resume" id="resume"></div>
+  <div class="grille" id="grille"></div>
+</div>
+
+<dialog id="dlg" aria-label="Glyphe agrandi">
+  <div class="loupe" id="loupe"></div>
+</dialog>
+
+<script>
+const D = /*DONNEES*/null;
+const $ = (s) => document.querySelector(s);
+const cle = "appli-tec-verdicts:" + D.reference.split(" ")[0];
+let verdicts = {};
+try { verdicts = JSON.parse(localStorage.getItem(cle) || "{}"); } catch (e) {}
+const sauver = () => { try { localStorage.setItem(cle, JSON.stringify(verdicts)); } catch (e) {} };
+
+let courant = (D.styles.find(s => s.glyphes.length) || D.styles[0]).style;
+let mode = "trois";
+try { const m = localStorage.getItem("appli-tec-mode"); if (m) mode = m; } catch (e) {}
+
+$("#ref").innerHTML = "comparé à <code></code> · généré le " + D.date;
+$("#ref code").textContent = D.reference;
+
+const total = D.styles.reduce((a, s) => a + s.glyphes.length, 0);
+
+function cadre(g) {
+  // Cadre vertical commun à tous les glyphes (descendante → au-dessus des capitales),
+  // pour que les tailles restent comparables d'une carte à l'autre.
+  const [x0, , x1] = g.boite;
+  const bas = Math.min(-250, g.boite[1] - 20), haut = Math.max(950, g.boite[3] + 20);
+  let l = x1 - x0 + 80, cx = (x0 + x1) / 2;
+  const h = haut - bas;
+  if (l < h * 0.8) l = h * 0.8;
+  return { x: cx - l / 2, y: -haut, w: l, h };
+}
+
+function svg(g, quoi, grand) {
+  const c = cadre(g);
+  const base = `<line x1="${c.x}" x2="${c.x + c.w}" y1="0" y2="0" stroke="var(--trait)" stroke-width="${grand ? 3 : 6}"/>`;
+  let corps = "";
+  const t = `transform="scale(1,-1)"`;
+  if (quoi === "avant") corps = `<path ${t} d="${g.avant}" fill="var(--encre)"/>`;
+  else if (quoi === "apres") corps = `<path ${t} d="${g.apres}" fill="var(--encre)"/>`;
+  else corps =
+    `<path ${t} d="${g.apres}" fill="var(--encre)" fill-opacity=".12"/>` +
+    `<path ${t} d="${g.diff}" fill="var(--diff)"/>` +
+    `<path ${t} d="${g.avant}" fill="none" stroke="var(--avant)" stroke-width="${grand ? 1.5 : 4}"/>` +
+    `<path ${t} d="${g.apres}" fill="none" stroke="var(--apres)" stroke-width="${grand ? 1.5 : 4}"/>`;
+  return `<svg class="g" viewBox="${c.x} ${c.y} ${c.w} ${c.h}" role="img" aria-label="${quoi}">${base}${corps}</svg>`;
+}
+
+function vues(g, grand) {
+  if (mode === "super") return `<div class="${grand ? "grand une" : "vues une"}"><div class="vue">${svg(g, "super", grand)}</div></div>`;
+  return `<div class="${grand ? "grand" : "vues"}">` +
+    `<div class="vue"><span>avant</span>${svg(g, "avant", grand)}</div>` +
+    `<div class="vue"><span>après</span>${svg(g, "apres", grand)}</div>` +
+    `<div class="vue"><span>superposé</span>${svg(g, "super", grand)}</div></div>`;
+}
+
+const id = (st, g) => st + "/" + g.nom;
+function boutonsVerdict(k) {
+  const v = verdicts[k];
+  return `<div class="verdict">` +
+    `<button type="button" data-v="ok" data-k="${k}" class="${v === "ok" ? "on-ok" : ""}">Bon</button>` +
+    `<button type="button" data-v="revoir" data-k="${k}" class="${v === "revoir" ? "on-revoir" : ""}">À revoir</button></div>`;
+}
+function texteEcart(g) {
+  const parts = [];
+  parts.push(g.ecart < 0 ? "écart ?" : "écart " + g.ecart.toLocaleString("fr-CH", { minimumFractionDigits: 2 }) + " u");
+  if (g.chasse[0] !== g.chasse[1]) parts.push(`chasse ${g.chasse[0]}→${g.chasse[1]}`);
+  return parts.join(" · ");
+}
+
+function rendreStyles() {
+  $("#styles").innerHTML = D.styles.map(s =>
+    `<button type="button" class="style" data-s="${s.style}" aria-pressed="${s.style === courant}" ${s.glyphes.length ? "" : "disabled"}>` +
+    `${s.style}<span class="n">${s.glyphes.length}</span></button>`).join("");
+}
+
+function filtrés() {
+  const st = D.styles.find(s => s.style === courant);
+  const q = $("#filtre").value.trim();
+  if (!st) return [];
+  if (!q) return st.glyphes;
+  const ql = q.toLowerCase();
+  // une seule lettre : ce caractère exactement (« G » ne doit pas trouver « paragraph »)
+  if ([...q].length === 1) return st.glyphes.filter(g => g.car === q);
+  return st.glyphes.filter(g => g.car === q || g.nom.toLowerCase().includes(ql) || g.u.toLowerCase() === ql);
+}
+
+function rendre() {
+  rendreStyles();
+  $("#m-trois").setAttribute("aria-pressed", mode === "trois");
+  $("#m-super").setAttribute("aria-pressed", mode === "super");
+  const gs = filtrés();
+  const st = D.styles.find(s => s.style === courant);
+  const n = st ? st.glyphes.length : 0;
+  const ok = st ? st.glyphes.filter(g => verdicts[id(courant, g)] === "ok").length : 0;
+  const rv = st ? st.glyphes.filter(g => verdicts[id(courant, g)] === "revoir").length : 0;
+  $("#resume").textContent = total === 0
+    ? "Aucun glyphe n'a changé de dessin depuis cette version."
+    : `${courant} : ${n} glyphe${n > 1 ? "s" : ""} modifié${n > 1 ? "s" : ""}, du plus touché au moins touché` +
+      (ok || rv ? ` · ${ok} bon${ok > 1 ? "s" : ""}, ${rv} à revoir` : "") +
+      ` · ${total} au total dans la famille`;
+  $("#grille").classList.toggle("dense", mode === "super");
+  $("#grille").innerHTML = gs.length ? gs.map((g, i) => {
+    const k = id(courant, g);
+    const v = verdicts[k] || "";
+    return `<article class="carte ${v}" data-i="${st.glyphes.indexOf(g)}" tabindex="0">` +
+      `<div class="tete"><b>${g.car ? escape(g.car) : "·"}</b><span class="nom">${g.nom} ${g.u}</span><span class="ecart">${texteEcart(g)}</span></div>` +
+      vues(g, false) + boutonsVerdict(k) + `</article>`;
+  }).join("") : `<div class="vide">${total ? "Aucun glyphe ne correspond au filtre." : "Rien à contrôler."}</div>`;
+}
+function escape(s) { return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+let ouvert = -1;
+function ouvrir(i) {
+  const st = D.styles.find(s => s.style === courant);
+  const g = st.glyphes[i]; ouvert = i;
+  const k = id(courant, g);
+  $("#loupe").innerHTML =
+    `<div class="tete"><b>${g.car ? escape(g.car) : "·"} <span class="nom">${g.nom} ${g.u}</span></b><span class="ecart">${courant} · ${texteEcart(g)}</span></div>` +
+    vues(g, true) +
+    `<div class="bas"><span class="aide">← → glyphe précédent / suivant · B bon · R à revoir · Échap fermer</span>${boutonsVerdict(k)}<button type="button" class="fermer" id="fermer">Fermer</button></div>`;
+  if (!$("#dlg").open) $("#dlg").showModal();
+}
+
+function basculer(k, v) {
+  if (verdicts[k] === v) delete verdicts[k]; else verdicts[k] = v;
+  sauver(); rendre();
+  if ($("#dlg").open) ouvrir(ouvert);
+}
+
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b && b.dataset.v) { e.stopPropagation(); basculer(b.dataset.k, b.dataset.v); return; }
+  if (b && b.dataset.s) { courant = b.dataset.s; rendre(); return; }
+  if (b && b.id === "m-trois") { mode = "trois"; try { localStorage.setItem("appli-tec-mode", mode); } catch (e) {} rendre(); return; }
+  if (b && b.id === "m-super") { mode = "super"; try { localStorage.setItem("appli-tec-mode", mode); } catch (e) {} rendre(); return; }
+  if (b && b.id === "fermer") { $("#dlg").close(); return; }
+  if (e.target === $("#dlg")) { $("#dlg").close(); return; }
+  const c = e.target.closest(".carte");
+  if (c) ouvrir(+c.dataset.i);
+});
+document.addEventListener("keydown", (e) => {
+  if ($("#dlg").open) {
+    const st = D.styles.find(s => s.style === courant);
+    const g = st.glyphes[ouvert];
+    if (e.key === "ArrowRight" && ouvert < st.glyphes.length - 1) ouvrir(ouvert + 1);
+    else if (e.key === "ArrowLeft" && ouvert > 0) ouvrir(ouvert - 1);
+    else if (e.key === "b" || e.key === "B") basculer(id(courant, g), "ok");
+    else if (e.key === "r" || e.key === "R") basculer(id(courant, g), "revoir");
+    return;
+  }
+  const c = e.target.closest && e.target.closest(".carte");
+  if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); ouvrir(+c.dataset.i); }
+});
+$("#filtre").addEventListener("input", rendre);
+rendre();
+</script>

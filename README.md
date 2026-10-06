@@ -77,9 +77,20 @@ qui les envoyait au fond de la courbe, à 120 unités de leur place, et laissait
 l'écart de graisse du terminal y creuser une encoche. Résidus ramenés de 123 à
 29 unités sur le « e », de 129 à 28 sur le « c », de 127 à 24 sur le « s ».
 
-### Neuf glyphes penchés depuis le romain
+**Des points au même nombre, mais pas à la même place.** L'épaule du « C »
+romain porte deux points intermédiaires, au tiers et aux deux tiers de la
+courbe ; celle du Bold n'en porte qu'un, à mi-chemin. Appariés par rang, le
+point du tiers glissait vers le milieu. Interpolé, le défaut restait discret ;
+extrapolé au Heavy, le point dépassait son voisin et le contour se repliait :
+l'encoche du « C » des italiques Bold et Heavy. Chaque dessin reçoit
+désormais les positions de l'autre qui lui manquent, si bien que tout point
+a un homologue au même endroit. Couper une courbe ne change pas son tracé.
+Le même correctif lisse `C` `Ç` `G` `S` `6` `9` `@` `&` `¶` `Þ` et les
+autres rondes touchées à des degrés moindres.
 
-`a` `$` `¢` `|` `¦` `ª` `}` `‰` et `.notdef` ne sont pas déduits de l'italique
+### Huit glyphes penchés depuis le romain
+
+`a` `$` `¢` `|` `¦` `ª` `}` et `.notdef` ne sont pas déduits de l'italique
 mais obtenus en penchant le romain à la graisse voulue. Pour `$` et `¢`, leurs
 contreformes fusionnent dans le gras. Pour les autres — le `a` surtout, dont
 l'italique est une lettre à un seul étage face au romain à deux étages —
@@ -87,7 +98,7 @@ aucune correspondance n'existe.
 
 Pour le `a`, c'est un **choix provisoire** : un penchage maintenant, un
 redessin de la forme italique propre plus tard. Conséquence assumée :
-l'Italic 400 diffère du D-DIN Italic d'origine sur ces neuf glyphes, et le
+l'Italic 400 diffère du D-DIN Italic d'origine sur ces huit glyphes, et le
 reproduit à 1,01 unité près sur tous les autres.
 
 `tools/epaissir.py` reste dans le dépôt, débranché : il épaissit un contour
@@ -109,6 +120,7 @@ tools/appliquer_crenage.py  écriture de la table GPOS
 tools/appliquer_hinting.py  optimisation de l'affichage écran
 tools/naming.py       nomenclature OpenType
 tools/verifier.py     balayage complet avant livraison
+tools/comparer.py     planche avant / après, glyphe par glyphe
 tools/tout_construire.sh    reconstruction complète, dans l'ordre
 specimen.html         planche de contrôle
 ```
@@ -190,6 +202,24 @@ drapeaux de style, métriques verticales, progression des fûts, et l'encre de
 chaque glyphe comparée à l'interpolation des masters. Ce dernier contrôle est
 le seul capable d'attraper un appariement de points décalé d'un cran, qui ne
 se voit sur aucune mesure de distance.
+
+## Contrôler une correction, lettre par lettre
+
+```bash
+python3 tools/comparer.py            # contre le dernier commit
+python3 tools/comparer.py 9a46589    # contre une version précise
+```
+
+Produit `comparaison.html`, à ouvrir dans un navigateur. Pour chaque fichier,
+les glyphes dont le dessin a changé, du plus touché au moins touché : le
+dessin d'avant, celui d'après, et les deux superposés avec la zone modifiée
+en jaune. Un clic agrandit la lettre ; les flèches passent à la suivante.
+Les boutons « Bon » et « À revoir » gardent votre verdict dans le
+navigateur.
+
+L'écart est mesuré en unités (1 000 par cadratin) : la surface qui diffère,
+rapportée à la longueur du contour. Sous 0,1 unité, c'est le bruit de
+conversion des courbes, et le glyphe n'est pas listé.
 
 ## Licence
 

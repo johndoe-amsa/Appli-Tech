@@ -301,6 +301,39 @@ def _grow_span(contour, lo, hi, target, journal=None, ref=None, rlo=0, rhi=0):
     return hi
 
 
+TOL_JALON = 0.08   # positions normalisees ; en-deca, deux points se repondent
+
+
+def _croiser(ca, la, ha, cb, lb, hb, journal=None):
+    """Donne a chaque point interieur un homologue a la meme place dans l'autre.
+
+    Egaliser le seul NOMBRE de points ne suffit pas. L'epaule du "C" romain
+    porte des points au tiers et aux deux tiers de la courbe, celle du Bold
+    un seul, a mi-chemin : apparies par rang, le point du tiers etait envoye
+    a mi-courbe. Interpole, le defaut reste discret ; extrapole au Heavy, le
+    point depasse son voisin et le contour se replie - l'encoche observee sur
+    le "C" des italiques Bold et Heavy.
+
+    On complete donc chaque dessin par les positions de l'autre qui lui
+    manquent. Couper une courbe ne change pas son trace : le contour reste
+    identique, il gagne seulement des points qui se repondent.
+    """
+    ja, jb = _jalons(ca, la, ha), _jalons(cb, lb, hb)
+    manque_a = [p for p in jb if all(abs(p - q) > TOL_JALON for q in ja)]
+    manque_b = [p for p in ja if all(abs(p - q) > TOL_JALON for q in jb)]
+    for p in manque_a:
+        j, t = _localiser(ca, la, ha, p)
+        insert_anchor(ca, j, t)
+        if journal is not None:
+            journal.append(("split", j, t))
+        ha += 1
+    for p in manque_b:
+        j, t = _localiser(cb, lb, hb, p)
+        insert_anchor(cb, j, t)
+        hb += 1
+    return ha, hb
+
+
 def _norm(c):
     """Ancres ramenees dans un carre unite : compare des formes, pas des tailles.
     Indispensable, le Bold etant plus large que le Regular."""
@@ -392,6 +425,7 @@ def harmonize_pair(ca, cb, journal=None):
     for i in range(len(bornes_a) - 2, -1, -1):
         la, ha = bornes_a[i], bornes_a[i + 1]
         lb, hb = bornes_b[i], bornes_b[i + 1]
+        ha, hb = _croiser(ca, la, ha, cb, lb, hb, journal)
         cible = max(ha - la, hb - lb)
         _grow_span(ca, la, ha, cible, journal, ref=cb, rlo=lb, rhi=hb)
         _grow_span(cb, lb, hb, cible, None, ref=ca, rlo=la, rhi=ha)

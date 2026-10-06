@@ -178,6 +178,17 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-06          Fixed the notch on the upper terminal of "C" in Bold
+                    Italic and Heavy Italic. The Regular and Bold masters
+                    carry their intermediate curve points at different places
+                    (thirds against a midpoint); paired by rank, a point slid
+                    along the curve and, once extrapolated to Heavy, overtook
+                    its neighbour. Each master now receives the positions of
+                    the other that it lacks, so every point has a counterpart
+                    at the same place. Same fix smooths G, S, 6, 9, @, &,
+                    pilcrow and Thorn. The italic per mille now keeps the
+                    italic drawing instead of a slanted upright.
+                    Added tools/comparer.py, a before/after proof sheet.
 2026-09-21  v1.007  Added the condensed width, five upright weights.
                     Two long-standing engine bugs surfaced while building it,
                     both present from the start:
