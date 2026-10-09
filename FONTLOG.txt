@@ -178,6 +178,10 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-09          Italics: "e" (and its accented forms) now also comes from
+                    the slanted upright: around the crossbar, the italic
+                    drawing kept short upright walls that met the curves at
+                    an angle, much amplified in Heavy Italic.
 2026-10-09          Italics: "0", "3", "5", "C", "Ç" now come from the slanted
                     upright (the italic drawing put a corner where the lower
                     terminal of 3 and 5 meets the bowl, and a lumpy end on

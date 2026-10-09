@@ -46,11 +46,11 @@ SEUIL_PIRE = 120.0    # ecart du point le plus mal apparie ; meme sens
 #    graisse penche leur taillait des bouts obliques et tordait le "×".
 #  - les guillemets, que D-DIN Italic obtient par simple cisaillement des
 #    droits : voir chevrons_egaux.
-#  - "0", "3", "5", "C" et "Ç" : le dessinateur les a a peine retouches, et ses
+#  - "e", "0", "3", "5", "C" et "Ç" : le dessinateur les a a peine retouches, et ses
 #    retouches y ont mis des defauts. Le bord interieur du terminal bas du
 #    "3" et du "5" reste vertical et rejoint la courbe en faisant un angle ;
 #    le bout du "C" est bossele. Penches depuis le romain, ils sont lisses.
-PENCHES = {"three", "five", "C", "Ccedilla", "zero",
+PENCHES = {"e", "three", "five", "C", "Ccedilla", "zero",
            "plus", "less", "equal", "greater", "asciicircum", "multiply",
            "divide", "plusminus", "logicalnot", "underscore",
            "guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright"}
