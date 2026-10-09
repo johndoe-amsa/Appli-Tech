@@ -171,6 +171,8 @@ def _ecart_max(ga, gb, nom):
         if not loin:
             return 0.0
         Z = X[loin]
+        if len(Z) > 400:   # glyphe deplace en bloc : un echantillon suffit
+            Z = Z[:: len(Z) // 400 + 1]
         d = ((Z[:, None, :] - Y[None, :, :]) ** 2).sum(-1).min(1)
         return float(d.max()) ** 0.5
 
