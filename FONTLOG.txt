@@ -14,8 +14,8 @@ Deutsches Institut fuer Normung in 1931 for industrial and traffic signage.
 D-DIN ships with two weights only (Regular 400 and Bold 700). Appli-Tec extends
 the family with the intermediate and extreme weights required by Applitec's
 documents. The additional weights are computed from the two original drawings
-by point-to-point interpolation and extrapolation; no outline was redrawn from
-scratch.
+by point-to-point interpolation and extrapolation. One glyph is built from
+scratch: the slashed O, redrawn as a diameter sign (see below).
 
 As required by clause 3 of the SIL Open Font License, this derivative does NOT
 use the Reserved Font Name "D-DIN". "Appli-Tec" is reserved in turn.
@@ -106,6 +106,25 @@ tools/epaissir.py remains in the tree, unwired. It thickens an outline
 without any reference master, and was measured at about 27 units of deviation
 against the real Monotype Bold (against about 1 unit for true interpolation).
 It is the starting point should the single-storey italic "a" be taken up.
+
+The diameter sign
+-----------------
+In D-DIN, "Oslash" (U+00D8) is the Danish and Norwegian letter: the oval
+DIN 1451 O with a slash. In Applitec's documents it is only ever used to
+dimension a diameter ("Ø 12 mm"), where a circle is expected, as on a
+drawing. tools/diametre.py therefore redraws it, weight by weight, as a
+slashed circle built from the measurements of the "O" in the same font:
+
+  - outer circle: the height of the O, overshoots included;
+  - stroke: the O's stem on the sides, its thinner stroke at top and bottom;
+  - slash: the thickness of the original Oslash slash, overshooting the
+    circle at top and bottom by 6% of the radius, its outer corners flush
+    with the circle's sides (about 50 degrees);
+  - sidebearings: those of the O.
+
+Italics receive the upright drawing of the same weight, sheared by 12
+degrees. U+2300 DIAMETER SIGN is mapped to the same glyph. The lowercase
+"oslash" is unchanged.
 
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------

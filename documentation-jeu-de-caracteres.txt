@@ -1,5 +1,5 @@
 APPLI-TEC — JEU DE CARACTERES COMPLET
-231 caractères, identiques dans les 15 fichiers de la famille
+232 caractères, identiques dans les 15 fichiers de la famille
 
 Majuscules (26)
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -34,8 +34,9 @@ Tirets (3)
 Parenthèses et crochets (6)
 ()[]{}
 
-Mathématiques et technique (13)
-%+<=>~¬°±µ×÷‰
+Mathématiques et technique (14)
+%+<=>~¬°±µ×÷‰⌀
+(⌀, signe de diamètre, et Ø sont un seul et même dessin : un cercle barré)
 
 Monnaies (7)
 $¢£¤¥ƒ€
@@ -57,7 +58,7 @@ uniquement par le panneau Glyphes d'InDesign, ou par une fonctionnalité
 OpenType (frac pour les fractions, sups pour les exposants, dlig pour tt) :
   t_t (ligature tt)  zero.dnom  one.dnom  two.dnom  three.dnom  four.dnom  zero.numr  one.numr  two.numr  three.numr  four.numr  zero.sups  one.sups  two.sups  three.sups  four.sups  glyph249 (barre de fraction)
 
-Total : 221 visibles + 10 invisibles = 231 caractères
+Total : 222 visibles + 10 invisibles = 232 caractères
 
 Remarque : les fractions ¼ ½ ¾ existent en glyphes tout faits. Pour les autres
 (3/8, 7/16…), activez la fonctionnalité « Fractions » dans InDesign : elle

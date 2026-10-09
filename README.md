@@ -151,6 +151,24 @@ sans master de référence, à ~27 unités d'écart du vrai Bold de Monotype
 (contre ~1 unité pour une vraie interpolation). C'est le point de départ si
 l'on reprend le `a` italique.
 
+## Le Ø, signe de diamètre
+
+Dans D-DIN, le `Ø` est la lettre danoise et norvégienne : le O ovale de la
+DIN 1451, barré. Chez Applitec, il ne sert qu'à coter un diamètre —
+« Ø 12 mm » — et l'on attend alors un **cercle**, comme sur un plan.
+
+`tools/diametre.py` le redessine donc en cercle barré, graisse par graisse,
+d'après le O de la même police : le cercle a la hauteur du O (dépassements
+compris), le trait reprend le fût du O sur les flancs et son délié en haut
+et en bas, la barre garde l'épaisseur de la barre d'origine, dépasse le
+cercle en haut et en bas et s'arrête à son aplomb sur les côtés (environ
+50°). Les italiques reçoivent le dessin du romain de même graisse, penché
+de 12°.
+
+Le signe de diamètre du standard, `⌀` (U+2300), pointe sur le même dessin :
+un texte copié depuis un logiciel de DAO s'affiche à l'identique. Le `ø`
+minuscule n'est pas touché.
+
 ## Organisation du dépôt
 
 ```
@@ -160,6 +178,7 @@ sources/upstream-d-din/   les dessins d'origine de Datto, intacts
 tools/build.py        générateur de graisses romaines
 tools/build_italic.py générateur d'italiques
 tools/harmonize.py    mise en compatibilité des contours
+tools/diametre.py     Ø redessiné en signe de diamètre
 tools/crenage.py      mesure du blanc entre lettres
 tools/appliquer_crenage.py  écriture de la table GPOS
 tools/appliquer_hinting.py  optimisation de l'affichage écran
@@ -227,10 +246,10 @@ python3 tools/build.py 0.3333 500 Medium
 python3 tools/build_italic.py 1.0 700 "Bold Italic"
 ```
 
-**Attention à l'ordre** : le crénage puis le hinting sont écrits *dans* les
-fichiers produits par les générateurs. Relancer un générateur seul efface les
-deux pour la graisse concernée — il faut repasser `appliquer_crenage.py` et
-`appliquer_hinting.py` dessus. Pour tout reconstruire proprement :
+**Attention à l'ordre** : le Ø rond, le crénage puis le hinting sont écrits
+*dans* les fichiers produits par les générateurs. Relancer un générateur seul
+efface les trois pour la graisse concernée — il faut repasser `diametre.py`,
+`appliquer_crenage.py` et `appliquer_hinting.py` dessus. Pour tout reconstruire proprement :
 
 ```bash
 ./tools/tout_construire.sh
