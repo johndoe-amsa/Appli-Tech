@@ -176,6 +176,21 @@ def controler(chemin):
     if decales:
         pbs.append(f"marge gauche fausse sur {len(decales)} glyphes ({', '.join(decales[:5])}...)")
 
+    # Contours de moins de trois points : scories des dessins d'origine
+    scories = []
+    for x in f.getGlyphOrder():
+        gl = g[x]
+        if gl.isComposite() or gl.numberOfContours <= 0:
+            continue
+        debut = 0
+        for fin in gl.endPtsOfContours:
+            if fin - debut + 1 < 3:
+                scories.append(x)
+                break
+            debut = fin + 1
+    if scories:
+        pbs.append(f"points isoles dans {len(scories)} glyphes ({', '.join(scories[:5])})")
+
     italique = style.endswith("Italic")
     gras = sub in ("Bold", "Bold Italic")
     fs = f["OS/2"].fsSelection

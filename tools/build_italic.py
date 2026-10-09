@@ -32,7 +32,7 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
                        replay, anchors)
-from build import interp_contours, interp_mismatched, recaler_marges
+from build import interp_contours, interp_mismatched, recaler_marges, draw_contours, sans_scories
 import naming
 
 SLANT = math.tan(math.radians(12.0))     # 0.21256
@@ -78,15 +78,6 @@ def droit_a_la_graisse(cU, cB, t):
             and all(len(x["segs"]) == len(y["segs"]) for x, y in zip(cU, cB))):
         return interp_contours(cU, cB, t)
     return interp_mismatched(cU, cB, t)
-
-
-def draw_contours(contours, pen):
-    q = Cu2QuPen(pen, max_err=0.6, reverse_direction=False)
-    for c in contours:
-        q.moveTo(c["start"])
-        for p1, p2, p3 in c["segs"]:
-            q.curveTo(p1, p2, p3)
-        q.closePath()
 
 
 def _report(pu, pb, pi, t):
@@ -217,6 +208,13 @@ def build_italic(t, weight_class, style, out_path,
                 stats["repli"].append(name)
                 neufs[name] = Ig
                 largeurs[name] = hI[name]
+            continue
+
+        if t == 0.0:
+            # l'Italic 400 est le dessin d'origine : on le garde tel quel
+            neufs[name] = sans_scories(Ig, gI)
+            largeurs[name] = hI[name]
+            stats["report"] += 1
             continue
 
         droite = []

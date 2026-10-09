@@ -373,14 +373,19 @@ def match_features(ca, cb, fa, fb):
     """
     NA, NB = _norm(ca), _norm(cb)
     NA0, NB0, fa0, fb0 = NA, NB, fa, fb
+    TA, TB = [feature_type(ca, x) for x in fa], [feature_type(cb, y) for y in fb]
     swap = len(fa) > len(fb)
     if swap:
-        fa, fb, NA, NB = fb, fa, NB, NA
+        fa, fb, NA, NB, TA, TB = fb, fa, NB, NA, TB, TA
     m, n = len(fa), len(fb)
     if m == 0 or n == 0:
         return None
-    cout = [[math.hypot(NA[fa[i]][0] - NB[fb[j]][0],
-                        NA[fa[i]][1] - NB[fb[j]][1]) for j in range(n)]
+    # A distance voisine, un angle doit epouser un angle. Le bas de la barre
+    # du "e" Bold a absorbe son extremum voisin (14 unites) : sans cette
+    # preference, son angle allait au point du Regular situe 30 unites plus
+    # bas, et le Light, extrapole, creusait une encoche sous la barre.
+    cout = [[math.hypot(NA[fa[i]][0] - NB[fb[j]][0], NA[fa[i]][1] - NB[fb[j]][1])
+             + _penalite(TA[i], TB[j]) for j in range(n)]
             for i in range(m)]
 
     meilleur = None
@@ -422,6 +427,12 @@ PAIRE_MAX = 0.45   # distance normalisee ; au-dela, deux reperes ne se repondent
 GAIN = 0.45        # ce que rapporte une paire, diminue de son cout
 
 
+def _penalite(ta, tb):
+    if ta == tb:
+        return 0.0
+    return 0.15 if "corner" in (ta, tb) else 0.08
+
+
 def _cout(NA, NB, x, y):
     return math.hypot(NA[x][0] - NB[y][0], NA[x][1] - NB[y][1])
 
@@ -449,10 +460,7 @@ def _apparier_avec_trous(ca, cb, fa, fb, NA, NB):
     tb = [feature_type(cb, y) for y in fb]
 
     def gain(i, j):
-        g = GAIN - _cout(NA, NB, fa[i], fb[j])
-        if ta[i] != tb[j]:
-            g -= 0.15 if "corner" in (ta[i], tb[j]) else 0.08
-        return g
+        return GAIN - _cout(NA, NB, fa[i], fb[j]) - _penalite(ta[i], tb[j])
 
     meilleur = None
     for r in range(n):
