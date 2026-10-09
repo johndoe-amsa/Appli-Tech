@@ -538,6 +538,7 @@ def harmonize_pair(ca, cb, journal=None):
 # --------------------------------------------------------------------------
 
 LISSE_DEG = 4.0   # en-deca, la tangente du dessin d'origine est continue
+CROCHET_MAX = 10.0  # unites : un point lisse si pres d'un angle n'a rien a y faire
 
 
 def _droit_seg(p0, seg, tol=0.02):
@@ -598,12 +599,45 @@ def lisser(out, refs):
                     return False
             return True
 
+        # Crochets : un point lisse que l'extrapolation a colle a un angle
+        # (moins de CROCHET_MAX unites) et dont le petit segment vers l'angle
+        # part dans une autre direction que la courbe. Dans le Condensed
+        # Regular, l'angle interieur de la queue du "y" est precede d'un
+        # court segment droit qui prolonge la courbe ; dans le Bold, la courbe
+        # arrive droit sur l'angle. Extrapole au Heavy, le court segment ne
+        # fait plus que quelques unites, dans une autre direction : un
+        # crochet. On retire le point, la courbe file jusqu'a l'angle.
+        # Detection AVANT le lissage, qui alignerait la courbe sur le crochet.
+        A2 = [c["start"]] + [sg[2] for sg in segs[:-1]]
+        crochets, pris = [], set()
+        for j in range(1, n - 1):
+            if pris & {j - 1, j, j + 1} or not lisse_ref(j):
+                continue
+            for voisin in (j + 1, j - 1):
+                if math.dist(A2[j], A2[voisin]) > CROCHET_MAX:
+                    continue
+                if voisin == j + 1:
+                    t = (A2[j][0] - segs[j - 1][1][0], A2[j][1] - segs[j - 1][1][1])
+                    corde = (A2[j + 1][0] - A2[j][0], A2[j + 1][1] - A2[j][1])
+                else:
+                    t = (segs[j][0][0] - A2[j][0], segs[j][0][1] - A2[j][1])
+                    corde = (A2[j][0] - A2[j - 1][0], A2[j][1] - A2[j - 1][1])
+                nt, nc = math.hypot(*t), math.hypot(*corde)
+                if nt < 1e-6 or nc < 1e-6:
+                    continue
+                if (t[0] * corde[0] + t[1] * corde[1]) / (nt * nc) > math.cos(math.radians(20)):
+                    continue
+                crochets.append((j, voisin))
+                pris |= {j - 1, j, j + 1}
+                break
+        sautes = {j for j, _ in crochets}
+
         retirer = set()
         for j in range(n):
-            if j and milieu_droit(j):
+            if j and milieu_droit(j) and not (sautes & {j - 1, j, j + 1}):
                 retirer.add(j)
                 continue
-            if not lisse_ref(j):
+            if j in sautes or not lisse_ref(j):
                 continue
             P = A[j]
             hin = (P[0] - segs[j - 1][1][0], P[1] - segs[j - 1][1][1])
@@ -618,6 +652,25 @@ def lisser(out, refs):
             dx, dy = dx / L, dy / L
             segs[j - 1][1] = (P[0] - dx * li, P[1] - dy * li)
             segs[j][0] = (P[0] + dx * lo, P[1] + dy * lo)
+        if crochets:
+            A2 = [c["start"]] + [sg[2] for sg in segs[:-1]]
+            supprimes = set()
+            for j, voisin in crochets:
+                d = (A2[voisin][0] - A2[j][0], A2[voisin][1] - A2[j][1])
+                if voisin == j + 1:
+                    a1, a2, _ = segs[j - 1]
+                    segs[j - 1] = [a1, (a2[0] + d[0], a2[1] + d[1]), A2[j + 1]]
+                    supprimes.add(j)
+                else:
+                    b1, b2, b3 = segs[j]
+                    segs[j] = [(b1[0] + d[0], b1[1] + d[1]), b2, b3]
+                    supprimes.add(j - 1)
+            # renumerotation : l'ancre k perd un rang par segment supprime avant elle
+            avant = lambda k: sum(1 for x in supprimes if x < k)
+            retirer = {k - avant(k) for k in retirer if k not in supprimes}
+            segs = [sg for k, sg in enumerate(segs) if k not in supprimes]
+            n = len(segs)
+
         # fusion des droites dont le point commun est retire
         sortie, a = [], c["start"]
         j = 0

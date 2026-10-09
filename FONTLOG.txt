@@ -178,6 +178,10 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-09          Condensed Heavy: removed the small hook where the tail of
+                    "y" (and ý ÿ), "Q" and "ƒ" meets the stem; a smooth point
+                    pushed within a few units of a corner by extrapolation
+                    is now dropped.
 2026-10-09          Italics are now derived from the slanted upright, except
                     the true redrawings (s S & Q @ ~ bullet degree ring
                     registered copyright trademark ordmasculine OE Aring

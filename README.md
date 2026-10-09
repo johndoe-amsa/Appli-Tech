@@ -103,7 +103,9 @@ reçoivent des écarts de graisse un peu différents ; extrapolés, ils
 zigzaguent là où le dessin d'origine est lisse. Un point lisse dans tous les
 dessins de référence le reste (ses poignées sont réalignées), et un point
 posé au milieu d'un trait droit dans tous les dessins de référence est
-retiré. Les droites sont écrites comme des droites, et les masters (Regular,
+retiré. Enfin, un point lisse que l'extrapolation a collé à moins de 10
+unités d'un angle, en y formant un crochet, est retiré lui aussi : la courbe
+file jusqu'à l'angle (queue du `y`, du `Q` et du `ƒ` en Condensed Heavy). Les droites sont écrites comme des droites, et les masters (Regular,
 Bold, Italic) sont repris tels quels, sans repasser par l'appariement.
 
 **Le `$` et le `¢`.** Dans le Regular, la barre traverse la lettre et ferme
