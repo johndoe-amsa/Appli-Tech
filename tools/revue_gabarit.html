@@ -1,0 +1,503 @@
+<title>Revue Appli-Tec</title>
+<style>
+/* Visionneur plein cadre : barre d'état en haut, glyphe au centre, bande des 15 styles en bas */
+@font-face { font-family: "Appli-Tec"; font-weight: 400; src: url(data:font/woff2;base64,/*POLICE_REGULAR*/) format("woff2"); }
+@font-face { font-family: "Appli-Tec"; font-weight: 700; src: url(data:font/woff2;base64,/*POLICE_BOLD*/) format("woff2"); }
+:root {
+  --fond: #eef0ee;
+  --scene: #ffffff;
+  --encre: #15171a;
+  --doux: #626870;
+  --trait: #d5d9d5;
+  --guide: #c9d3e3;
+  --avant: #c8372d;
+  --apres: #1f5fbf;
+  --diff: #e8a400;
+  --revoir: #c4580a;
+  --sel: #15171a;
+  --texte: "Appli-Tec", "DIN Alternate", "Bahnschrift", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #121417; --scene: #1b1e22; --encre: #eceeec; --doux: #9aa1a8; --trait: #30353b; --guide: #34405a;
+    --avant: #ff6b5e; --apres: #6ea8ff; --diff: #f5b800; --revoir: #f08a3c; --sel: #eceeec; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #121417; --scene: #1b1e22; --encre: #eceeec; --doux: #9aa1a8; --trait: #30353b; --guide: #34405a;
+  --avant: #ff6b5e; --apres: #6ea8ff; --diff: #f5b800; --revoir: #f08a3c; --sel: #eceeec; color-scheme: dark;
+}
+html, body { height: 100%; }
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--encre); font-family: var(--texte); font-size: 15px; margin: 0; overflow: hidden; }
+.app { height: 100%; display: flex; flex-direction: column; padding: 0 16px; }
+button, select, input { font: inherit; color: var(--encre); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--apres); outline-offset: 2px; }
+
+/* barre du haut */
+.haut { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding-block: 10px; border-bottom: 1px solid var(--trait); }
+.style-nav { display: flex; align-items: center; gap: 4px; }
+.style-nav select { font-size: 16px; font-weight: 700; padding: 5px 8px; border: 1px solid var(--trait); border-radius: 4px; background: var(--scene); }
+.btn { border: 1px solid var(--trait); background: var(--scene); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1.2; }
+.btn[aria-pressed="true"] { background: var(--sel); color: var(--fond); border-color: var(--sel); }
+.btn.revoir[aria-pressed="true"] { background: var(--revoir); border-color: var(--revoir); color: #fff; }
+.seg { display: inline-flex; }
+.seg .btn { border-radius: 0; margin-left: -1px; }
+.seg .btn:first-child { border-radius: 4px 0 0 4px; margin-left: 0; }
+.seg .btn:last-child { border-radius: 0 4px 4px 0; }
+.btn kbd { font-family: var(--mono); font-size: 11px; opacity: .6; margin-left: 4px; }
+.espace { flex: 1; }
+.compte { color: var(--doux); font-size: 13px; font-variant-numeric: tabular-nums; }
+label.case { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; cursor: pointer; }
+
+/* identité du glyphe */
+.ident { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding-block: 8px 0; }
+.ident .car { font-size: 30px; font-weight: 700; min-width: 1.2em; }
+.ident .nom { font-family: var(--mono); font-size: 14px; }
+.ident .meta { color: var(--doux); font-size: 13px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.ident .badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--diff); color: #1a1400; }
+.ident .badge.rv { background: var(--revoir); color: #fff; }
+
+/* scène */
+.scene-wrap { flex: 1; min-height: 0; display: flex; align-items: stretch; gap: 8px; padding-block: 8px; }
+.fleche { border: 0; background: transparent; color: var(--doux); font-size: 28px; width: 40px; cursor: pointer; border-radius: 6px; }
+.fleche:hover { background: var(--scene); color: var(--encre); }
+.scene { flex: 1; min-width: 0; background: var(--scene); border: 1px solid var(--trait); border-radius: 8px; position: relative; overflow: hidden; touch-action: none; }
+.scene svg { width: 100%; height: 100%; display: block; }
+.legende { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 12px; font-size: 12px; color: var(--doux); }
+.legende i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.coin { position: absolute; right: 12px; bottom: 10px; font-size: 12px; color: var(--doux); }
+
+/* bande des styles */
+.bande { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 4px; padding-block: 0 10px; }
+.vignette { border: 1px solid var(--trait); background: var(--scene); border-radius: 4px; padding: 2px 2px 3px; cursor: pointer; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.vignette svg { width: 100%; height: 44px; display: block; }
+.vignette span { font-size: 9.5px; color: var(--doux); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.vignette.actif { border-color: var(--sel); box-shadow: 0 0 0 1px var(--sel); }
+.vignette.mod span { color: var(--encre); font-weight: 700; }
+.vignette.rv { border-color: var(--revoir); }
+.vignette.mod::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: var(--diff); align-self: flex-end; margin-bottom: -6px; }
+
+/* panneaux */
+dialog { border: 1px solid var(--trait); border-radius: 8px; background: var(--scene); color: var(--encre); padding: 0; width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+dialog::backdrop { background: rgba(0,0,0,.5); }
+.panneau { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.panneau h2 { margin: 0; font-size: 20px; }
+.panneau .tete { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 4px; max-height: 70vh; overflow: auto; }
+.grille button { border: 1px solid var(--trait); background: var(--scene); border-radius: 3px; padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+.grille button svg { width: 100%; height: 48px; }
+.grille button span { font-size: 9px; color: var(--doux); font-family: var(--mono); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grille button.mod { background: color-mix(in srgb, var(--diff) 18%, var(--scene)); }
+.grille button.rv { border-color: var(--revoir); box-shadow: 0 0 0 1px var(--revoir); }
+.grille button.ici { outline: 2px solid var(--apres); }
+.liste { display: flex; flex-direction: column; gap: 6px; max-height: 60vh; overflow: auto; }
+.ligne { display: grid; grid-template-columns: 2.2em 1fr 2fr auto; gap: 10px; align-items: center; border-bottom: 1px solid var(--trait); padding-block: 4px; }
+.ligne b { font-size: 22px; }
+.ligne .q { font-size: 13px; }
+.ligne .q small { color: var(--doux); font-family: var(--mono); }
+.ligne input { padding: 4px 8px; border: 1px solid var(--trait); border-radius: 4px; background: var(--fond); min-width: 0; }
+.vide { color: var(--doux); padding: 24px 0; }
+textarea { width: 100%; min-height: 6em; font-family: var(--mono); font-size: 12px; background: var(--fond); color: var(--encre); border: 1px solid var(--trait); border-radius: 4px; padding: 8px; }
+.aide-clavier { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
+.aide-clavier kbd { font-family: var(--mono); background: var(--fond); border: 1px solid var(--trait); border-radius: 3px; padding: 1px 6px; }
+
+/* plein écran / concentration : seule reste la scène */
+.focus .haut, .focus .ident, .focus .bande, .focus .fleche { display: none; }
+.focus .scene-wrap { padding-block: 0; }
+.focus .app { padding: 0; }
+.focus .scene { border: 0; border-radius: 0; }
+.focus .hud { display: flex; }
+.hud { display: none; position: absolute; left: 12px; top: 10px; gap: 10px; align-items: baseline; font-size: 14px; color: var(--doux); }
+.hud b { color: var(--encre); font-size: 18px; }
+
+@media (max-width: 760px) {
+  .bande { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .fleche { display: none; }
+  .btn kbd { display: none; }
+  .ligne { grid-template-columns: 2em 1fr; }
+  .ligne input { grid-column: 1 / -1; }
+  .coin { display: none; }
+}
+</style>
+
+<div class="app" id="app">
+  <div class="haut">
+    <div class="style-nav">
+      <button type="button" class="btn" id="st-prec" title="Style précédent (↑)">↑</button>
+      <select id="style" aria-label="Style"></select>
+      <button type="button" class="btn" id="st-suiv" title="Style suivant (↓)">↓</button>
+    </div>
+    <div class="seg" role="group" aria-label="Mode d'affichage">
+      <button type="button" class="btn" data-mode="normal">Normal<kbd>1</kbd></button>
+      <button type="button" class="btn" data-mode="contour">Contour<kbd>2</kbd></button>
+      <button type="button" class="btn" data-mode="diff">Différence<kbd>3</kbd></button>
+    </div>
+    <label class="case"><input type="checkbox" id="seuls-mod"> Modifiés seulement</label>
+    <span class="espace"></span>
+    <button type="button" class="btn revoir" id="b-revoir" aria-pressed="false">À revoir<kbd>R</kbd></button>
+    <button type="button" class="btn" id="b-liste">Liste <span id="n-revoir">0</span><kbd>L</kbd></button>
+    <button type="button" class="btn" id="b-grille">Grille<kbd>G</kbd></button>
+    <button type="button" class="btn" id="b-plein">Plein écran<kbd>F</kbd></button>
+    <button type="button" class="btn" id="b-aide" title="Raccourcis clavier">?</button>
+  </div>
+  <div class="ident" id="ident"></div>
+  <div class="scene-wrap">
+    <button type="button" class="fleche" id="g-prec" title="Glyphe précédent (←)">‹</button>
+    <div class="scene" id="scene">
+      <svg id="grand" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="hud" id="hud"></div>
+      <div class="legende" id="legende"></div>
+      <div class="coin" id="coin"></div>
+    </div>
+    <button type="button" class="fleche" id="g-suiv" title="Glyphe suivant (→)">›</button>
+  </div>
+  <div class="bande" id="bande" aria-label="Le même glyphe dans tous les styles"></div>
+</div>
+
+<dialog id="dlg-grille" aria-label="Tous les glyphes"><div class="panneau">
+  <div class="tete"><h2 id="grille-titre"></h2><button type="button" class="btn" data-fermer>Fermer</button></div>
+  <div class="grille" id="grille"></div>
+</div></dialog>
+
+<dialog id="dlg-liste" aria-label="Liste à revoir"><div class="panneau">
+  <div class="tete"><h2>À revoir</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn" id="b-copier">Copier la liste</button>
+      <button type="button" class="btn" id="b-vider">Tout effacer</button>
+      <button type="button" class="btn" data-fermer>Fermer</button>
+    </div>
+  </div>
+  <p class="compte" style="margin:0">Notez ce qui ne va pas, puis copiez la liste et collez-la dans la conversation.</p>
+  <div class="liste" id="liste"></div>
+  <textarea id="export" readonly hidden aria-label="Liste à copier"></textarea>
+</div></dialog>
+
+<dialog id="dlg-aide" aria-label="Raccourcis"><div class="panneau">
+  <div class="tete"><h2>Raccourcis clavier</h2><button type="button" class="btn" data-fermer>Fermer</button></div>
+  <div class="aide-clavier">
+    <kbd>← →</kbd><span>glyphe précédent / suivant</span>
+    <kbd>↑ ↓</kbd><span>style précédent / suivant, même glyphe</span>
+    <kbd>1 2 3</kbd><span>Normal, Contour (avec les points), Différence avec la version précédente</span>
+    <kbd>F</kbd><span>plein écran (Échap pour sortir)</span>
+    <kbd>R</kbd><span>marquer ou démarquer « à revoir »</span>
+    <kbd>G</kbd><span>grille de tous les glyphes du style</span>
+    <kbd>M</kbd><span>seulement les glyphes modifiés</span>
+    <kbd>L</kbd><span>liste à revoir</span>
+  </div>
+  <p class="compte" style="margin:0">Sur téléphone : glisser à gauche ou à droite pour changer de glyphe, en haut ou en bas pour changer de style.</p>
+</div></dialog>
+
+<script>
+const D = /*DONNEES*/null;
+const $ = (s) => document.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const lire = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } };
+const ecrire = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+const etat = Object.assign({ s: 1, n: "A", mode: "normal", seulsMod: false }, lire("revue-etat", {}));
+let revoir = lire("revue-revoir", {});   // "style|glyphe" -> remarque
+if (!D.styles[etat.s]) etat.s = 0;
+
+// index des glyphes par nom, par style
+const index = D.styles.map(st => { const m = {}; st.glyphes.forEach((g, i) => m[g.n] = i); return m; });
+const S = () => D.styles[etat.s];
+const G = () => { const i = index[etat.s][etat.n]; return S().glyphes[i ?? 0]; };
+const cle = (st, g) => st.style + "|" + g.n;
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const hex = (u) => u ? "U+" + u.toString(16).toUpperCase().padStart(4, "0") : "";
+
+// ---------- dessin ----------
+function cadre(st, g, bbox, marge) {
+  // cadre vertical fixe par style (ascendante → descendante), élargi seulement
+  // pour un glyphe qui en sort : la taille ne saute pas d'un glyphe à l'autre
+  const haut = Math.max(st.asc, bbox ? bbox.y + bbox.height : 0) + 40;
+  const bas = Math.min(st.desc, bbox ? bbox.y : 0) - 40;
+  let x0 = Math.min(0, bbox ? bbox.x : 0), x1 = Math.max(g.a, bbox ? bbox.x + bbox.width : g.a);
+  if (g.x && g.x.a) x1 = Math.max(x1, g.x.a);
+  const h = haut - bas;
+  let w = x1 - x0 + 2 * marge;
+  const cx = (x0 + x1) / 2;
+  return { x: cx - w / 2, y: -haut, w, h };
+}
+let mesureur;
+function bboxDe(d) {
+  if (!d) return null;
+  if (!mesureur) {
+    mesureur = document.createElementNS(NS, "svg");
+    mesureur.setAttribute("style", "position:absolute;width:0;height:0;visibility:hidden");
+    mesureur.innerHTML = '<path/>';
+    document.body.appendChild(mesureur);
+  }
+  const p = mesureur.firstChild; p.setAttribute("d", d);
+  const b = p.getBBox();
+  return { x: b.x, y: b.y, width: b.width, height: b.height };
+}
+function union(a, b) {
+  if (!a) return b; if (!b) return a;
+  const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y);
+  return { x, y, width: Math.max(a.x + a.width, b.x + b.width) - x, height: Math.max(a.y + a.height, b.y + b.height) - y };
+}
+
+function guides(st, g, c, epais) {
+  const L = (y, nom) => `<line x1="${c.x}" x2="${c.x + c.w}" y1="${-y}" y2="${-y}" stroke="var(--guide)" stroke-width="${epais}"/>` +
+    (nom ? `<text x="${c.x + 8 * epais}" y="${-y - 6 * epais}" font-size="${11 * epais}" fill="var(--doux)" font-family="ui-monospace,monospace">${nom}</text>` : "");
+  const V = (x) => `<line x1="${x}" x2="${x}" y1="${c.y}" y2="${c.y + c.h}" stroke="var(--guide)" stroke-width="${epais}" stroke-dasharray="${6 * epais} ${6 * epais}"/>`;
+  return L(0, "ligne de base") + L(st.xh, "x " + st.xh) + L(st.cap, "cap " + st.cap) + L(st.desc, "") + V(0) + V(g.a);
+}
+
+function dessinPoints(g, epais) {
+  if (!g.p || !g.p.length) return "";
+  let s = "", debut = 0;
+  const pts = g.p;
+  for (const fin of g.f) {
+    const n = fin - debut + 1;
+    for (let k = 0; k < n; k++) {
+      const a = pts[debut + k], b = pts[debut + (k + 1) % n];
+      if (!a[2] || !b[2]) s += `<line x1="${a[0]}" y1="${-a[1]}" x2="${b[0]}" y2="${-b[1]}" stroke="var(--doux)" stroke-width="${epais * 0.8}" stroke-opacity=".6"/>`;
+    }
+    for (let k = 0; k < n; k++) {
+      const a = pts[debut + k];
+      const r = 4.5 * epais;
+      if (a[2]) s += `<rect x="${a[0] - r}" y="${-a[1] - r}" width="${2 * r}" height="${2 * r}" fill="var(--apres)"/>`;
+      else s += `<circle cx="${a[0]}" cy="${-a[1]}" r="${r * 0.85}" fill="var(--scene)" stroke="var(--avant)" stroke-width="${epais * 1.2}"/>`;
+    }
+    const a0 = pts[debut];
+    s += `<circle cx="${a0[0]}" cy="${-a0[1]}" r="${9 * epais}" fill="none" stroke="var(--apres)" stroke-width="${epais}"/>`;
+    debut = fin + 1;
+  }
+  return s;
+}
+
+function rendreGrand() {
+  const st = S(), g = G();
+  const svg = $("#grand");
+  const rect = svg.getBoundingClientRect();
+  let bb = bboxDe(g.d);
+  if (etat.mode === "diff" && g.x && g.x.d) bb = union(bb, bboxDe(g.x.d));
+  const c = cadre(st, g, bb, 80);
+  // épaisseur d'un pixel écran, en unités de dessin
+  const ech = Math.max(c.w / Math.max(rect.width, 1), c.h / Math.max(rect.height, 1));
+  svg.setAttribute("viewBox", `${c.x} ${c.y} ${c.w} ${c.h}`);
+  const t = 'transform="scale(1,-1)"';
+  let corps = guides(st, g, c, ech);
+  let legende = "";
+  if (etat.mode === "normal") {
+    corps += `<path ${t} d="${g.d}" fill="var(--encre)"/>`;
+  } else if (etat.mode === "contour") {
+    corps += `<path ${t} d="${g.d}" fill="var(--encre)" fill-opacity=".08" stroke="var(--encre)" stroke-width="${ech * 1.5}"/>`;
+    corps += dessinPoints(g, ech);
+    legende = `<span><i style="background:var(--apres)"></i>point sur la courbe</span><span><i style="background:var(--scene);border:1.5px solid var(--avant)"></i>point de contrôle</span>`;
+  } else {
+    if (g.x && g.x.d) {
+      corps += `<path ${t} d="${g.d}" fill="var(--encre)" fill-opacity=".10"/>` +
+        `<path ${t} d="${g.x.z}" fill="var(--diff)"/>` +
+        `<path ${t} d="${g.x.d}" fill="none" stroke="var(--avant)" stroke-width="${ech * 1.5}"/>` +
+        `<path ${t} d="${g.d}" fill="none" stroke="var(--apres)" stroke-width="${ech * 1.5}"/>`;
+      legende = `<span><i style="background:var(--avant)"></i>avant</span><span><i style="background:var(--apres)"></i>après</span><span><i style="background:var(--diff)"></i>zone modifiée</span>`;
+    } else {
+      corps += `<path ${t} d="${g.d}" fill="var(--encre)" fill-opacity=".85"/>`;
+      legende = `<span>inchangé depuis ${esc(D.reference.split(" ")[0])}</span>`;
+    }
+  }
+  svg.innerHTML = corps;
+  $("#legende").innerHTML = legende;
+}
+
+function vignette(st, g, h) {
+  const c = cadre(st, g, bboxDe(g.d), 40);
+  return `<svg viewBox="${c.x} ${c.y} ${c.w} ${c.h}" preserveAspectRatio="xMidYMid meet" style="height:${h}px"><path transform="scale(1,-1)" d="${g.d}" fill="var(--encre)"/></svg>`;
+}
+
+function rendreBande() {
+  const g = G();
+  $("#bande").innerHTML = D.styles.map((st, i) => {
+    const j = index[i][g.n];
+    if (j === undefined) return `<div class="vignette" aria-disabled="true"><svg></svg><span>${esc(st.style)}</span></div>`;
+    const h = st.glyphes[j];
+    const cls = ["vignette", i === etat.s ? "actif" : "", h.x ? "mod" : "", revoir[cle(st, h)] !== undefined ? "rv" : ""].join(" ");
+    return `<button type="button" class="${cls}" data-s="${i}" title="${esc(st.style)}">${vignette(st, h, 44)}<span>${esc(st.style)}</span></button>`;
+  }).join("");
+}
+
+function rendre() {
+  const st = S(), g = G();
+  etat.n = g.n;
+  ecrire("revue-etat", etat);
+  $("#style").value = etat.s;
+  document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === etat.mode));
+  $("#seuls-mod").checked = etat.seulsMod;
+  const k = cle(st, g), marque = revoir[k] !== undefined;
+  $("#b-revoir").setAttribute("aria-pressed", marque);
+  $("#n-revoir").textContent = Object.keys(revoir).length;
+  const liste = navigables();
+  const pos = liste.indexOf(index[etat.s][g.n]);
+  let meta = `chasse ${g.a}`;
+  if (g.x && g.x.a !== undefined && g.x.a !== g.a) meta += ` (avant ${g.x.a})`;
+  const badge = g.x ? (g.x.nouveau ? `<span class="badge">nouveau</span>` :
+    `<span class="badge">modifié · écart ${g.x.e < 0 ? "?" : g.x.e.toLocaleString("fr-CH", { minimumFractionDigits: 2 })} u</span>`) : "";
+  $("#ident").innerHTML =
+    `<span class="car">${g.c ? esc(g.c) : "·"}</span><span class="nom">${esc(g.n)}</span>` +
+    `<span class="meta">${hex(g.u)}</span><span class="meta">${meta}</span>${badge}` +
+    (marque ? `<span class="badge rv">à revoir</span>` : "") +
+    `<span class="espace"></span><span class="compte">${pos + 1} / ${liste.length}${etat.seulsMod ? " modifiés" : ""} · ${esc(st.fichier)} · ${st.modifies} modifié${st.modifies > 1 ? "s" : ""} dans ce style</span>`;
+  $("#hud").innerHTML = `<b>${g.c ? esc(g.c) : "·"}</b><span>${esc(g.n)} · ${esc(st.style)}</span>${marque ? '<span style="color:var(--revoir)">à revoir</span>' : ""}`;
+  $("#coin").textContent = `comparé à ${D.reference} · ${D.date}`;
+  rendreGrand();
+  rendreBande();
+}
+
+// ---------- navigation ----------
+function navigables() {
+  const st = S();
+  const r = [];
+  st.glyphes.forEach((g, i) => { if (!etat.seulsMod || g.x) r.push(i); });
+  return r.length ? r : st.glyphes.map((_, i) => i);
+}
+function glyphe(delta) {
+  const l = navigables();
+  const ici = index[etat.s][etat.n];
+  let p = l.indexOf(ici);
+  if (p < 0) p = l.findIndex(i => i > ici) - (delta > 0 ? 1 : 0);
+  p = (p + delta + l.length) % l.length;
+  etat.n = S().glyphes[l[p]].n;
+  rendre();
+}
+function style(delta) {
+  const n = D.styles.length;
+  let s = etat.s;
+  for (let k = 0; k < n; k++) {
+    s = (s + delta + n) % n;
+    if (index[s][etat.n] !== undefined) break;
+  }
+  etat.s = s;
+  rendre();
+}
+
+$("#style").innerHTML = D.styles.map((st, i) => `<option value="${i}">${esc(st.style)}${st.modifies ? " · " + st.modifies + " modifiés" : ""}</option>`).join("");
+$("#style").addEventListener("change", (e) => { etat.s = +e.target.value; if (index[etat.s][etat.n] === undefined) etat.n = S().glyphes[0].n; rendre(); });
+$("#st-prec").onclick = () => style(-1);
+$("#st-suiv").onclick = () => style(1);
+$("#g-prec").onclick = () => glyphe(-1);
+$("#g-suiv").onclick = () => glyphe(1);
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { etat.mode = b.dataset.mode; rendre(); });
+$("#seuls-mod").onchange = (e) => { etat.seulsMod = e.target.checked; if (etat.seulsMod && !G().x) glyphe(1); else rendre(); };
+$("#bande").addEventListener("click", (e) => { const b = e.target.closest("[data-s]"); if (b) { etat.s = +b.dataset.s; rendre(); } });
+
+// ---------- à revoir ----------
+function basculerRevoir() {
+  const k = cle(S(), G());
+  if (revoir[k] !== undefined) delete revoir[k]; else revoir[k] = "";
+  ecrire("revue-revoir", revoir); rendre();
+}
+$("#b-revoir").onclick = basculerRevoir;
+function texteListe() {
+  const parStyle = {};
+  for (const [k, note] of Object.entries(revoir)) {
+    const [s, n] = k.split("|");
+    (parStyle[s] = parStyle[s] || []).push([n, note]);
+  }
+  const ordre = D.styles.map(s => s.style).filter(s => parStyle[s]);
+  return ordre.map(s => s + "\n" + parStyle[s].map(([n, note]) => {
+    const st = D.styles.find(x => x.style === s);
+    const g = st.glyphes[index[D.styles.indexOf(st)][n]];
+    return `  ${g && g.c ? g.c + " " : ""}(${n}${g && g.u ? " " + hex(g.u) : ""})${note ? " : " + note : ""}`;
+  }).join("\n")).join("\n\n");
+}
+function rendreListe() {
+  const entrees = Object.entries(revoir);
+  $("#liste").innerHTML = entrees.length ? entrees.map(([k, note]) => {
+    const [s, n] = k.split("|");
+    const si = D.styles.findIndex(x => x.style === s);
+    const g = si >= 0 ? D.styles[si].glyphes[index[si][n]] : null;
+    return `<div class="ligne"><b>${g && g.c ? esc(g.c) : "·"}</b>` +
+      `<button type="button" class="btn q" data-aller="${esc(k)}">${esc(s)} <small>${esc(n)}</small></button>` +
+      `<input type="text" data-note="${esc(k)}" value="${esc(note)}" placeholder="Ce qui ne va pas (facultatif)" aria-label="Remarque">` +
+      `<button type="button" class="btn" data-suppr="${esc(k)}">Retirer</button></div>`;
+  }).join("") : `<div class="vide">Rien pour l'instant. Appuyez sur R sur un glyphe pour l'ajouter ici.</div>`;
+}
+$("#b-liste").onclick = () => { rendreListe(); $("#export").hidden = true; $("#dlg-liste").showModal(); };
+$("#liste").addEventListener("input", (e) => { const k = e.target.dataset.note; if (k) { revoir[k] = e.target.value; ecrire("revue-revoir", revoir); } });
+$("#liste").addEventListener("click", (e) => {
+  const a = e.target.closest("[data-aller]"), s = e.target.closest("[data-suppr]");
+  if (a) { const [st, n] = a.dataset.aller.split("|"); etat.s = D.styles.findIndex(x => x.style === st); etat.n = n; $("#dlg-liste").close(); rendre(); }
+  if (s) { delete revoir[s.dataset.suppr]; ecrire("revue-revoir", revoir); rendreListe(); rendre(); }
+});
+$("#b-copier").onclick = () => {
+  const t = texteListe();
+  const zone = $("#export");
+  zone.value = t;
+  const repli = () => { zone.hidden = false; zone.focus(); zone.select(); $("#b-copier").textContent = "Sélectionnée : Ctrl+C"; };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(() => { $("#b-copier").textContent = "Copiée"; setTimeout(() => $("#b-copier").textContent = "Copier la liste", 1500); }, repli);
+  } else repli();
+};
+$("#b-vider").onclick = () => {
+  const b = $("#b-vider");
+  if (b.dataset.confirme) { revoir = {}; ecrire("revue-revoir", revoir); rendreListe(); rendre(); b.textContent = "Tout effacer"; delete b.dataset.confirme; }
+  else { b.dataset.confirme = 1; b.textContent = "Confirmer l'effacement"; setTimeout(() => { b.textContent = "Tout effacer"; delete b.dataset.confirme; }, 3000); }
+};
+
+// ---------- grille ----------
+function ouvrirGrille() {
+  const st = S();
+  $("#grille-titre").textContent = `${st.style} · ${st.glyphes.length} glyphes`;
+  $("#grille").innerHTML = st.glyphes.map((g, i) => {
+    const cls = [g.x ? "mod" : "", revoir[cle(st, g)] !== undefined ? "rv" : "", g.n === etat.n ? "ici" : ""].join(" ");
+    return `<button type="button" class="${cls}" data-i="${i}" title="${esc(g.n)}">${vignette(st, g, 48)}<span>${esc(g.c || g.n)}</span></button>`;
+  }).join("");
+  $("#dlg-grille").showModal();
+  const ici = $("#grille .ici"); if (ici) ici.scrollIntoView({ block: "center" });
+}
+$("#b-grille").onclick = ouvrirGrille;
+$("#grille").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) { etat.n = S().glyphes[+b.dataset.i].n; $("#dlg-grille").close(); rendre(); } });
+
+// ---------- plein écran ----------
+function pleinEcran() {
+  const racine = document.documentElement;
+  if (document.body.classList.contains("focus")) {
+    document.body.classList.remove("focus");
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  } else {
+    document.body.classList.add("focus");
+    if (racine.requestFullscreen) racine.requestFullscreen().catch(() => {});
+  }
+  requestAnimationFrame(rendreGrand);
+}
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) document.body.classList.remove("focus"); requestAnimationFrame(rendreGrand); });
+$("#b-plein").onclick = pleinEcran;
+$("#b-aide").onclick = () => $("#dlg-aide").showModal();
+document.querySelectorAll("[data-fermer]").forEach(b => b.onclick = () => b.closest("dialog").close());
+document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
+
+// ---------- clavier et gestes ----------
+document.addEventListener("keydown", (e) => {
+  if (e.target.matches("input[type=text], textarea, select")) return;
+  if (document.querySelector("dialog[open]")) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  const actions = {
+    ArrowLeft: () => glyphe(-1), ArrowRight: () => glyphe(1),
+    ArrowUp: () => style(-1), ArrowDown: () => style(1),
+    "1": () => { etat.mode = "normal"; rendre(); }, "2": () => { etat.mode = "contour"; rendre(); }, "3": () => { etat.mode = "diff"; rendre(); },
+    f: pleinEcran, F: pleinEcran, r: basculerRevoir, R: basculerRevoir,
+    g: ouvrirGrille, G: ouvrirGrille,
+    m: () => $("#seuls-mod").click(), M: () => $("#seuls-mod").click(),
+    l: () => $("#b-liste").click(), L: () => $("#b-liste").click(),
+    Escape: () => { if (document.body.classList.contains("focus")) pleinEcran(); },
+  };
+  if (actions[k]) { e.preventDefault(); actions[k](); }
+});
+let tx = null, ty = null;
+$("#scene").addEventListener("touchstart", (e) => { if (e.touches.length === 1) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; } }, { passive: true });
+$("#scene").addEventListener("touchend", (e) => {
+  if (tx === null) return;
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  tx = ty = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+  if (Math.abs(dx) > Math.abs(dy)) glyphe(dx < 0 ? 1 : -1); else style(dy < 0 ? 1 : -1);
+});
+window.addEventListener("resize", () => requestAnimationFrame(rendreGrand));
+rendre();
+</script>

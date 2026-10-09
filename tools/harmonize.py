@@ -110,6 +110,19 @@ def _tangents(c, j):
     return (a[0] - p[0], a[1] - p[1]), (q[0] - a[0], q[1] - a[1])
 
 
+def _droit(c, i):
+    """Le segment i est-il un trait droit (poignees alignees sur la corde) ?"""
+    segs = c["segs"]
+    i %= len(segs)
+    p0 = c["start"] if i == 0 else segs[i - 1][2]
+    p1, p2, p3 = segs[i]
+    dx, dy = p3[0] - p0[0], p3[1] - p0[1]
+    L = math.hypot(dx, dy)
+    if L < 1e-9:
+        return True
+    return all(abs((q[0] - p0[0]) * dy - (q[1] - p0[1]) * dx) / L < 0.5 for q in (p1, p2))
+
+
 def feature_type(c, j):
     """None si le point est 'au milieu d'une courbe', sinon son type."""
     tin, tout = _tangents(c, j)
@@ -119,6 +132,13 @@ def feature_type(c, j):
     cosang = max(-1.0, min(1.0, (tin[0] * tout[0] + tin[1] * tout[1]) / (ni * no)))
     if math.degrees(math.acos(cosang)) > CORNER_DEG:
         return "corner"
+    # Un point pose entre deux segments droits n'articule rien : c'est le
+    # milieu d'un trait. Le fut du "E" de "OE" Regular porte ainsi un
+    # decrochement d'une unite (x 543 -> 544) que rien ne distingue d'un
+    # extremum ; le coin de la barre du Bold s'y accrochait au lieu du vrai
+    # coin, et le Heavy biseautait la jonction de la barre et du fut.
+    if _droit(c, j - 1) and _droit(c, j):
+        return None
     # Extremum : changement de signe de la tangente, OU tangente parallele a
     # l'axe. Au sommet d'un ovale la tangente est exactement horizontale, donc
     # la composante y vaut ZERO des deux cotes : tester le seul changement de
@@ -301,6 +321,39 @@ def _grow_span(contour, lo, hi, target, journal=None, ref=None, rlo=0, rhi=0):
     return hi
 
 
+TOL_JALON = 0.08   # positions normalisees ; en-deca, deux points se repondent
+
+
+def _croiser(ca, la, ha, cb, lb, hb, journal=None):
+    """Donne a chaque point interieur un homologue a la meme place dans l'autre.
+
+    Egaliser le seul NOMBRE de points ne suffit pas. L'epaule du "C" romain
+    porte des points au tiers et aux deux tiers de la courbe, celle du Bold
+    un seul, a mi-chemin : apparies par rang, le point du tiers etait envoye
+    a mi-courbe. Interpole, le defaut reste discret ; extrapole au Heavy, le
+    point depasse son voisin et le contour se replie - l'encoche observee sur
+    le "C" des italiques Bold et Heavy.
+
+    On complete donc chaque dessin par les positions de l'autre qui lui
+    manquent. Couper une courbe ne change pas son trace : le contour reste
+    identique, il gagne seulement des points qui se repondent.
+    """
+    ja, jb = _jalons(ca, la, ha), _jalons(cb, lb, hb)
+    manque_a = [p for p in jb if all(abs(p - q) > TOL_JALON for q in ja)]
+    manque_b = [p for p in ja if all(abs(p - q) > TOL_JALON for q in jb)]
+    for p in manque_a:
+        j, t = _localiser(ca, la, ha, p)
+        insert_anchor(ca, j, t)
+        if journal is not None:
+            journal.append(("split", j, t))
+        ha += 1
+    for p in manque_b:
+        j, t = _localiser(cb, lb, hb, p)
+        insert_anchor(cb, j, t)
+        hb += 1
+    return ha, hb
+
+
 def _norm(c):
     """Ancres ramenees dans un carre unite : compare des formes, pas des tailles.
     Indispensable, le Bold etant plus large que le Regular."""
@@ -319,14 +372,20 @@ def match_features(ca, cb, fa, fb):
     redeviennent de simples points interieurs a un intervalle.
     """
     NA, NB = _norm(ca), _norm(cb)
+    NA0, NB0, fa0, fb0 = NA, NB, fa, fb
+    TA, TB = [feature_type(ca, x) for x in fa], [feature_type(cb, y) for y in fb]
     swap = len(fa) > len(fb)
     if swap:
-        fa, fb, NA, NB = fb, fa, NB, NA
+        fa, fb, NA, NB, TA, TB = fb, fa, NB, NA, TB, TA
     m, n = len(fa), len(fb)
     if m == 0 or n == 0:
         return None
-    cout = [[math.hypot(NA[fa[i]][0] - NB[fb[j]][0],
-                        NA[fa[i]][1] - NB[fb[j]][1]) for j in range(n)]
+    # A distance voisine, un angle doit epouser un angle. Le bas de la barre
+    # du "e" Bold a absorbe son extremum voisin (14 unites) : sans cette
+    # preference, son angle allait au point du Regular situe 30 unites plus
+    # bas, et le Light, extrapole, creusait une encoche sous la barre.
+    cout = [[math.hypot(NA[fa[i]][0] - NB[fb[j]][0], NA[fa[i]][1] - NB[fb[j]][1])
+             + _penalite(TA[i], TB[j]) for j in range(n)]
             for i in range(m)]
 
     meilleur = None
@@ -356,7 +415,81 @@ def match_features(ca, cb, fa, fb):
     if meilleur is None:
         return None
     paires = meilleur[1]
-    return [(y, x) for x, y in paires] if swap else paires
+    paires = [(y, x) for x, y in paires] if swap else paires
+    if max(_cout(NA0, NB0, x, y) for x, y in paires) > PAIRE_MAX:
+        trous = _apparier_avec_trous(ca, cb, fa0, fb0, NA0, NB0)
+        if trous and len(trous) >= 2:
+            return trous
+    return paires
+
+
+PAIRE_MAX = 0.45   # distance normalisee ; au-dela, deux reperes ne se repondent pas
+GAIN = 0.45        # ce que rapporte une paire, diminue de son cout
+
+
+def _penalite(ta, tb):
+    if ta == tb:
+        return 0.0
+    return 0.15 if "corner" in (ta, tb) else 0.08
+
+
+def _cout(NA, NB, x, y):
+    return math.hypot(NA[x][0] - NB[y][0], NA[x][1] - NB[y][1])
+
+
+def _apparier_avec_trous(ca, cb, fa, fb, NA, NB):
+    """Appariement ordonne ou chaque repere peut rester seul.
+
+    L'appariement ordinaire marie tous les reperes du contour qui en a le
+    moins. Quand les deux dessins ont autant de reperes mais pas les memes,
+    il est force de marier des points sans rapport. Le contre-poincon du "e"
+    de "ae" en est le cas type : le romain a un extremum en bout de barre, a
+    droite, l'italique un extremum sur le flanc, a gauche. Tous deux en
+    comptent quatre ; apparies de force, ils se decalaient d'un rang, et le
+    coin gauche de la barre etait marie au coin droit, 234 unites plus loin.
+    Epaissi, l'italique creusait un coin effile dans la contreforme.
+
+    Ici, une paire rapporte GAIN moins sa distance, et deux reperes de types
+    differents (angle contre extremum) coutent un supplement : un repere sans
+    homologue credible reste seul et redevient un point interieur.
+    """
+    m, n = len(fa), len(fb)
+    if m == 0 or n == 0:
+        return None
+    ta = [feature_type(ca, x) for x in fa]
+    tb = [feature_type(cb, y) for y in fb]
+
+    def gain(i, j):
+        return GAIN - _cout(NA, NB, fa[i], fb[j]) - _penalite(ta[i], tb[j])
+
+    meilleur = None
+    for r in range(n):
+        ordre = [(r + k) % n for k in range(n)]
+        S = [[0.0] * (n + 1) for _ in range(m + 1)]
+        T = [[0] * (n + 1) for _ in range(m + 1)]   # 0 diag, 1 haut, 2 gauche
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                best, t = S[i - 1][j], 1
+                if S[i][j - 1] > best:
+                    best, t = S[i][j - 1], 2
+                g = gain(i - 1, ordre[j - 1])
+                if g > 0 and S[i - 1][j - 1] + g > best:
+                    best, t = S[i - 1][j - 1] + g, 0
+                S[i][j], T[i][j] = best, t
+        paires, i, j = [], m, n
+        while i > 0 and j > 0:
+            if T[i][j] == 0:
+                paires.append((fa[i - 1], fb[ordre[j - 1]])); i -= 1; j -= 1
+            elif T[i][j] == 1:
+                i -= 1
+            else:
+                j -= 1
+        paires.reverse()
+        cle = (len(paires), S[m][n])
+        if meilleur is None or cle > meilleur[0]:
+            meilleur = (cle, paires)
+    paires = meilleur[1]
+    return paires if len(paires) >= 2 else None
 
 
 def harmonize_pair(ca, cb, journal=None):
@@ -392,8 +525,167 @@ def harmonize_pair(ca, cb, journal=None):
     for i in range(len(bornes_a) - 2, -1, -1):
         la, ha = bornes_a[i], bornes_a[i + 1]
         lb, hb = bornes_b[i], bornes_b[i + 1]
+        ha, hb = _croiser(ca, la, ha, cb, lb, hb, journal)
         cible = max(ha - la, hb - lb)
         _grow_span(ca, la, ha, cible, journal, ref=cb, rlo=lb, rhi=hb)
         _grow_span(cb, lb, hb, cible, None, ref=ca, rlo=la, rhi=ha)
 
     return len(ca["segs"]) == len(cb["segs"])
+
+
+# --------------------------------------------------------------------------
+# lissage d'apres le dessin d'origine
+# --------------------------------------------------------------------------
+
+LISSE_DEG = 4.0   # en-deca, la tangente du dessin d'origine est continue
+CROCHET_MAX = 10.0  # unites : un point lisse si pres d'un angle n'a rien a y faire
+
+
+def _droit_seg(p0, seg, tol=0.02):
+    p1, p2, p3 = seg
+    L = max(1.0, math.hypot(p3[0] - p0[0], p3[1] - p0[1]))
+    for q, f in ((p1, 1 / 3.0), (p2, 2 / 3.0)):
+        ex, ey = p0[0] + (p3[0] - p0[0]) * f, p0[1] + (p3[1] - p0[1]) * f
+        if math.hypot(q[0] - ex, q[1] - ey) > tol * L:
+            return False
+    return True
+
+
+def lisser(out, refs):
+    """Corrige les accrocs que l'interpolation cree entre points voisins.
+
+    Deux points voisins recoivent des ecarts de graisse un peu differents ;
+    extrapoles, ils se mettent a zigzaguer la ou le dessin d'origine est
+    parfaitement lisse (terminal bas du "3" en exposant des italiques). Le
+    dessin d'origine dit ce qui doit l'etre :
+      - un point lisse dans TOUS les dessins de reference (tangente continue)
+        le reste : ses deux poignees sont realignees, longueurs conservees ;
+      - un point pose au milieu d'un trait droit dans tous les dessins de
+        reference est retire : les deux droites n'en font plus qu'une.
+    Les angles ne sont pas touches. `refs` : listes de contours de meme
+    structure que `out` (Regular et Bold, ou Regular et italique).
+    """
+    res = []
+    for k, c in enumerate(out):
+        rs = [r[k] for r in refs]
+        n = len(c["segs"])
+        segs = [list(sg) for sg in c["segs"]]
+        A = anchors(c)
+
+        def lisse_ref(j):
+            for r in rs:
+                tin, tout = _tangents(r, j)
+                ni, no = math.hypot(*tin), math.hypot(*tout)
+                if ni < 1e-6 or no < 1e-6:
+                    return False
+                cos = (tin[0] * tout[0] + tin[1] * tout[1]) / (ni * no)
+                if cos < math.cos(math.radians(LISSE_DEG)):
+                    return False
+            return True
+
+        def milieu_droit(j):
+            for r in rs:
+                ra = anchors(r)
+                p0, p1 = ra[j - 1], ra[j]
+                p2 = r["segs"][j][2]
+                if not (_droit_seg(p0, r["segs"][j - 1]) and _droit_seg(p1, r["segs"][j])):
+                    return False
+                # les deux droites doivent etre dans le prolongement l'une de l'autre
+                u = (p1[0] - p0[0], p1[1] - p0[1]); v = (p2[0] - p1[0], p2[1] - p1[1])
+                nu, nv = math.hypot(*u), math.hypot(*v)
+                if nu < 1e-6 or nv < 1e-6:
+                    return False
+                if (u[0] * v[0] + u[1] * v[1]) / (nu * nv) < math.cos(math.radians(1.0)):
+                    return False
+            return True
+
+        # Crochets : un point lisse que l'extrapolation a colle a un angle
+        # (moins de CROCHET_MAX unites) et dont le petit segment vers l'angle
+        # part dans une autre direction que la courbe. Dans le Condensed
+        # Regular, l'angle interieur de la queue du "y" est precede d'un
+        # court segment droit qui prolonge la courbe ; dans le Bold, la courbe
+        # arrive droit sur l'angle. Extrapole au Heavy, le court segment ne
+        # fait plus que quelques unites, dans une autre direction : un
+        # crochet. On retire le point, la courbe file jusqu'a l'angle.
+        # Detection AVANT le lissage, qui alignerait la courbe sur le crochet.
+        A2 = [c["start"]] + [sg[2] for sg in segs[:-1]]
+        crochets, pris = [], set()
+        for j in range(1, n - 1):
+            if pris & {j - 1, j, j + 1} or not lisse_ref(j):
+                continue
+            for voisin in (j + 1, j - 1):
+                if math.dist(A2[j], A2[voisin]) > CROCHET_MAX:
+                    continue
+                if voisin == j + 1:
+                    t = (A2[j][0] - segs[j - 1][1][0], A2[j][1] - segs[j - 1][1][1])
+                    corde = (A2[j + 1][0] - A2[j][0], A2[j + 1][1] - A2[j][1])
+                else:
+                    t = (segs[j][0][0] - A2[j][0], segs[j][0][1] - A2[j][1])
+                    corde = (A2[j][0] - A2[j - 1][0], A2[j][1] - A2[j - 1][1])
+                nt, nc = math.hypot(*t), math.hypot(*corde)
+                if nt < 1e-6 or nc < 1e-6:
+                    continue
+                if (t[0] * corde[0] + t[1] * corde[1]) / (nt * nc) > math.cos(math.radians(20)):
+                    continue
+                crochets.append((j, voisin))
+                pris |= {j - 1, j, j + 1}
+                break
+        sautes = {j for j, _ in crochets}
+
+        retirer = set()
+        for j in range(n):
+            if j and milieu_droit(j) and not (sautes & {j - 1, j, j + 1}):
+                retirer.add(j)
+                continue
+            if j in sautes or not lisse_ref(j):
+                continue
+            P = A[j]
+            hin = (P[0] - segs[j - 1][1][0], P[1] - segs[j - 1][1][1])
+            hout = (segs[j][0][0] - P[0], segs[j][0][1] - P[1])
+            li, lo = math.hypot(*hin), math.hypot(*hout)
+            if li < 1e-6 or lo < 1e-6:
+                continue
+            dx, dy = hin[0] / li + hout[0] / lo, hin[1] / li + hout[1] / lo
+            L = math.hypot(dx, dy)
+            if L < 1e-6:
+                continue
+            dx, dy = dx / L, dy / L
+            segs[j - 1][1] = (P[0] - dx * li, P[1] - dy * li)
+            segs[j][0] = (P[0] + dx * lo, P[1] + dy * lo)
+        if crochets:
+            A2 = [c["start"]] + [sg[2] for sg in segs[:-1]]
+            supprimes = set()
+            for j, voisin in crochets:
+                d = (A2[voisin][0] - A2[j][0], A2[voisin][1] - A2[j][1])
+                if voisin == j + 1:
+                    a1, a2, _ = segs[j - 1]
+                    segs[j - 1] = [a1, (a2[0] + d[0], a2[1] + d[1]), A2[j + 1]]
+                    supprimes.add(j)
+                else:
+                    b1, b2, b3 = segs[j]
+                    segs[j] = [(b1[0] + d[0], b1[1] + d[1]), b2, b3]
+                    supprimes.add(j - 1)
+            # renumerotation : l'ancre k perd un rang par segment supprime avant elle
+            avant = lambda k: sum(1 for x in supprimes if x < k)
+            retirer = {k - avant(k) for k in retirer if k not in supprimes}
+            segs = [sg for k, sg in enumerate(segs) if k not in supprimes]
+            n = len(segs)
+
+        # fusion des droites dont le point commun est retire
+        sortie, a = [], c["start"]
+        j = 0
+        while j < n:
+            k2 = j
+            while k2 + 1 < n and (k2 + 1) in retirer:
+                k2 += 1
+            if k2 == j:
+                sortie.append(tuple(segs[j]))
+            else:
+                b = segs[k2][2]
+                sortie.append(((a[0] + (b[0] - a[0]) / 3, a[1] + (b[1] - a[1]) / 3),
+                               (a[0] + (b[0] - a[0]) * 2 / 3, a[1] + (b[1] - a[1]) * 2 / 3), b))
+            a = sortie[-1][2]
+            j = k2 + 1
+        res.append({"start": c["start"], "segs": sortie})
+    return res
+

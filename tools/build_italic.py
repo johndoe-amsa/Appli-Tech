@@ -31,13 +31,35 @@ from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
-                       replay, anchors)
-from build import interp_contours, interp_mismatched
+                       replay, anchors, lisser)
+from build import interp_contours, interp_mismatched, recaler_marges, draw_contours, sans_scories
 import naming
 
 SLANT = math.tan(math.radians(12.0))     # 0.21256
 ORIGINE = 254.1   # hauteur autour de laquelle le dessinateur a penche (mesuree)
 SEUIL_RESIDU = 45.0   # au-dela, romain et italique ne sont plus la meme lettre
+SEUIL_PIRE = 120.0    # ecart du point le plus mal apparie ; meme sens
+
+# Tout l'italique est tire du romain penche, SAUF les vrais redessins.
+#
+# Mesure faite, D-DIN Italic n'est, pour presque tous ses glyphes, que le
+# romain penche a quelques unites pres (2,4 pour le "o", 3,5 pour le "e").
+# Et ces quelques unites sont un geste repete du dessinateur : forcer une
+# tangente verticale sur les flancs des rondes. Dans un italique a 12 degres,
+# cela fait un meplat vertical qui rejoint la courbe par un angle - signale
+# sur "o", "e", "0", "3", "5", "C" -, amplifie aux graisses grasses. Le
+# romain penche n'a pas ce defaut.
+#
+# Les vrais redessins (plus de 7,5 unites d'ecart) gardent l'italique :
+DESSINS_ITALIQUES = {"s", "S", "ampersand", "Q", "at", "asciitilde", "bullet",
+                     "degree", "ring", "uni030A", "registered", "copyright",
+                     "trademark", "ordmasculine", "OE", "Aring",
+                     "quoteleft", "quotedblleft", "percent", "perthousand"}
+# (le "a", le "$", le "¢", le "|"... sont penches d'office : sans homologue.)
+# Les operateurs, que D-DIN Italic laisse droits, et les guillemets, qu'il
+# cisaille, sont penches depuis le romain eux aussi : voir chevrons_egaux.
+CHEVRONS = {"guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright",
+            "less", "greater", "asciicircum"}
 
 
 def redresser(contours):
@@ -57,6 +79,11 @@ def redresser(contours):
             for c in contours]
 
 
+def _centre(contours):
+    xs = [c["start"][0] for c in contours] + [q[0] for c in contours for sg in c["segs"] for q in sg]
+    return (min(xs) + max(xs)) / 2 if xs else 0.0
+
+
 def pencher(contours):
     """Cisaillement mecanique reproduisant celui du dessinateur :
     x' = x + tan(12 deg) x (y - 254.1). Sert de repli pour les rares glyphes
@@ -69,23 +96,154 @@ def pencher(contours):
             for c in contours]
 
 
+def _inter(p, d, q, e):
+    """Intersection des droites (p, direction d) et (q, direction e)."""
+    det = d[0] * e[1] - d[1] * e[0]
+    if abs(det) < 1e-12:
+        return None
+    k = ((q[0] - p[0]) * e[1] - (q[1] - p[1]) * e[0]) / det
+    return (p[0] + d[0] * k, p[1] + d[1] * k)
+
+
+TOURNES = {"multiply"}
+RECALES = {"percent", "perthousand"}   # voir recaler
+
+
+def tourner(contours):
+    """Le "×" reste droit, deplace comme le serait le texte penche.
+
+    Cisaille, il garde deux bras epais et deux bras minces ; tourne de
+    l'angle de l'italique, il ressemble a un "+" de travers. Symetrique, il
+    n'a pas d'inclinaison a montrer.
+    """
+    pts = [c["start"] for c in contours] + [q for c in contours for sg in c["segs"] for q in sg]
+    cx = (min(p[0] for p in pts) + max(p[0] for p in pts)) / 2
+    cy = (min(p[1] for p in pts) + max(p[1] for p in pts)) / 2
+    co, si = 1.0, 0.0
+    dx = SLANT * (cy - ORIGINE)
+
+    def f(p):
+        x, y = p[0] - cx, p[1] - cy
+        return (cx + dx + x * co - y * si, cy + x * si + y * co)
+    return [{"start": f(c["start"]), "segs": [tuple(f(q) for q in sg) for sg in c["segs"]]}
+            for c in contours]
+
+
+def recaler(cU, cB, cI, t):
+    """Le "%" et le "‰" : le trace du romain, aux places de l'italique.
+
+    L'italique est ici un vrai redessin, plus etroit que le romain penche.
+    Mais le dessinateur a ajoute dans ses contreformes des points que le
+    romain n'a pas ; a travers la double correspondance romain - italique -
+    gras, ils cabossaient les zeros du Bold et du Heavy Italic. On prend donc
+    le romain a la graisse voulue (propre, comme le Bold romain d'origine),
+    et l'on loge chaque contour dans la boite du contour correspondant de
+    l'italique redresse : places et proportions de l'italique, trace du
+    romain. Le resultat reste a pencher.
+    """
+    def boite(c):
+        pts = [c["start"]] + [sg[2] for sg in c["segs"]]
+        xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+        return min(xs), min(ys), max(xs), max(ys)
+
+    if not (len(cU) == len(cB) == len(cI)) or not cU:
+        return None
+    droit = droit_a_la_graisse(copy.deepcopy(cU), copy.deepcopy(cB), t)
+    if not droit or len(droit) != len(cU):
+        return None
+    out = []
+    for u, i, d in zip(cU, cI, droit):
+        ux0, uy0, ux1, uy1 = boite(u)
+        ix0, iy0, ix1, iy1 = boite(i)
+        sx = (ix1 - ix0) / max(ux1 - ux0, 1e-6)
+        sy = (iy1 - iy0) / max(uy1 - uy0, 1e-6)
+        # centre a centre : l'epaississement deborde la boite du Regular
+        ucx, ucy = (ux0 + ux1) / 2, (uy0 + uy1) / 2
+        icx, icy = (ix0 + ix1) / 2, (iy0 + iy1) / 2
+        f = lambda p: (icx + (p[0] - ucx) * sx, icy + (p[1] - ucy) * sy)
+        out.append({"start": f(d["start"]),
+                    "segs": [tuple(f(q) for q in sg) for sg in d["segs"]]})
+    return out
+
+
+def chevrons_egaux(glyph, glyf):
+    """Redonne aux deux branches d'un chevron penche la meme epaisseur
+    (guillemets, < > ^).
+
+    Cisailler un chevron droit aplatit et amincit la branche montante, et
+    redresse et epaissit la descendante. On garde le bord exterieur et la
+    coupe des extremites du chevron penche, et l'on retrace chaque bord
+    interieur parallele a son bord exterieur, a l'epaisseur du romain.
+
+    Le chevron se lit a partir de son seul point rentrant, le creux : de
+    part et d'autre, le bord interieur mene a la coupe, puis le bord
+    exterieur repart vers la pointe (plate ou non).
+    """
+    coords, ends, flags = glyph.getCoordinates(glyf)
+    if any(not f & 1 for f in flags):
+        return glyph
+    pts = [tuple(p) for p in coords]
+    neufs, debut = list(pts), 0
+    for fin in ends:
+        idx = list(range(debut, fin + 1))
+        debut = fin + 1
+        n = len(idx)
+        if n not in (6, 7):
+            continue
+        droit = {i: (pts[i][0] - SLANT * (pts[i][1] - ORIGINE), pts[i][1]) for i in idx}
+        aire = sum(droit[idx[k]][0] * droit[idx[(k + 1) % n]][1]
+                   - droit[idx[(k + 1) % n]][0] * droit[idx[k]][1] for k in range(n))
+
+        def tour(k):
+            p0, p1, p2 = (droit[idx[(k + d) % n]] for d in (-1, 0, 1))
+            return (p1[0] - p0[0]) * (p2[1] - p1[1]) - (p1[1] - p0[1]) * (p2[0] - p1[0])
+        rentrants = [k for k in range(n) if tour(k) * aire < 0]
+        if len(rentrants) != 1:
+            continue
+        kv = rentrants[0]
+        V = idx[kv]
+        bras = []
+        for sens in (1, -1):
+            A2, A, Ta = (idx[(kv + sens * d) % n] for d in (1, 2, 3))
+            (x0, y0), (x1, y1), (x, y) = droit[A], droit[Ta], droit[V]
+            w = abs((x - x0) * (y1 - y0) - (y - y0) * (x1 - x0)) / math.hypot(x1 - x0, y1 - y0)
+            d = (pts[Ta][0] - pts[A][0], pts[Ta][1] - pts[A][1])
+            L = math.hypot(*d)
+            nrm = (-d[1] / L, d[0] / L)
+            vx, vy = pts[V][0] - pts[A][0], pts[V][1] - pts[A][1]
+            if nrm[0] * vx + nrm[1] * vy < 0:
+                nrm = (-nrm[0], -nrm[1])
+            o = (pts[A][0] + nrm[0] * w, pts[A][1] + nrm[1] * w)
+            coupe = (pts[A2][0] - pts[A][0], pts[A2][1] - pts[A][1])
+            p = _inter(o, d, pts[A], coupe)
+            if p is None:
+                break
+            neufs[A2] = p
+            bras.append((o, d))
+        if len(bras) != 2:
+            continue
+        v = _inter(bras[0][0], bras[0][1], bras[1][0], bras[1][1])
+        if v is not None:
+            neufs[V] = v
+    g = copy.deepcopy(glyph)
+    from fontTools.ttLib.tables._g_l_y_f import GlyphCoordinates
+    g.coordinates = GlyphCoordinates([(int(round(x)), int(round(y))) for x, y in neufs])
+    g.recalcBounds(glyf)
+    return g
+
+
 def droit_a_la_graisse(cU, cB, t):
     """Le droit interpole a la graisse t, topologies divergentes comprises."""
     if not cU or not cB:
         return None
-    if (len(cU) == len(cB)
-            and all(len(x["segs"]) == len(y["segs"]) for x, y in zip(cU, cB))):
-        return interp_contours(cU, cB, t)
+    if len(cU) == len(cB):
+        # Harmoniser TOUJOURS, comme pour les romains : meme nombre de points
+        # ne veut pas dire meme point de depart. Sans cela, le "5" Medium
+        # Italic, tire du romain, se dechirait.
+        A, B = copy.deepcopy(cU), copy.deepcopy(cB)
+        if all(harmonize_pair(x, y) for x, y in zip(A, B)):
+            return lisser(interp_contours(A, B, t), [A, B])
     return interp_mismatched(cU, cB, t)
-
-
-def draw_contours(contours, pen):
-    q = Cu2QuPen(pen, max_err=0.6, reverse_direction=False)
-    for c in contours:
-        q.moveTo(c["start"])
-        for p1, p2, p3 in c["segs"]:
-            q.curveTo(p1, p2, p3)
-        q.closePath()
 
 
 def _report(pu, pb, pi, t):
@@ -110,6 +268,16 @@ def residu(cU, cI):
         for pu, pi in zip(anchors(u), anchors(i)):
             d.append(math.hypot(pi[0] - pu[0], pi[1] - pu[1]))
     return sorted(d)[len(d) // 2] if d else 0.0
+
+
+def pire(cU, cI):
+    """Ecart du point le plus mal apparie. La mediane ne suffit pas : le "ª"
+    italique (un etage) et le romain (deux etages) partagent assez de points
+    pour une mediane basse, mais la panse du romain n'a pas d'homologue, a
+    180 unites de la, et l'epaississement en faisait un pate."""
+    d = [math.hypot(pi[0] - pu[0], pi[1] - pu[1])
+         for u, i in zip(cU, cI) for pu, pi in zip(anchors(u), anchors(i))]
+    return max(d) if d else 0.0
 
 
 def aligner(cU, cB, cI):
@@ -178,8 +346,19 @@ def build_italic(t, weight_class, style, out_path,
         cB = match_contours(cU, glyph_to_contours(Bg, gB))
         cI = match_contours(cU, redresser(glyph_to_contours(Ig, gI)))
 
+        if name in RECALES:
+            droit = recaler(cU, cB, cI, t)
+            if droit:
+                pen = TTGlyphPen(None)
+                draw_contours(pencher(droit), pen)
+                neufs[name] = pen.glyph()
+                largeurs[name] = (aw, hI[name][1])
+                stats["report"] += 1
+                continue
+
         alignable = aligner(cU, cB, cI)
-        if not alignable or residu(cU, cI) > SEUIL_RESIDU:
+        if (not alignable or residu(cU, cI) > SEUIL_RESIDU
+                or pire(cU, cI) > SEUIL_PIRE or name not in DESSINS_ITALIQUES):
             # Soit les topologies divergent ($ et cent, dont les contreformes
             # fusionnent dans le gras), soit romain et italique ne sont pas la
             # meme lettre (le "a" romain a deux etages, l'italique un seul).
@@ -195,16 +374,33 @@ def build_italic(t, weight_class, style, out_path,
                 match_contours(glyph_to_contours(A, gU),
                                glyph_to_contours(Bg, gB)), t)
             if droit:
+                incline = tourner if name in TOURNES else pencher
+                res = incline(droit)
+                # A la place et a la chasse de l'italique : centre du dessin
+                # italique d'origine, plus la derive du romain avec la graisse.
+                if Ig.numberOfContours > 0:
+                    Ig.recalcBounds(gI)
+                    ref0 = incline(glyph_to_contours(A, gU))
+                    dx = ((Ig.xMin + Ig.xMax) / 2 + _centre(res) - _centre(ref0)) - _centre(res)
+                    res = [{"start": (c["start"][0] + dx, c["start"][1]),
+                            "segs": [tuple((q[0] + dx, q[1]) for q in sg) for sg in c["segs"]]}
+                           for c in res]
                 pen = TTGlyphPen(None)
-                draw_contours(pencher(droit), pen)
+                draw_contours(res, pen)
                 neufs[name] = pen.glyph()
-                largeurs[name] = (int(round(hU[name][0] + (hB[name][0] - hU[name][0]) * t)),
-                                  hU[name][1])
+                largeurs[name] = (aw, hI[name][1])
                 stats["penche"] = stats.get("penche", 0) + 1
             else:
                 stats["repli"].append(name)
                 neufs[name] = Ig
                 largeurs[name] = hI[name]
+            continue
+
+        if t == 0.0 and name not in RECALES:
+            # l'Italic 400 est le dessin d'origine : on le garde tel quel
+            neufs[name] = sans_scories(Ig, gI)
+            largeurs[name] = hI[name]
+            stats["report"] += 1
             continue
 
         droite = []
@@ -215,6 +411,7 @@ def build_italic(t, weight_class, style, out_path,
             droite.append({"start": start, "segs": segs})
 
         pen = TTGlyphPen(None)
+        droite = lisser(droite, [cI, cU, cB])
         draw_contours(pencher(droite), pen)
         neufs[name] = pen.glyph()
         largeurs[name] = (aw, hI[name][1])
@@ -240,8 +437,12 @@ def build_italic(t, weight_class, style, out_path,
     for name in I.getGlyphOrder():
         gI[name] = neufs[name]
         hI[name] = largeurs[name]
+    for name in CHEVRONS & set(I.getGlyphOrder()):
+        if not gI[name].isComposite():
+            gI[name] = chevrons_egaux(gI[name], gI)
     for name in I.getGlyphOrder():
         gI[name].recalcBounds(gI)
+    recaler_marges(I)
     I["head"].recalcBounds = 1
 
     naming.apply(I, style, weight_class)
