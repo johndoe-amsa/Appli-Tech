@@ -31,7 +31,7 @@ from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
-                       replay, anchors, lisser)
+                       replay, anchors, lisser, alleger)
 from build import interp_contours, interp_mismatched, recaler_marges, draw_contours, sans_scories
 import naming
 
@@ -46,7 +46,12 @@ SEUIL_PIRE = 120.0    # ecart du point le plus mal apparie ; meme sens
 #    graisse penche leur taillait des bouts obliques et tordait le "×".
 #  - les guillemets, que D-DIN Italic obtient par simple cisaillement des
 #    droits : voir chevrons_egaux.
-PENCHES = {"plus", "less", "equal", "greater", "asciicircum", "multiply",
+#  - "0", "3", "5", "C" et "Ç" : le dessinateur les a a peine retouches, et ses
+#    retouches y ont mis des defauts. Le bord interieur du terminal bas du
+#    "3" et du "5" reste vertical et rejoint la courbe en faisant un angle ;
+#    le bout du "C" est bossele. Penches depuis le romain, ils sont lisses.
+PENCHES = {"three", "five", "C", "Ccedilla", "zero",
+           "plus", "less", "equal", "greater", "asciicircum", "multiply",
            "divide", "plusminus", "logicalnot", "underscore",
            "guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright"}
 CHEVRONS = {"guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright",
@@ -92,6 +97,7 @@ def _inter(p, d, q, e):
 
 
 TOURNES = {"multiply"}
+ALLEGES = {"percent", "perthousand"}   # voir harmonize.alleger
 
 
 def tourner(contours):
@@ -184,9 +190,13 @@ def droit_a_la_graisse(cU, cB, t):
     """Le droit interpole a la graisse t, topologies divergentes comprises."""
     if not cU or not cB:
         return None
-    if (len(cU) == len(cB)
-            and all(len(x["segs"]) == len(y["segs"]) for x, y in zip(cU, cB))):
-        return interp_contours(cU, cB, t)
+    if len(cU) == len(cB):
+        # Harmoniser TOUJOURS, comme pour les romains : meme nombre de points
+        # ne veut pas dire meme point de depart. Sans cela, le "5" Medium
+        # Italic, tire du romain, se dechirait.
+        A, B = copy.deepcopy(cU), copy.deepcopy(cB)
+        if all(harmonize_pair(x, y) for x, y in zip(A, B)):
+            return lisser(interp_contours(A, B, t), [A, B])
     return interp_mismatched(cU, cB, t)
 
 
@@ -335,7 +345,10 @@ def build_italic(t, weight_class, style, out_path,
             droite.append({"start": start, "segs": segs})
 
         pen = TTGlyphPen(None)
-        draw_contours(pencher(lisser(droite, [cI, cU, cB])), pen)
+        droite = lisser(droite, [cI, cU, cB])
+        if name in ALLEGES:
+            droite = alleger(droite)
+        draw_contours(pencher(droite), pen)
         neufs[name] = pen.glyph()
         largeurs[name] = (aw, hI[name][1])
         stats["report"] += 1

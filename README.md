@@ -121,6 +121,13 @@ contreformes fusionnent dans le gras. Pour les autres — le `a` surtout, dont
 l'italique est une lettre à un seul étage face au romain à deux étages —
 aucune correspondance n'existe.
 
+Le `0`, le `3`, le `5`, le `C` et le `Ç` le sont aussi : le dessinateur les
+a à peine retouchés, et ses retouches y ont mis des défauts (le bord du
+terminal bas du `3` et du `5` reste vertical et rejoint la courbe par un
+angle, le bout du `C` est bosselé). Le `%` et le `‰`, eux, sont un vrai
+redessin, plus étroit : on garde l'italique, mais les points superflus de
+leurs contreformes, qui gonflaient au gras, sont retirés.
+
 Les opérateurs `+ − < = > ^ ± ÷ ¬ _` et les guillemets `« » ‹ ›` le sont
 aussi, par choix. D-DIN Italic laisse les opérateurs **droits** au milieu du
 texte penché, et obtient ses guillemets en cisaillant les droits : la

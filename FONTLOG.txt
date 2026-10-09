@@ -178,6 +178,13 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-09          Italics: "0", "3", "5", "C", "Ç" now come from the slanted
+                    upright (the italic drawing put a corner where the lower
+                    terminal of 3 and 5 meets the bowl, and a lumpy end on
+                    C). Superfluous points removed from the counters of
+                    "%" and "‰", which bulged in Bold and Heavy Italic.
+                    Fixed the slanted-upright path, which interpolated
+                    without aligning start points first.
 2026-10-09          Review round on ~330 reported glyphs:
                     - hmtx left side bearings now equal each glyph's xMin.
                       They were copied from the Regular: on ~2,900 glyphs
