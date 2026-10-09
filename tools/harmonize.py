@@ -531,3 +531,107 @@ def harmonize_pair(ca, cb, journal=None):
         _grow_span(cb, lb, hb, cible, None, ref=ca, rlo=la, rhi=ha)
 
     return len(ca["segs"]) == len(cb["segs"])
+
+
+# --------------------------------------------------------------------------
+# lissage d'apres le dessin d'origine
+# --------------------------------------------------------------------------
+
+LISSE_DEG = 4.0   # en-deca, la tangente du dessin d'origine est continue
+
+
+def _droit_seg(p0, seg, tol=0.02):
+    p1, p2, p3 = seg
+    L = max(1.0, math.hypot(p3[0] - p0[0], p3[1] - p0[1]))
+    for q, f in ((p1, 1 / 3.0), (p2, 2 / 3.0)):
+        ex, ey = p0[0] + (p3[0] - p0[0]) * f, p0[1] + (p3[1] - p0[1]) * f
+        if math.hypot(q[0] - ex, q[1] - ey) > tol * L:
+            return False
+    return True
+
+
+def lisser(out, refs):
+    """Corrige les accrocs que l'interpolation cree entre points voisins.
+
+    Deux points voisins recoivent des ecarts de graisse un peu differents ;
+    extrapoles, ils se mettent a zigzaguer la ou le dessin d'origine est
+    parfaitement lisse (terminal bas du "3" en exposant des italiques). Le
+    dessin d'origine dit ce qui doit l'etre :
+      - un point lisse dans TOUS les dessins de reference (tangente continue)
+        le reste : ses deux poignees sont realignees, longueurs conservees ;
+      - un point pose au milieu d'un trait droit dans tous les dessins de
+        reference est retire : les deux droites n'en font plus qu'une.
+    Les angles ne sont pas touches. `refs` : listes de contours de meme
+    structure que `out` (Regular et Bold, ou Regular et italique).
+    """
+    res = []
+    for k, c in enumerate(out):
+        rs = [r[k] for r in refs]
+        n = len(c["segs"])
+        segs = [list(sg) for sg in c["segs"]]
+        A = anchors(c)
+
+        def lisse_ref(j):
+            for r in rs:
+                tin, tout = _tangents(r, j)
+                ni, no = math.hypot(*tin), math.hypot(*tout)
+                if ni < 1e-6 or no < 1e-6:
+                    return False
+                cos = (tin[0] * tout[0] + tin[1] * tout[1]) / (ni * no)
+                if cos < math.cos(math.radians(LISSE_DEG)):
+                    return False
+            return True
+
+        def milieu_droit(j):
+            for r in rs:
+                ra = anchors(r)
+                p0, p1 = ra[j - 1], ra[j]
+                p2 = r["segs"][j][2]
+                if not (_droit_seg(p0, r["segs"][j - 1]) and _droit_seg(p1, r["segs"][j])):
+                    return False
+                # les deux droites doivent etre dans le prolongement l'une de l'autre
+                u = (p1[0] - p0[0], p1[1] - p0[1]); v = (p2[0] - p1[0], p2[1] - p1[1])
+                nu, nv = math.hypot(*u), math.hypot(*v)
+                if nu < 1e-6 or nv < 1e-6:
+                    return False
+                if (u[0] * v[0] + u[1] * v[1]) / (nu * nv) < math.cos(math.radians(1.0)):
+                    return False
+            return True
+
+        retirer = set()
+        for j in range(n):
+            if j and milieu_droit(j):
+                retirer.add(j)
+                continue
+            if not lisse_ref(j):
+                continue
+            P = A[j]
+            hin = (P[0] - segs[j - 1][1][0], P[1] - segs[j - 1][1][1])
+            hout = (segs[j][0][0] - P[0], segs[j][0][1] - P[1])
+            li, lo = math.hypot(*hin), math.hypot(*hout)
+            if li < 1e-6 or lo < 1e-6:
+                continue
+            dx, dy = hin[0] / li + hout[0] / lo, hin[1] / li + hout[1] / lo
+            L = math.hypot(dx, dy)
+            if L < 1e-6:
+                continue
+            dx, dy = dx / L, dy / L
+            segs[j - 1][1] = (P[0] - dx * li, P[1] - dy * li)
+            segs[j][0] = (P[0] + dx * lo, P[1] + dy * lo)
+        # fusion des droites dont le point commun est retire
+        sortie, a = [], c["start"]
+        j = 0
+        while j < n:
+            k2 = j
+            while k2 + 1 < n and (k2 + 1) in retirer:
+                k2 += 1
+            if k2 == j:
+                sortie.append(tuple(segs[j]))
+            else:
+                b = segs[k2][2]
+                sortie.append(((a[0] + (b[0] - a[0]) / 3, a[1] + (b[1] - a[1]) / 3),
+                               (a[0] + (b[0] - a[0]) * 2 / 3, a[1] + (b[1] - a[1]) * 2 / 3), b))
+            a = sortie[-1][2]
+            j = k2 + 1
+        res.append({"start": c["start"], "segs": sortie})
+    return res

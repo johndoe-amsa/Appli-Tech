@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
-from harmonize import glyph_to_contours, harmonize_pair, match_contours
+from harmonize import glyph_to_contours, harmonize_pair, match_contours, lisser
 import naming
 
 def lerp(a, b, t):
@@ -383,7 +383,7 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
             continue
 
         pen = TTGlyphPen(None)
-        draw_contours(interp_contours(ca, cb, t), pen)
+        draw_contours(lisser(interp_contours(ca, cb, t), [ca, cb]), pen)
         new_glyphs[name] = pen.glyph()
         new_hmtx[name] = (aw, hma[name][1])
         stats["harmonise" if needed else "interp"] += 1

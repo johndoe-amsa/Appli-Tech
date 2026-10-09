@@ -98,6 +98,14 @@ d'un trait droit n'est plus un repère : le fût du E de `Œ` Regular porte un
 décrochement d'une unité qui attirait à lui le coin de la barre du Bold, et
 le Heavy biseautait la jonction.
 
+**Garder ce qui est lisse, garder ce qui est droit.** Deux points voisins
+reçoivent des écarts de graisse un peu différents ; extrapolés, ils
+zigzaguent là où le dessin d'origine est lisse. Un point lisse dans tous les
+dessins de référence le reste (ses poignées sont réalignées), et un point
+posé au milieu d'un trait droit dans tous les dessins de référence est
+retiré. Les droites sont écrites comme des droites, et les masters (Regular,
+Bold, Italic) sont repris tels quels, sans repasser par l'appariement.
+
 **Le `$` et le `¢`.** Dans le Regular, la barre traverse la lettre et ferme
 de petites contreformes ; dans le Bold, elle se réduit à deux ergots. Ce
 sont deux dessins, pas deux graisses. Le Bold est traduit dans le dessin du
@@ -105,13 +113,22 @@ Regular (barre prolongée, par opération booléenne) pour l'interpolation ;
 le Bold reste le dessin d'origine à l'identique, et le Heavy l'épaissit
 de 10 unités par flanc avec `tools/epaissir.py`.
 
-### Huit glyphes penchés depuis le romain
+### Les glyphes penchés depuis le romain
 
 `a` `$` `¢` `|` `¦` `ª` `}` et `.notdef` ne sont pas déduits de l'italique
 mais obtenus en penchant le romain à la graisse voulue. Pour `$` et `¢`, leurs
 contreformes fusionnent dans le gras. Pour les autres — le `a` surtout, dont
 l'italique est une lettre à un seul étage face au romain à deux étages —
 aucune correspondance n'existe.
+
+Les opérateurs `+ − < = > ^ ± ÷ ¬ _` et les guillemets `« » ‹ ›` le sont
+aussi, par choix. D-DIN Italic laisse les opérateurs **droits** au milieu du
+texte penché, et obtient ses guillemets en cisaillant les droits : la
+branche montante s'amincit, la descendante s'épaissit (52 contre 65 unités à
+l'Italic 400). Penchés depuis le romain, les chevrons (`« » ‹ › < > ^`)
+retrouvent ensuite deux branches de même épaisseur. Le `×`, symétrique,
+reste droit : cisaillé, il a deux bras épais et deux minces ; tourné, il
+ressemble à un `+` de travers.
 
 Pour le `a`, c'est un **choix provisoire** : un penchage maintenant, un
 redessin de la forme italique propre plus tard. Conséquence assumée :
@@ -215,7 +232,9 @@ python3 tools/verifier.py
 ```
 
 Balaie les 15 fichiers : hinting, GSUB, GDEF, crénage, écritures déclarées,
-drapeaux de style, métriques verticales, progression des fûts, et l'encre de
+drapeaux de style, métriques verticales, marges gauches (la marge de la
+table des chasses doit égaler le bord du dessin, sinon le moteur de rendu
+décale le glyphe), points isolés, progression des fûts, et l'encre de
 chaque glyphe comparée à l'interpolation des masters. Ce dernier contrôle est
 le seul capable d'attraper un appariement de points décalé d'un cran, qui ne
 se voit sur aucune mesure de distance.
@@ -242,9 +261,9 @@ Produit `revue.html`, à ouvrir dans un navigateur : tous les glyphes des
 | L | liste à revoir, avec remarques, à copier |
 
 Le mode Différence superpose la version de référence et colorie la zone qui
-a changé. L'écart est mesuré en unités (1 000 par cadratin) : la surface qui
-diffère, rapportée à la longueur du contour. Sous 0,1 unité, c'est le bruit
-de conversion des courbes, et le glyphe est tenu pour inchangé. En bas, la
+a changé. L'écart est la plus grande distance entre l'ancien et le nouveau
+contour, en unités (1 000 par cadratin). Sous une unité, c'est le bruit de
+conversion des courbes, et le glyphe est tenu pour inchangé. En bas, la
 bande montre le glyphe courant dans les 15 styles.
 
 ## Licence

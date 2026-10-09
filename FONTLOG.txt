@@ -178,6 +178,21 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-09          Review round on ~330 reported glyphs:
+                    - hmtx left side bearings now equal each glyph's xMin.
+                      They were copied from the Regular: on ~2,900 glyphs
+                      renderers shifted the outline by a few units.
+                    - Regular, Bold and Italic are the original drawings,
+                      untouched; straight edges stay straight (lines had
+                      come back as wavy curves, the "y" went 15 -> 40 points).
+                    - Stray one- and two-point contours of D-DIN removed
+                      (ª º $ § Å ‘ “ : ;).
+                    - Notch under the crossbar of "e" (and æ œ, C G c Q in
+                      the condensed) fixed: corners now pair with corners.
+                    - Italic operators + < = > ^ ± ÷ ¬ _ are slanted (D-DIN
+                      Italic leaves them upright); chevrons « » ‹ › < > ^
+                      get arms of equal thickness; × stays upright.
+                    - Points smooth in every master stay smooth.
 2026-10-06          Fixed three more outline defects reported in review:
                     - "ae" (bold and heavy italics): a sharp wedge cut into
                       the counter of the "e". Upright and italic each had
