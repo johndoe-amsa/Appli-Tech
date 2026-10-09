@@ -181,8 +181,9 @@ ChangeLog
 2026-10-09          Italics: "0", "3", "5", "C", "Ç" now come from the slanted
                     upright (the italic drawing put a corner where the lower
                     terminal of 3 and 5 meets the bowl, and a lumpy end on
-                    C). Superfluous points removed from the counters of
-                    "%" and "‰", which bulged in Bold and Heavy Italic.
+                    C). "%" and "‰" keep the italic proportions but take the
+                    upright outlines at the right weight: the extra points
+                    in the italic counters dented the zeros when bold.
                     Fixed the slanted-upright path, which interpolated
                     without aligning start points first.
 2026-10-09          Review round on ~330 reported glyphs:
