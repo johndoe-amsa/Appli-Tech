@@ -178,6 +178,15 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-09          Italics are now derived from the slanted upright, except
+                    the true redrawings (s S & Q @ ~ bullet degree ring
+                    registered copyright trademark ordmasculine OE Aring
+                    quoteleft quotedblleft; % and ‰ keep italic proportions).
+                    D-DIN Italic is the slanted upright within a few units,
+                    but forces vertical tangents on the sides of rounds,
+                    which made flat upright spots meeting the curves at an
+                    angle (o, e, 0, 3, 5, C...). Advance widths and positions
+                    of the italic drawing are kept.
 2026-10-09          Italics: "e" (and its accented forms) now also comes from
                     the slanted upright: around the crossbar, the italic
                     drawing kept short upright walls that met the curves at

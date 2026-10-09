@@ -113,25 +113,25 @@ Regular (barre prolongée, par opération booléenne) pour l'interpolation ;
 le Bold reste le dessin d'origine à l'identique, et le Heavy l'épaissit
 de 10 unités par flanc avec `tools/epaissir.py`.
 
-### Les glyphes penchés depuis le romain
+### L'italique est tiré du romain penché, sauf les vrais redessins
 
-`a` `$` `¢` `|` `¦` `ª` `}` et `.notdef` ne sont pas déduits de l'italique
-mais obtenus en penchant le romain à la graisse voulue. Pour `$` et `¢`, leurs
-contreformes fusionnent dans le gras. Pour les autres — le `a` surtout, dont
-l'italique est une lettre à un seul étage face au romain à deux étages —
-aucune correspondance n'existe.
+Mesure faite, D-DIN Italic n'est, pour presque tous ses glyphes, que le
+romain penché à quelques unités près (2,4 pour le `o`, 3,5 pour le `e`). Et
+ces quelques unités sont un geste répété du dessinateur : forcer une
+tangente verticale sur les flancs des rondes. Dans un italique à 12°, cela
+fait un méplat vertical qui rejoint la courbe par un angle, amplifié aux
+graisses grasses (signalé sur `o e 0 3 5 C`). Tout l'italique est donc tiré
+du romain penché, à la chasse et à la place du dessin italique d'origine.
 
-Le `e`, le `0`, le `3`, le `5`, le `C` et le `Ç` le sont aussi : le dessinateur les
-a à peine retouchés, et ses retouches y ont mis des défauts (le bord du
-terminal bas du `3` et du `5` reste vertical et rejoint la courbe par un
-angle, le bout du `C` est bosselé). Le `%` et le `‰`, eux, sont un vrai
-redessin, plus étroit : chaque contour garde la place et les dimensions de
-l'italique, mais reçoit le tracé du romain à la bonne graisse. Les points
-que le dessinateur avait ajoutés dans les contreformes cabossaient les
-zéros au gras.
+Seuls les vrais redessins, à plus de 7,5 unités du romain penché, gardent
+leur dessin italique : `s S & Q @ ~ • ° ˚ ® © ™ º Œ Å ‘ “`. Le `%` et le
+`‰`, redessins plus étroits, gardent les proportions de l'italique mais le
+tracé du romain, chaque contour logé dans la boîte de son homologue
+italique. Le `a` (à un étage en italique, à deux en romain), le `$`, le `¢`,
+`|`, `¦`, `ª`, `}` sont penchés faute d'homologue.
 
-Les opérateurs `+ − < = > ^ ± ÷ ¬ _` et les guillemets `« » ‹ ›` le sont
-aussi, par choix. D-DIN Italic laisse les opérateurs **droits** au milieu du
+Les opérateurs `+ − < = > ^ ± ÷ ¬ _` et les guillemets `« » ‹ ›`, eux,
+sont penchés en connaissance de cause. D-DIN Italic laisse les opérateurs **droits** au milieu du
 texte penché, et obtient ses guillemets en cisaillant les droits : la
 branche montante s'amincit, la descendante s'épaissit (52 contre 65 unités à
 l'Italic 400). Penchés depuis le romain, les chevrons (`« » ‹ › < > ^`)

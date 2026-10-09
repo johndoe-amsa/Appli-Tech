@@ -40,20 +40,24 @@ ORIGINE = 254.1   # hauteur autour de laquelle le dessinateur a penche (mesuree)
 SEUIL_RESIDU = 45.0   # au-dela, romain et italique ne sont plus la meme lettre
 SEUIL_PIRE = 120.0    # ecart du point le plus mal apparie ; meme sens
 
-# Penches depuis le romain, quoi qu'en dise l'appariement :
-#  - les operateurs, que D-DIN Italic laisse DROITS. A l'Italic 400 ils
-#    detonnaient au milieu du texte penche ; aux autres graisses, l'ecart de
-#    graisse penche leur taillait des bouts obliques et tordait le "×".
-#  - les guillemets, que D-DIN Italic obtient par simple cisaillement des
-#    droits : voir chevrons_egaux.
-#  - "e", "0", "3", "5", "C" et "Ç" : le dessinateur les a a peine retouches, et ses
-#    retouches y ont mis des defauts. Le bord interieur du terminal bas du
-#    "3" et du "5" reste vertical et rejoint la courbe en faisant un angle ;
-#    le bout du "C" est bossele. Penches depuis le romain, ils sont lisses.
-PENCHES = {"e", "three", "five", "C", "Ccedilla", "zero",
-           "plus", "less", "equal", "greater", "asciicircum", "multiply",
-           "divide", "plusminus", "logicalnot", "underscore",
-           "guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright"}
+# Tout l'italique est tire du romain penche, SAUF les vrais redessins.
+#
+# Mesure faite, D-DIN Italic n'est, pour presque tous ses glyphes, que le
+# romain penche a quelques unites pres (2,4 pour le "o", 3,5 pour le "e").
+# Et ces quelques unites sont un geste repete du dessinateur : forcer une
+# tangente verticale sur les flancs des rondes. Dans un italique a 12 degres,
+# cela fait un meplat vertical qui rejoint la courbe par un angle - signale
+# sur "o", "e", "0", "3", "5", "C" -, amplifie aux graisses grasses. Le
+# romain penche n'a pas ce defaut.
+#
+# Les vrais redessins (plus de 7,5 unites d'ecart) gardent l'italique :
+DESSINS_ITALIQUES = {"s", "S", "ampersand", "Q", "at", "asciitilde", "bullet",
+                     "degree", "ring", "uni030A", "registered", "copyright",
+                     "trademark", "ordmasculine", "OE", "Aring",
+                     "quoteleft", "quotedblleft", "percent", "perthousand"}
+# (le "a", le "$", le "¢", le "|"... sont penches d'office : sans homologue.)
+# Les operateurs, que D-DIN Italic laisse droits, et les guillemets, qu'il
+# cisaille, sont penches depuis le romain eux aussi : voir chevrons_egaux.
 CHEVRONS = {"guillemotleft", "guillemotright", "guilsinglleft", "guilsinglright",
             "less", "greater", "asciicircum"}
 
@@ -73,6 +77,11 @@ def redresser(contours):
     return [{"start": f(c["start"]),
              "segs": [tuple(f(q) for q in sg) for sg in c["segs"]]}
             for c in contours]
+
+
+def _centre(contours):
+    xs = [c["start"][0] for c in contours] + [q[0] for c in contours for sg in c["segs"] for q in sg]
+    return (min(xs) + max(xs)) / 2 if xs else 0.0
 
 
 def pencher(contours):
@@ -349,7 +358,7 @@ def build_italic(t, weight_class, style, out_path,
 
         alignable = aligner(cU, cB, cI)
         if (not alignable or residu(cU, cI) > SEUIL_RESIDU
-                or pire(cU, cI) > SEUIL_PIRE or name in PENCHES):
+                or pire(cU, cI) > SEUIL_PIRE or name not in DESSINS_ITALIQUES):
             # Soit les topologies divergent ($ et cent, dont les contreformes
             # fusionnent dans le gras), soit romain et italique ne sont pas la
             # meme lettre (le "a" romain a deux etages, l'italique un seul).
@@ -365,11 +374,21 @@ def build_italic(t, weight_class, style, out_path,
                 match_contours(glyph_to_contours(A, gU),
                                glyph_to_contours(Bg, gB)), t)
             if droit:
+                incline = tourner if name in TOURNES else pencher
+                res = incline(droit)
+                # A la place et a la chasse de l'italique : centre du dessin
+                # italique d'origine, plus la derive du romain avec la graisse.
+                if Ig.numberOfContours > 0:
+                    Ig.recalcBounds(gI)
+                    ref0 = incline(glyph_to_contours(A, gU))
+                    dx = ((Ig.xMin + Ig.xMax) / 2 + _centre(res) - _centre(ref0)) - _centre(res)
+                    res = [{"start": (c["start"][0] + dx, c["start"][1]),
+                            "segs": [tuple((q[0] + dx, q[1]) for q in sg) for sg in c["segs"]]}
+                           for c in res]
                 pen = TTGlyphPen(None)
-                draw_contours(tourner(droit) if name in TOURNES else pencher(droit), pen)
+                draw_contours(res, pen)
                 neufs[name] = pen.glyph()
-                largeurs[name] = (int(round(hU[name][0] + (hB[name][0] - hU[name][0]) * t)),
-                                  hU[name][1])
+                largeurs[name] = (aw, hI[name][1])
                 stats["penche"] = stats.get("penche", 0) + 1
             else:
                 stats["repli"].append(name)
