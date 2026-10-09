@@ -192,6 +192,25 @@ def interp_contours(ca, cb, t):
     return out
 
 
+def recaler_marges(font):
+    """Aligne la marge gauche de la table des chasses sur le bord du dessin.
+
+    En TrueType, la marge gauche (hmtx) DOIT egaler le xMin du glyphe : les
+    moteurs de rendu (FreeType, Windows) font confiance a la table et
+    recalent le dessin pour qu'elle soit vraie. Les generateurs recopiaient
+    la marge du Regular d'origine sans la recalculer : sur pres de 2 900
+    glyphes, le dessin affiche etait decale de quelques unites par rapport a
+    son propre trace - un espacement faux, et, dans le visionneur, des
+    contours qui ne passaient plus par leurs points.
+    """
+    glyf, hmtx = font["glyf"], font["hmtx"]
+    for name in font.getGlyphOrder():
+        g = glyf[name]
+        g.recalcBounds(glyf)
+        largeur = hmtx[name][0]
+        hmtx[name] = (largeur, g.xMin if g.numberOfContours != 0 else 0)
+
+
 def draw_contours(contours, pen):
     qpen = Cu2QuPen(pen, max_err=0.6, reverse_direction=False)
     for c in contours:
@@ -307,6 +326,7 @@ def build_instance(reg_path, bold_path, t, weight_class, style, out_path,
         hma[name] = new_hmtx[name]
     for name in order:
         ga[name].recalcBounds(ga)
+    recaler_marges(fa)
     fa["head"].recalcBounds = 1
 
     naming.apply(fa, style, weight_class, width_name)

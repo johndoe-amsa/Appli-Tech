@@ -163,6 +163,19 @@ def controler(chemin):
         if "latn" not in scripts:
             pbs.append("ecriture latn non declaree (plusieurs logiciels ignoreraient le crenage)")
 
+    # La marge gauche (hmtx) doit egaler le bord gauche du dessin : sinon le
+    # moteur de rendu decale le glyphe pour la rendre vraie.
+    decales = []
+    for x in f.getGlyphOrder():
+        gl = g[x]
+        if gl.numberOfContours == 0:
+            continue
+        gl.recalcBounds(g)
+        if f["hmtx"][x][1] != gl.xMin:
+            decales.append(x)
+    if decales:
+        pbs.append(f"marge gauche fausse sur {len(decales)} glyphes ({', '.join(decales[:5])}...)")
+
     italique = style.endswith("Italic")
     gras = sub in ("Bold", "Bold Italic")
     fs = f["OS/2"].fsSelection

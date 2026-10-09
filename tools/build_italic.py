@@ -32,7 +32,7 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from harmonize import (glyph_to_contours, harmonize_pair, match_contours,
                        replay, anchors)
-from build import interp_contours, interp_mismatched
+from build import interp_contours, interp_mismatched, recaler_marges
 import naming
 
 SLANT = math.tan(math.radians(12.0))     # 0.21256
@@ -254,6 +254,7 @@ def build_italic(t, weight_class, style, out_path,
         hI[name] = largeurs[name]
     for name in I.getGlyphOrder():
         gI[name].recalcBounds(gI)
+    recaler_marges(I)
     I["head"].recalcBounds = 1
 
     naming.apply(I, style, weight_class)
