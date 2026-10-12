@@ -108,6 +108,11 @@ def _aires(chemin):
     return out
 
 
+# Glyphes redessines apres coup, qui ne suivent plus les masters : le Ø,
+# devenu cercle barre (tools/diametre.py).
+REDESSINES = {"Oslash"}
+
+
 def controler_interpolation(master_a, master_b, genere, t, tolerance=0.25):
     """L'encre de chaque glyphe suit-elle l'interpolation des deux masters ?
 
@@ -121,7 +126,7 @@ def controler_interpolation(master_a, master_b, genere, t, tolerance=0.25):
     A, B, G = _aires(master_a), _aires(master_b), _aires(genere)
     suspects = []
     for n, ag in G.items():
-        if n not in A or n not in B:
+        if n not in A or n not in B or n in REDESSINES:
             continue
         attendu = A[n] + (B[n] - A[n]) * t
         if attendu < 2000:          # glyphes minuscules : bruit
