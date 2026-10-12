@@ -13,7 +13,9 @@ la meme police, si bien qu'il suit la famille sans master a part :
   - epaisseur du trait : celle du O, sur le flanc (fut) et au sommet
     (delie) - le contraste de la DIN est garde, la contreforme est une
     ellipse a peine aplatie ;
-  - barre : l'epaisseur de la barre du Ø d'origine ; elle depasse le
+  - barre : l'epaisseur de la barre du Ø d'origine, portee au besoin a
+    62 % du fut du cercle - dans D-DIN, la barre ne prend presque pas de
+    graisse et tombe sous la moitie du fut des le Bold ; elle depasse le
     cercle en haut et en bas, et s'arrete a son aplomb sur les cotes, ce
     qui la couche a 50° environ ;
   - approches : celles du O.
@@ -41,6 +43,7 @@ from fontTools.pens.transformPen import TransformPen
 
 SLANT = math.tan(math.radians(12.0))   # l'inclinaison des italiques
 DEPASSE = 0.06    # la barre depasse le cercle de ce rapport du rayon
+BARRE_MIN = 0.62  # epaisseur minimale de la barre, en part du fut du cercle
 KAPPA = 0.5522847498                   # quart de cercle en courbe de Bezier
 DIAMETRE = 0x2300
 
@@ -97,9 +100,11 @@ def mesures(font):
     (a0, _, a1, _), (b0, _, b1, _) = milieux
     angle = math.atan2(50, (b0 + b1) / 2 - (a0 + a1) / 2)
     barre = ((a1 - a0) + (b1 - b0)) / 2 * math.sin(angle)
+    fut = gauche[2] - gauche[0]
+    barre = max(barre, BARRE_MIN * fut)
     lsb = x0
     rsb = font["hmtx"]["O"][0] - x1
-    return dict(y0=y0, y1=y1, fut=gauche[2] - gauche[0], delie=haut[3] - haut[1],
+    return dict(y0=y0, y1=y1, fut=fut, delie=haut[3] - haut[1],
                 barre=barre, lsb=lsb, rsb=rsb, chasse_o=font["hmtx"]["O"][0])
 
 

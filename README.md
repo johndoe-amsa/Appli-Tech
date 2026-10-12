@@ -160,7 +160,9 @@ DIN 1451, barré. Chez Applitec, il ne sert qu'à coter un diamètre —
 `tools/diametre.py` le redessine donc en cercle barré, graisse par graisse,
 d'après le O de la même police : le cercle a la hauteur du O (dépassements
 compris), le trait reprend le fût du O sur les flancs et son délié en haut
-et en bas, la barre garde l'épaisseur de la barre d'origine, dépasse le
+et en bas, la barre garde l'épaisseur de la barre d'origine — portée au
+besoin à 62 % du fût du cercle, car celle de D-DIN ne prend presque pas de
+graisse et tombe sous la moitié du fût dès le Bold —, dépasse le
 cercle en haut et en bas et s'arrête à son aplomb sur les côtés (environ
 50°). Les italiques reçoivent le dessin du romain de même graisse, penché
 de 12°.

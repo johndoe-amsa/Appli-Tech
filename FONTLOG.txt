@@ -117,7 +117,9 @@ slashed circle built from the measurements of the "O" in the same font:
 
   - outer circle: the height of the O, overshoots included;
   - stroke: the O's stem on the sides, its thinner stroke at top and bottom;
-  - slash: the thickness of the original Oslash slash, overshooting the
+  - slash: the thickness of the original Oslash slash, raised where needed
+    to 62% of the circle's stem (the D-DIN slash hardly gains weight and
+    falls under half the stem from the Bold on), overshooting the
     circle at top and bottom by 6% of the radius, its outer corners flush
     with the circle's sides (about 50 degrees);
   - sidebearings: those of the O.
