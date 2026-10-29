@@ -313,3 +313,6 @@ elle ne peut pas être vendue seule.
 
 Le nom « D-DIN » est un *Reserved Font Name* : une version modifiée ne peut pas
 le porter. C'est la raison pour laquelle cette famille s'appelle Appli-Tec.
+
+Enfin, les noms de Datto et de Charles Nix peuvent être cités comme origine de la
+police, mais pas servir à la promouvoir (clause 4).
