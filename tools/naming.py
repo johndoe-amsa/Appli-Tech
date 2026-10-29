@@ -52,6 +52,10 @@ def apply(font, style, weight_class, width="", version="1.002"):
     os2 = font["OS/2"]
     os2.usWeightClass = weight_class
     os2.achVendID = "APTC"
+    # fsType 0 = installable, aucune restriction d'integration : c'est ce que
+    # permet l'OFL. D-DIN portait 4 (apercu et impression seuls), qui empeche
+    # d'editer un document Word ou PowerPoint ou la police est incorporee.
+    os2.fsType = 0
     fs = os2.fsSelection & ~0x0061          # on remet a plat ITALIC/BOLD/REGULAR
     if italic:
         fs |= 0x0001
