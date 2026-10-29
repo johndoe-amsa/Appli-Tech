@@ -199,6 +199,11 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-29          Embedding permissions (OS/2 fsType) set to 0,
+                    "installable", in line with the OFL. D-DIN carried 4,
+                    "preview & print": a Word or PowerPoint file with the
+                    font embedded could not be edited on a machine without
+                    the font. No change to the outlines.
 2026-10-09          Condensed Heavy: removed the small hook where the tail of
                     "y" (and ý ÿ), "Q" and "ƒ" meets the stem; a smooth point
                     pushed within a few units of a corner by extrapolation
