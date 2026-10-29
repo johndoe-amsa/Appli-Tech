@@ -14,15 +14,19 @@ Deutsches Institut fuer Normung in 1931 for industrial and traffic signage.
 D-DIN ships with two weights only (Regular 400 and Bold 700). Appli-Tec extends
 the family with the intermediate and extreme weights required by Applitec's
 documents. The additional weights are computed from the two original drawings
-by point-to-point interpolation and extrapolation. One glyph is built from
-scratch: the slashed O, redrawn as a diameter sign (see below).
+by point-to-point interpolation and extrapolation. Some glyphs are built
+from scratch: the slashed O, redrawn as a diameter sign, and the technical
+signs D-DIN lacked (see below).
 
 As required by clause 3 of the SIL Open Font License, this derivative does NOT
 use the Reserved Font Name "D-DIN". "Appli-Tec" is reserved in turn.
 
 Coverage: Basic Latin, Latin-1 Supplement, plus the ISO 8859-15 additions.
 This covers French, German, English, Italian and Spanish in full.
-It does NOT cover Central European, Turkish, Greek or Cyrillic.
+It does NOT cover Central European, Turkish, Greek or Cyrillic: the eight
+Greek letters added below are technical symbols, not Greek-language support.
+Technical signs: − ≤ ≥ ≈ ≠ ∞ √, arrows ← → ↔ ↑ ↓, Δ Ω α β μ π σ φ,
+superiors ⁰-⁹ ⁺ ⁻ and inferiors ₀-₉, fraction slash ⁄.
 
 Styles
 ------
@@ -128,6 +132,45 @@ Italics receive the upright drawing of the same weight, sheared by 12
 degrees. U+2300 DIAMETER SIGN is mapped to the same glyph. The lowercase
 "oslash" is unchanged.
 
+Technical signs
+---------------
+D-DIN has none of the signs a data sheet writes daily: "≤ 0.01 mm",
+"≈ 12 kg", "H₂O", "12 000 min⁻¹", "Ω", "Δt". Word and InDesign fetched them
+from another typeface, of another design. tools/symboles.py builds them,
+weight by weight, from the signs of the same font, so that they follow the
+family without a master of their own, like the diameter sign:
+
+  - operators − ≤ ≥ ≈ ≠ ∞ √: the stroke, axis and advance of + and =; the
+    chevron of ≤ ≥ is the chevron of <, retraced at the required height
+    with the same perpendicular thickness at the tips and at the notch; ≈ is
+    two tildes spaced as the bars of =; ≠ is = crossed at the slope of /;
+  - arrows ← → ↔ ↑ ↓: the bar of the minus, heads drawn from the chevron of <;
+  - Greek Δ Ω α β μ π σ φ: from A (closed), O (opened at the bottom, feet
+    outwards), q (without descender, with a foot), the n stems and z bar
+    (π), the o (σ, and the rounds of β and φ, rebuilt from the curvature
+    of the o). μ is a reference to µ. U+2206 INCREMENT and U+2126 OHM SIGN
+    map to the same glyphs as Δ and Ω;
+  - superiors 5-9, ⁺ and ⁻: D-DIN's superiors are not reduced figures, which
+    would be too light. Measured, they are the figures of a heavier weight
+    reduced to 60.5%: the superior "0" of the Bold is the "0" at t = 1.65,
+    reduced, to within 1.5% of its area. The new superiors are made the
+    same way, with the source weight, width and sidebearings fitted on the
+    original superiors 0-4. ⁰ and ⁴ already existed, without a code point;
+  - inferiors ₀-₉: the superiors, lowered by 580 units;
+  - numerators and denominators 5-9: references to the superiors, offset
+    like those of 0-4.
+
+Italics receive the upright drawing of the same weight, sheared by 12
+degrees around the same height as the rest of the italic; sheared chevrons
+get two arms of equal thickness back (build_italic.chevrons_egaux).
+
+GSUB is rewritten at the same step. "sups" and the new "subs"/"sinf",
+"numr" and "dnom" cover all ten figures, and "frac" now composes any
+fraction (3/8, 7/16) instead of only ½ ¼ ¾. Every feature is registered
+under both DFLT and latn: D-DIN registered frac and sups under DFLT only,
+which InDesign, querying latn, does not see. Existing glyphs, advances and
+kerning are unchanged.
+
 Fixes applied to defects inherited from D-DIN
 ---------------------------------------------
 - "periodcentered" (U+00B7) is an EMPTY glyph in D-DIN Bold. Rebuilt from the
@@ -199,6 +242,14 @@ Known limitations
 
 ChangeLog
 ---------
+2026-10-29          Technical signs: − ≤ ≥ ≈ ≠ ∞ √ ← → ↔ ↑ ↓ Δ Ω α β μ π σ φ,
+                    superiors ⁰ ⁴-⁹ ⁺ ⁻, inferiors ₀-₉, fraction slash ⁄;
+                    numerators and denominators 5-9 (tools/symboles.py).
+                    42 characters, 55 glyphs per file. GSUB rewritten:
+                    frac composes any fraction, sups/subs/numr/dnom cover the
+                    ten figures, all features registered under DFLT and latn.
+                    Verified: all existing glyphs, advances and kerning of
+                    existing text unchanged in the 15 files.
 2026-10-29          Embedding permissions (OS/2 fsType) set to 0,
                     "installable", in line with the OFL. D-DIN carried 4,
                     "preview & print": a Word or PowerPoint file with the
