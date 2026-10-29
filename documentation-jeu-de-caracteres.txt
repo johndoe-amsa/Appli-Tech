@@ -1,5 +1,5 @@
 APPLI-TEC — JEU DE CARACTERES COMPLET
-274 caractères, identiques dans les 15 fichiers de la famille
+284 caractères, identiques dans les 15 fichiers de la famille
 
 Majuscules (26)
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -31,15 +31,18 @@ Ponctuation (24)
 Guillemets et apostrophes (12)
 "'«»‘’‚“”„‹›
 
-Tirets (3)
--–—
+Tirets (5)
+-–—‐‑
+(‐ trait d'union typographique, ‑ trait d'union insécable : même dessin que -)
 
 Parenthèses et crochets (6)
 ()[]{}
 
-Mathématiques et technique (21)
-%+<=>~¬°±µ×÷‰⌀−≤≥≈≠∞√
-(⌀, signe de diamètre, et Ø sont un seul et même dessin : un cercle barré)
+Mathématiques et technique (24)
+%+<=>~¬°±µ×÷‰⌀∅−≤≥≈≠∞√′″
+(⌀ et ∅, que l'on tape pour un diamètre, et Ø sont un seul et même dessin :
+un cercle barré)
+(′ et ″ : minutes et secondes d'angle, pieds et pouces)
 (− est le vrai signe moins, plus long que le trait d'union -)
 
 Flèches (5)
@@ -59,8 +62,10 @@ Symboles divers (3)
 Accents isolés (11)
 ^`¨¯´¸ˆˇ˙˚˜
 
-Invisibles (10) — présents mais sans dessin visible :
+Invisibles (15) — présents mais sans dessin visible :
   retour chariot · espace · espace insécable · trait d'union conditionnel
+  espace demi-cadratin · espace cadratin · espace de chiffre (chasse du 0)
+  espace fine · espace fine insécable (celle des milliers : 12 000)
   accents combinants : grave · aigu · circonflexe · tilde · tréma · rond en chef
   (un accent combinant se colle au caractère qui le précède : collé seul dans
   InDesign il ne montrera rien, ou se greffera sur la lettre d'avant)
@@ -74,7 +79,7 @@ fractions, sups pour les exposants, subs pour les indices, dlig pour tt) :
   zero.sups … nine.sups   (dessins des exposants, 10)
   glyph249 (barre de fraction)
 
-Total : 264 visibles + 10 invisibles = 274 caractères
+Total : 269 visibles + 15 invisibles = 284 caractères
 
 Remarque : les fractions ¼ ½ ¾ existent en glyphes tout faits. Pour les autres
 (3/8, 7/16…), activez la fonctionnalité « Fractions » dans InDesign : elle

@@ -25,8 +25,9 @@ Coverage: Basic Latin, Latin-1 Supplement, plus the ISO 8859-15 additions.
 This covers French, German, English, Italian and Spanish in full.
 It does NOT cover Central European, Turkish, Greek or Cyrillic: the eight
 Greek letters added below are technical symbols, not Greek-language support.
-Technical signs: − ≤ ≥ ≈ ≠ ∞ √, arrows ← → ↔ ↑ ↓, Δ Ω α β μ π σ φ,
-superiors ⁰-⁹ ⁺ ⁻ and inferiors ₀-₉, fraction slash ⁄.
+Technical signs: − ≤ ≥ ≈ ≠ ∞ √ ′ ″, arrows ← → ↔ ↑ ↓, Δ Ω α β μ π σ φ,
+superiors ⁰-⁹ ⁺ ⁻ and inferiors ₀-₉, fraction slash ⁄; typographic spaces
+(en, em, figure, thin, narrow no-break) and hyphens ‐ ‑.
 
 Styles
 ------
@@ -156,7 +157,15 @@ family without a master of their own, like the diameter sign:
     reduced, to within 1.5% of its area. The new superiors are made the
     same way, with the source weight, width and sidebearings fitted on the
     original superiors 0-4. ⁰ and ⁴ already existed, without a code point;
+  - primes ′ ″ (minutes of arc, inches): the straight quotes, leaned by
+    16 degrees; U+2205 EMPTY SET, often typed for a diameter, maps to the
+    diameter sign like U+2300;
   - inferiors ₀-₉: the superiors, lowered by 580 units;
+  - spaces: en (500), em (1000), figure (the advance of the zero), thin and
+    narrow no-break (0.6 of the word space). InDesign sets the narrow
+    no-break space between thousands and before : ; ? ! in French; without
+    it, a "12 000" set in DIN Pro shows a missing glyph once switched;
+  - hyphen ‐ and non-breaking hyphen ‑: references to the hyphen;
   - numerators and denominators 5-9: references to the superiors, offset
     like those of 0-4.
 
@@ -242,10 +251,11 @@ Known limitations
 
 ChangeLog
 ---------
-2026-10-29          Technical signs: − ≤ ≥ ≈ ≠ ∞ √ ← → ↔ ↑ ↓ Δ Ω α β μ π σ φ,
-                    superiors ⁰ ⁴-⁹ ⁺ ⁻, inferiors ₀-₉, fraction slash ⁄;
-                    numerators and denominators 5-9 (tools/symboles.py).
-                    42 characters, 55 glyphs per file. GSUB rewritten:
+2026-10-29          Technical signs: − ≤ ≥ ≈ ≠ ∞ √ ′ ″ ← → ↔ ↑ ↓ Δ Ω α β μ π
+                    σ φ, superiors ⁰ ⁴-⁹ ⁺ ⁻, inferiors ₀-₉, fraction slash ⁄,
+                    typographic spaces, hyphens ‐ ‑; ∅ mapped to the diameter
+                    sign; numerators and denominators 5-9
+                    (tools/symboles.py). 52 characters, 64 glyphs per file. GSUB rewritten:
                     frac composes any fraction, sups/subs/numr/dnom cover the
                     ten figures, all features registered under DFLT and latn.
                     Verified: all existing glyphs, advances and kerning of

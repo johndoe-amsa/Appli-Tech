@@ -109,7 +109,8 @@ def _aires(chemin):
 
 
 # Signes ajoutes par tools/symboles.py : tous doivent etre la.
-SIGNES = [ord(c) for c in "−≤≥≈≠∞√←↑→↓↔ΔΩαβμπσφ∆Ω⁰⁴⁵⁶⁷⁸⁹⁺⁻₀₁₂₃₄₅₆₇₈₉⁄"]
+SIGNES = [ord(c) for c in "−≤≥≈≠∞√←↑→↓↔ΔΩαβμπσφ∆Ω⁰⁴⁵⁶⁷⁸⁹⁺⁻₀₁₂₃₄₅₆₇₈₉⁄‐‑′″∅"] + \
+    [0x2002, 0x2003, 0x2007, 0x2009, 0x202F]   # espaces
 
 
 # Glyphes redessines apres coup, qui ne suivent plus les masters : le Ø,

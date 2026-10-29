@@ -7,9 +7,11 @@ une autre police, d'un autre dessin. Ils sont construits ici, graisse par
 graisse, a partir des signes de la meme police, si bien qu'ils suivent la
 famille sans master a part - comme le Ø de tools/diametre.py :
 
-  operateurs   − ≤ ≥ ≈ ≠ ∞ √      d'apres + = < ± ~ / : meme trait, meme axe,
+  operateurs   − ≤ ≥ ≈ ≠ ∞ √ ′ ″  d'apres + = < ± ~ / : meme trait, meme axe,
                                    meme chasse ; le chevron de ≤ est celui
-                                   du <, retrace a la hauteur voulue ;
+                                   du <, retrace a la hauteur voulue ; les
+                                   primes sont les guillemets droits couches ;
+                                   ∅ vise le Ø, comme ⌀ ;
   fleches      ← → ↔ ↑ ↓          fut du −, pointe tiree du chevron du < ;
   grec         Δ Ω α β μ π σ φ    d'apres A, O, q, µ, n, z, o : leurs futs,
                                    leurs delies, leurs rondes ; μ est le µ ;
@@ -18,7 +20,10 @@ famille sans master a part - comme le Ø de tools/diametre.py :
   exposants    ⁰ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻   ⁰ et ⁴ existaient deja sans code ; ⁵ a ⁹,
                                    ⁺ et ⁻ (min⁻¹) sont tires des chiffres et
                                    du + de la police (voir plus bas) ;
-  indices      ₀ … ₉              les exposants, descendus sous la ligne.
+  indices      ₀ … ₉              les exposants, descendus sous la ligne ;
+  espaces      demi-cadratin, cadratin, espace de chiffre (la chasse du 0),
+               espace fine et espace fine insecable (0,6 espace-mot) ;
+  traits       ‐ et ‑ (insecable) : le trait d'union.
 
 Les chiffres numerateurs et denominateurs 5 a 9 sont ajoutes en passant, et
 GSUB est reecrite : les fonctionnalites "Exposant" et "Indice" couvrent les
@@ -64,7 +69,8 @@ CHIFFRES = ["zero", "one", "two", "three", "four",
 # Codes et noms des glyphes dessines ici.
 OPERATEURS = {"minus": 0x2212, "lessequal": 0x2264, "greaterequal": 0x2265,
               "approxequal": 0x2248, "notequal": 0x2260, "infinity": 0x221E,
-              "radical": 0x221A}
+              "radical": 0x221A, "minute": 0x2032, "second": 0x2033}
+VIDE = 0x2205      # ∅, souvent tape pour un diametre : le meme dessin que Ø
 FLECHES = {"arrowleft": 0x2190, "arrowup": 0x2191, "arrowright": 0x2192,
            "arrowdown": 0x2193, "arrowboth": 0x2194}
 GREC = {"Delta": (0x0394, 0x2206), "Omega": (0x03A9, 0x2126), "alpha": (0x03B1,),
@@ -74,6 +80,12 @@ EXPOSANTS_CODES = {0: 0x2070, 1: 0x00B9, 2: 0x00B2, 3: 0x00B3, 4: 0x2074,
                    5: 0x2075, 6: 0x2076, 7: 0x2077, 8: 0x2078, 9: 0x2079}
 INDICES_CODES = {i: 0x2080 + i for i in range(10)}
 FRACTION = 0x2044                # barre de fraction
+# Espaces typographiques, sans dessin : InDesign pose l'espace fine
+# insecable (U+202F) entre les milliers et devant : ; ? ! en francais.
+ESPACES = {"uni2002": 0x2002, "uni2003": 0x2003, "uni2007": 0x2007,
+           "uni2009": 0x2009, "uni202F": 0x202F}
+FINE = 0.6                        # espace fine, en part de l'espace-mot
+TRAITS = {"uni2010": 0x2010, "uni2011": 0x2011}   # trait d'union, insecable
 
 INDICE_DY = -580   # l'exposant, descendu : de -156 a 274 environ, sous la ligne
 
@@ -474,6 +486,24 @@ def d_radical(m):
     return [(p, False)], m["eq_chasse"]
 
 
+def _prime(m, nom):
+    """Le guillemet droit, couche comme un prime : pied rentre, tete dehors."""
+    f = m["font"]
+    p = chemin(f, nom)
+    x0, y0, x1, y1 = p.bounds
+    k = math.tan(math.radians(16))
+    q = transforme(p, (1, 0, k, 1, -k * (y0 + y1) / 2, 0))
+    return [(q, False)], f["hmtx"][nom][0]
+
+
+def d_minute(m):
+    return _prime(m, "quotesingle")
+
+
+def d_second(m):
+    return _prime(m, "quotedbl")
+
+
 # ---------------------------------------------------------------- fleches --
 
 def _fleche(m, gauche, droite):
@@ -672,7 +702,7 @@ def d_phi(m):
 DESSINS = {
     "minus": d_minus, "lessequal": d_lessequal, "greaterequal": d_greaterequal,
     "approxequal": d_approxequal, "notequal": d_notequal, "infinity": d_infinity,
-    "radical": d_radical,
+    "radical": d_radical, "minute": d_minute, "second": d_second,
     "arrowleft": d_arrowleft, "arrowright": d_arrowright, "arrowboth": d_arrowboth,
     "arrowup": d_arrowup, "arrowdown": d_arrowdown,
     "Delta": d_Delta, "Omega": d_Omega, "alpha": d_alpha, "beta": d_beta,
@@ -946,8 +976,21 @@ def appliquer(chemin_ttf, dessins, sups):
         dx = SLANT * INDICE_DY if italique else 0
         composite(font, f"uni{INDICES_CODES[i]:04X}", base, dx, INDICE_DY, ch, [INDICES_CODES[i]])
 
+    # espaces typographiques et traits d'union
+    mot = font["hmtx"]["space"][0]
+    largeurs = {"uni2002": 500, "uni2003": 1000, "uni2007": font["hmtx"]["zero"][0],
+                "uni2009": round(FINE * mot), "uni202F": round(FINE * mot)}
+    for nom, code in ESPACES.items():
+        _ajouter(font, nom, Glyph(), largeurs[nom], [code])
+    for nom, code in TRAITS.items():
+        composite(font, nom, "hyphen", 0, 0, font["hmtx"]["hyphen"][0], [code])
+
     # μ grec : le µ
     composite(font, "uni03BC", "uni00B5", 0, 0, font["hmtx"]["uni00B5"][0], [MU])
+
+    for t in font["cmap"].tables:
+        if t.isUnicode():
+            t.cmap[VIDE] = "Oslash"
 
     # barre de fraction : celle des fractions toutes faites
     if "glyph249" in glyf:

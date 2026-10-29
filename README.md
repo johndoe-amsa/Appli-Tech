@@ -181,14 +181,21 @@ construit graisse par graisse, à partir des signes de la même police, comme le
 | Signes | Construits d'après |
 |---|---|
 | `−` `≤` `≥` `≈` `≠` `∞` `√` | le trait, l'axe et la chasse du `+` et du `=` ; le chevron du `<`, retracé à la hauteur voulue ; deux `~` ; la pente du `/` |
+| `′` `″` | les guillemets droits, couchés (minutes d'angle, pouces) |
 | `←` `→` `↔` `↑` `↓` | la barre du `−`, une pointe tirée du chevron du `<` |
 | `Δ` `Ω` `α` `β` `μ` `π` `σ` `φ` | le `A` fermé, le `O` ouvert en pied, le `q`, les fûts du `n`, la barre du `z`, les rondes du `o` ; `μ` est le `µ` |
 | `⁰` `⁴`…`⁹` `⁺` `⁻` | les chiffres et le `+` d'une graisse plus forte, réduits |
 | `₀`…`₉` | les exposants, descendus sous la ligne |
 | `⁄` | la barre des fractions toutes faites |
+| espaces, `‐` `‑` | demi-cadratin, cadratin, espace de chiffre, espace fine et **espace fine insécable** ; traits d'union |
+
+L'espace fine insécable (U+202F) est celle qu'InDesign pose entre les
+milliers et devant `: ; ? !` en français : sans elle, un « 12 000 » composé en
+DIN Pro afficherait un glyphe manquant une fois passé en Appli-Tec.
 
 `∆` (U+2206) et `Ω` (U+2126), que proposent certains claviers et logiciels,
-pointent sur les mêmes dessins que `Δ` et `Ω`. Les huit lettres grecques sont
+pointent sur les mêmes dessins que `Δ` et `Ω` ; `∅` (U+2205), souvent tapé
+pour un diamètre, pointe sur le `Ø` rond, comme `⌀`. Les huit lettres grecques sont
 des symboles techniques : la police ne compose pas un texte en grec.
 
 **Les exposants d'origine ne sont pas des chiffres réduits** — un chiffre
