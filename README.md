@@ -182,7 +182,7 @@ construit graisse par graisse, à partir des signes de la même police, comme le
 |---|---|
 | `−` `≤` `≥` `≈` `≠` `∞` `√` | le trait, l'axe et la chasse du `+` et du `=` ; le chevron du `<`, retracé à la hauteur voulue ; deux `~` ; la pente du `/` |
 | `′` `″` | les guillemets droits, couchés (minutes d'angle, pouces) |
-| `←` `→` `↔` `↑` `↓` | la barre du `−`, une pointe tirée du chevron du `<` |
+| `←` `→` `↔` `↑` `↓` | la barre du `−`, une pointe ouverte à 45°, aux branches longues et à la pointe vive |
 | `Δ` `Ω` `α` `β` `μ` `π` `σ` `φ` | le `A` fermé, le `O` ouvert en pied, le `q`, les fûts du `n`, la barre du `z`, les rondes du `o` ; `μ` est le `µ` |
 | `⁰` `⁴`…`⁹` `⁺` `⁻` | les chiffres et le `+` d'une graisse plus forte, réduits |
 | `₀`…`₉` | les exposants, descendus sous la ligne |

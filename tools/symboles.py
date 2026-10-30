@@ -12,7 +12,7 @@ famille sans master a part - comme le Ø de tools/diametre.py :
                                    du <, retrace a la hauteur voulue ; les
                                    primes sont les guillemets droits couches ;
                                    ∅ vise le Ø, comme ⌀ ;
-  fleches      ← → ↔ ↑ ↓          fut du −, pointe tiree du chevron du < ;
+  fleches      ← → ↔ ↑ ↓          fut du −, pointe ouverte a 45 degres ;
   grec         Δ Ω α β μ π σ φ    d'apres A, O, q, µ, n, z, o : leurs futs,
                                    leurs delies, leurs rondes ; μ est le µ ;
                                    ∆ (U+2206) et Ω (U+2126) visent les memes
@@ -404,14 +404,21 @@ def d_minus(m):
 
 
 def _barre_et_chevron(m, vers_gauche):
+    """Chevron du <, barre du = dessous, le tout centre sur l'axe des
+    operateurs, a peine plus haut que le < : cale sur la boite du ±, le
+    signe descendait jusqu'a la ligne de base."""
     x0, _, x1, _ = m["eq"]
-    b0, b1 = m["pm_barre"]
-    haut = m["pm"][3]
-    ecart = 0.6 * m["trait"]
-    h = haut - (b1 + ecart)
-    cy = haut - h / 2
+    ep = m["trait"]
+    c = m["chevron"]
+    (b0, b1) = m["eq_barres"][0]
+    barre = b1 - b0
+    H = c["h"] + 0.9 * ep
+    bas = m["axe"] - H / 2
+    ecart = 0.5 * ep
+    h = H - barre - ecart
+    cy = bas + barre + ecart + h / 2
     pts = chevron(m, x0, x1, cy, h) if vers_gauche else chevron(m, x1, x0, cy, h)
-    return [(rect(x0, b0, x1, b1), False), (poly(*pts), True)], m["eq_chasse"]
+    return [(rect(x0, bas, x1, bas + barre), False), (poly(*pts), True)], m["eq_chasse"]
 
 
 def d_lessequal(m):
@@ -526,38 +533,33 @@ def d_second(m):
 
 # ---------------------------------------------------------------- fleches --
 
-def _fleche(m, gauche, droite):
+def _fleche(m, gauche, droite, longueur=None):
+    """Fleche couchee : la tige du −, une pointe ouverte a 45 degres, aux
+    branches longues et a la pointe vive, du meme trait."""
     x0, _, x1, _ = m["eq"]
     ep = m["trait"]
-    # la pointe grandit avec le trait : a taille fixe, ses branches
-    # raccourcissent a mesure qu'elles epaississent, et des le Bold le
-    # chevron se referme en un bloc
-    w = (x1 - x0) * 1.3 + 0.5 * ep
+    w = longueur or (x1 - x0) * 1.55 + 0.5 * ep
+    if gauche and droite and not longueur:
+        w *= 1.12
+    a = 0.26 * ((x1 - x0) * 1.55) + 0.25 * ep      # avancee d'une branche
     lsb = x0
     chasse = round(w + 2 * lsb)
-    a, b = lsb, lsb + w
     y0, y1 = m["barre_plus"]
     cy = (y0 + y1) / 2
-    c = m["chevron"]
-    hh = 0.28 * c["h"] + 0.9 * ep    # demi-hauteur de la pointe
-    L = hh * 1.0                     # branches a 45 degres
-    if gauche and droite:
-        # deux pointes : la fleche s'allonge pour que la tige reste visible
-        w += 0.6 * L
-        chasse = round(w + 2 * lsb)
-        b = lsb + w
+    d = ep / math.sqrt(2)            # la pointe en onglet depasse de d
+    debut, fin = lsb, lsb + w
     morceaux = []
-    fut_a, fut_b = a, b
-    if gauche:
-        pts = chevron(m, a, a + L, cy, 2 * hh)
-        morceaux.append((poly(*pts), True))
-        fut_a = pts[4][0] - 1
+    tige_a, tige_b = debut, fin
     if droite:
-        pts = chevron(m, b, b - L, cy, 2 * hh)
-        morceaux.append((poly(*pts), True))
-        fut_b = pts[4][0] + 1
-    morceaux.insert(0, (rect(fut_a, y0, fut_b, y1), False))
-    return morceaux, chasse
+        xt = fin - d
+        morceaux.append(trait([(xt - a, cy + a), (xt, cy), (xt - a, cy - a)], ep))
+        tige_b = xt
+    if gauche:
+        xt = debut + d
+        morceaux.append(trait([(xt + a, cy + a), (xt, cy), (xt + a, cy - a)], ep))
+        tige_a = xt
+    morceaux.append(rect(tige_a, y0, tige_b, y1))
+    return [(union(*morceaux), False)], chasse
 
 
 def d_arrowright(m):
@@ -573,19 +575,19 @@ def d_arrowboth(m):
 
 
 def _verticale(m, vers_haut):
-    morceaux, w = _fleche(m, False, True)
-    # la fleche couchee, tournee d'un quart de tour, centree a mi-capitale
-    cx, cy = w / 2, (m["barre_plus"][0] + m["barre_plus"][1]) / 2
-    chasse = m["eq_chasse"]
+    # la fleche couchee, a la hauteur des capitales, tournee d'un quart de
+    # tour ; la chasse est celle de la pointe
+    x0 = m["eq"][0]
+    morceaux, w = _fleche(m, False, True, longueur=m["cap"])
+    p = morceaux[0][0]
+    bx0, by0, bx1, by1 = p.bounds
+    cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
+    chasse = round(by1 - by0 + 2 * x0)
     s = 1 if vers_haut else -1
-    t = (0, s, -s, 0, 0, 0)          # rotation de +-90 degres
-    out = []
-    for p, chev in morceaux:
-        q = transforme(p, (1, 0, 0, 1, -cx, -cy))
-        q = transforme(q, t)
-        q = transforme(q, (1, 0, 0, 1, chasse / 2, m["cap"] / 2))
-        out.append((q, chev))
-    return out, chasse
+    q = transforme(p, (1, 0, 0, 1, -cx, -cy))
+    q = transforme(q, (0, s, -s, 0, 0, 0))          # rotation de +-90 degres
+    q = transforme(q, (1, 0, 0, 1, chasse / 2, m["cap"] / 2))
+    return [(q, False)], chasse
 
 
 def d_arrowup(m):

@@ -143,9 +143,11 @@ family without a master of their own, like the diameter sign:
 
   - operators − ≤ ≥ ≈ ≠ ∞ √: the stroke, axis and advance of + and =; the
     chevron of ≤ ≥ is the chevron of <, retraced at the required height
-    with the same perpendicular thickness at the tips and at the notch; ≈ is
+    with the same perpendicular thickness at the tips and at the notch, the
+    whole sign centred on the operator axis like = and <; ≈ is
     two tildes spaced as the bars of =; ≠ is = crossed at the slope of /;
-  - arrows ← → ↔ ↑ ↓: the bar of the minus, heads drawn from the chevron of <;
+  - arrows ← → ↔ ↑ ↓: the bar of the minus, an open 45-degree head with
+    long arms and a sharp point, in the same stroke;
   - Greek Δ Ω α β μ π σ φ: from A (closed), O (opened at the bottom, feet
     outwards), q (without descender, with a foot), the n stems and z bar
     (π), the o (σ, and the rounds of β and φ, rebuilt from the curvature
