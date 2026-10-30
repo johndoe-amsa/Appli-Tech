@@ -473,17 +473,30 @@ def d_infinity(m):
 
 
 def d_radical(m):
-    """Le radical : un court jambage, le V jusqu'a la ligne de base, la
-    montee jusqu'a la hauteur des capitales, la barre."""
+    """Le radical : un jambage qui descend jusqu'a la ligne de base, la
+    montee jusqu'a la hauteur des capitales, la barre.
+
+    Construit en aplats plutot qu'en trait epaissi : le creux entre le
+    jambage et la montee s'elargit avec la graisse, sans quoi il se bouche
+    des le Bold.
+    """
     x0, _, x1, _ = m["eq"]
     ep = m["trait"]
-    top = m["cap"] - ep / 2
-    xv = x0 + 0.42 * (x1 - x0)
-    pts = [(x0 - ep, 0.46 * m["cap"] + 0.25 * ep), (x0 + 0.12 * (x1 - x0), 0.46 * m["cap"]),
-           (xv, -ep), (x0 + 0.72 * (x1 - x0), top), (x1, top)]
-    p = trait(pts, ep, limite=2.0)
-    p = inter(p, rect(x0, 0, x1 + ep, m["cap"]))
-    return [(p, False)], m["eq_chasse"]
+    cap = m["cap"]
+    W = 1.15 * (x1 - x0) + 0.6 * ep
+    xb = 0.30 * W + 0.4 * ep                  # pied de la montee
+    course = 0.20 * W                         # avancee de la montee
+    hw = ep / math.sin(math.atan2(cap, course))
+    montee = poly((xb, 0), (xb + hw, 0), (xb + course + hw, cap), (xb + course, cap))
+    barre = rect(xb + course, cap - 0.9 * ep, W, cap)
+    # jambage : du haut a gauche jusqu'au pied de la montee, bout coupe
+    # d'equerre
+    ha = 0.40 * cap + 0.2 * ep
+    jambage = trait([(0, ha), (xb + 0.35 * hw, -ep)], 0.9 * ep)
+    p = inter(union(montee, barre, jambage), rect(-10 * ep, 0, W + 1, cap))
+    b = p.bounds
+    p = transforme(p, (1, 0, 0, 1, x0 - b[0], 0))
+    return [(p, False)], round(b[2] - b[0] + 2 * x0)
 
 
 def _prime(m, nom):
@@ -614,24 +627,37 @@ def d_Delta(m):
 
 
 def d_Omega(m):
-    """Le O, ouvert en bas : ses flancs descendent jusqu'aux pieds, qui
-    filent vers l'exterieur sur la ligne de base."""
+    """Le O, ouvert en bas : ses flancs descendent droit jusqu'aux pieds,
+    qui filent vers l'exterieur sur la ligne de base.
+
+    La coupe se fait tant que la contreforme est encore large : plus bas,
+    aux graisses fortes, elle se referme et les deux jambes se touchaient.
+    """
     f = m["font"]
     O = chemin(f, "O")
     x0, y0, x1, y1 = O.bounds
-    fut = coupe_h(O, (y0 + y1) / 2)[0]
+    cy = (y0 + y1) / 2
+    fut = coupe_h(O, cy)[0]
     fut = fut[1] - fut[0]
     pied = m["E_pied"][1] - m["E_pied"][0]
-    # coupe ou le flanc exterieur est deja rentre d'un demi-fut
-    y = (y0 + y1) / 2
-    while y > y0 + pied and coupe_h(O, y)[0][0] - x0 < 0.5 * fut:
+
+    def contre(y):
+        c = coupe_h(O, y)
+        return c[-1][0] - c[0][1] if len(c) >= 2 else 0
+    large = contre(cy)
+    y = cy
+    while y > y0 + pied and contre(y - 2) >= 0.70 * large \
+            and coupe_h(O, y - 2)[0][0] - x0 < 0.35 * fut:
         y -= 2
-    yc = y
-    g, d = coupe_h(O, yc)[0], coupe_h(O, yc)[-1]
-    corps = inter(O, rect(x0 - 10, yc, x1 + 10, y1 + 10))
-    jambes = union(rect(g[0], 0, g[1], yc + 1), rect(d[0], 0, d[1], yc + 1))
-    pieds = union(rect(x0, 0, g[1], pied), rect(d[0], 0, x1, pied))
-    return [(union(corps, jambes, pieds), False)], f["hmtx"]["O"][0]
+    g, d = coupe_h(O, y)[0], coupe_h(O, y)[-1]
+    corps = inter(O, rect(x0 - 10, y, x1 + 10, y1 + 10))
+    jambes = union(rect(g[0], 0, g[1], y + 1), rect(d[0], 0, d[1], y + 1))
+    # pieds : au moins 0,6 fut au-dela des jambes, quitte a elargir la chasse
+    deb = max(0.0, (x0 - (g[0] - 0.6 * fut)))
+    pieds = union(rect(x0 - deb, 0, g[1], pied), rect(d[0], 0, x1 + deb, pied))
+    p = union(corps, jambes, pieds)
+    p = transforme(p, (1, 0, 0, 1, deb, 0))
+    return [(p, False)], round(f["hmtx"]["O"][0] + 2 * deb)
 
 
 def d_alpha(m):
