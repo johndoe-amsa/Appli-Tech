@@ -379,18 +379,37 @@ def quarts_du_o(f):
     return out       # exterieur, interieur
 
 
-def anneau(m, x0, y0, x1, y1, fut, delie, contre_droit=False):
+def anneau(m, x0, y0, x1, y1, fut, delie, carres=()):
     """Anneau de la DIN dans la boite donnee : futs fut, delies delie.
 
-    contre_droit : contreforme a angles droits du cote gauche, contre le
-    fut, comme les panses du B.
+    carres : coins de la contreforme a angle droit, contre un fut -
+    "hg" (haut-gauche), "bg" (bas-gauche).
     """
     ext, intr = m["quarts"]
     cx0, cy0, cx1, cy1 = x0 + fut, y0 + delie, x1 - fut, y1 - delie
     contre = stade(cx0, cy0, cx1, cy1, intr)
-    if contre_droit:
-        contre = union(contre, rect(cx0, cy0, (cx0 + cx1) / 2, cy1))
+    mx, my = (cx0 + cx1) / 2, (cy0 + cy1) / 2
+    if "hg" in carres:
+        contre = union(contre, rect(cx0, my, mx, cy1))
+    if "bg" in carres:
+        contre = union(contre, rect(cx0, cy0, mx, my))
     return moins(stade(x0, y0, x1, y1, ext), contre)
+
+
+def arc(pen, cx, cy, r, a0, a1):
+    """Arc de cercle de a0 a a1 (degres), en cubiques d'au plus 90 degres."""
+    n = max(1, math.ceil(abs(a1 - a0) / 90))
+    pas = math.radians((a1 - a0) / n)
+    k = 4 / 3 * math.tan(pas / 4)
+    t = math.radians(a0)
+    for _ in range(n):
+        u = t + pas
+        p0 = (cx + r * math.cos(t), cy + r * math.sin(t))
+        p3 = (cx + r * math.cos(u), cy + r * math.sin(u))
+        c1 = (p0[0] - k * r * math.sin(t), p0[1] + k * r * math.cos(t))
+        c2 = (p3[0] + k * r * math.sin(u), p3[1] - k * r * math.cos(u))
+        pen.curveTo(c1, c2, p3)
+        t = u
 
 
 # ------------------------------------------------------------- operateurs --
@@ -454,33 +473,30 @@ def d_notequal(m):
 
 
 def d_infinity(m):
-    """Deux boucles qui se croisent, d'un seul trait de la graisse des operateurs."""
-    x0, _, x1, _ = m["eq"]
+    """Deux boucles rondes, reliees par deux droites qui se croisent au
+    centre, d'un seul trait de la graisse des operateurs."""
+    x0 = m["eq"][0]
     ep = m["trait"]
-    # plus large et plus haut a mesure que le trait epaissit, pour que les
-    # contreformes restent ouvertes
-    w = (x1 - x0) * 1.25 + 1.0 * ep
-    lsb = x0
-    chasse = round(w + 2 * lsb)
+    # plus haut a mesure que le trait epaissit, pour garder les boucles
+    # ouvertes
+    H = 0.62 * m["x"] + 0.60 * ep
+    r = (H - ep) / 2                 # rayon de la ligne mediane
+    d = 1.38 * r                     # du centre a celui d'une boucle
+    al = math.degrees(math.asin(r / d))
+    W = 2 * (d + r) + ep
+    chasse = round(W + 2 * x0)
     cx, cy = chasse / 2, m["axe"]
-    a = (w - ep) / 2                 # demi-largeur de la ligne mediane
-    b = 0.20 * w + 0.35 * ep         # demi-hauteur d'une boucle
-    xm = 0.52 * a                    # sommet d'une boucle
-    k = 1.1 * b / xm                 # pente de la croisee
-    # ligne mediane : du centre, la boucle droite dans le sens horaire, puis
-    # la gauche ; tangente horizontale aux sommets, verticale aux bouts
+    ta = math.radians(al)
     p = pathops.Path()
     pen = p.getPen()
     pen.moveTo((cx, cy))
-    for s in (1, -1):
-        pen.curveTo((cx + s * 0.45 * xm, cy + 0.45 * xm * k), (cx + s * 0.6 * xm, cy + b),
-                    (cx + s * xm, cy + b))
-        pen.curveTo((cx + s * (xm + 0.55 * (a - xm)), cy + b), (cx + s * a, cy + 0.55 * b),
-                    (cx + s * a, cy))
-        pen.curveTo((cx + s * a, cy - 0.55 * b), (cx + s * (xm + 0.55 * (a - xm)), cy - b),
-                    (cx + s * xm, cy - b))
-        pen.curveTo((cx + s * 0.6 * xm, cy - b), (cx + s * 0.45 * xm, cy - 0.45 * xm * k),
-                    (cx, cy))
+    # boucle droite, sens horaire : du point de tangence haut au bas
+    pen.lineTo((cx + d - r * math.sin(ta), cy + r * math.cos(ta)))
+    arc(pen, cx + d, cy, r, 90 + al, -90 - al)
+    pen.lineTo((cx, cy))
+    # boucle gauche, sens direct
+    pen.lineTo((cx - d + r * math.sin(ta), cy + r * math.cos(ta)))
+    arc(pen, cx - d, cy, r, 90 - al, 270 + al)
     pen.closePath()
     p.stroke(ep, pathops.LineCap.BUTT_CAP, pathops.LineJoin.ROUND_JOIN, 4)
     return [(pathops.simplify(p, clockwise=True), False)], chasse
@@ -684,26 +700,29 @@ def d_alpha(m):
 
 
 def d_beta(m):
-    """Fut du p, deux panses comme celles du B, l'arrondi du haut tire du o."""
+    """Fut du p ; la panse du haut, plus etroite, revient en une courte
+    attache qui ne touche pas le fut ; la panse du bas en repart et rejoint
+    le fut par une courbe. L'arrondi du haut et les rondes sont ceux du o."""
     fut = m["fut"]
     delie = m["o_delie"][1] - m["o_delie"][0]
-    lsb = m["n_marges"][0]
-    x0 = lsb
+    x0 = m["n_marges"][0]
     ow = m["o_box"][2] - m["o_box"][0]
-    xl = x0 + 0.98 * ow
-    xh = x0 + 0.86 * ow
+    # les panses s'elargissent avec le fut, sans quoi les contreformes se
+    # reduisent a une fente aux graisses fortes
+    xl = x0 + 0.86 * ow + 0.65 * fut
+    xh = x0 + 0.72 * ow + 0.65 * fut
     haut = m["asc"] + (m["o_box"][3] - m["x"])          # depassement du o
     bas = m["o_box"][1]
-    ym = round(0.54 * m["asc"])
-    panse_h = anneau(m, x0, ym, xh, haut, fut, delie, contre_droit=True)
-    panse_b = anneau(m, x0, bas, xl, ym + delie, fut, delie, contre_droit=True)
-    # le fut monte jusqu'a l'arrondi du haut : la panse superieure s'y
-    # raccorde sans echancrure
-    # la barre du milieu part du fut sans encoche : les arrondis exterieurs
-    # des deux panses y laissaient un creux, plus large que le fut aux
-    # graisses maigres
-    milieu = rect(x0, ym, (x0 + xh) / 2, ym + delie)
-    p = union(rect(x0, m["desc"], x0 + fut, (ym + haut) / 2), milieu, panse_h, panse_b)
+    # la jonction descend a mesure que les delies epaississent : la panse du
+    # haut, plus petite, garde une contreforme ouverte
+    ym = round(0.54 * m["asc"] - 0.5 * delie)
+    panse_h = anneau(m, x0, ym, xh, haut, fut, delie, carres=("bg",))
+    panse_b = anneau(m, x0, bas, xl, ym + delie, fut, delie, carres=("hg",))
+    fut_g = rect(x0, m["desc"], x0 + fut, (ym + haut) / 2)
+    p = union(fut_g, panse_h, panse_b)
+    # l'attache s'arrete avant le fut : les deux contreformes communiquent
+    jour = 0.5 * fut + 0.06 * ow
+    p = moins(p, rect(x0 + fut, ym - 1, x0 + fut + jour, ym + delie + 1))
     return [(p, False)], round(xl + m["o_marges"][1])
 
 
