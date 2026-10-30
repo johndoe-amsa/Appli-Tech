@@ -108,6 +108,11 @@ def _aires(chemin):
     return out
 
 
+# Signes ajoutes par tools/symboles.py : tous doivent etre la.
+SIGNES = [ord(c) for c in "−≤≥≈≠∞√←↑→↓↔ΔΩαβμπσφ∆Ω⁰⁴⁵⁶⁷⁸⁹⁺⁻₀₁₂₃₄₅₆₇₈₉⁄‐‑′″∅"] + \
+    [0x2002, 0x2003, 0x2007, 0x2009, 0x202F]   # espaces
+
+
 # Glyphes redessines apres coup, qui ne suivent plus les masters : le Ø,
 # devenu cercle barre (tools/diametre.py).
 REDESSINES = {"Oslash"}
@@ -155,6 +160,21 @@ def controler(chemin):
 
     if "GSUB" not in f or not f["GSUB"].table.FeatureList.FeatureRecord:
         pbs.append("GSUB absente (ligatures, fractions, exposants perdus)")
+    else:
+        # InDesign interroge latn : une fonctionnalite declaree sous DFLT
+        # seulement n'y existe pas
+        gs = f["GSUB"].table
+        for sr in gs.ScriptList.ScriptRecord:
+            tags = {gs.FeatureList.FeatureRecord[i].FeatureTag
+                    for i in sr.Script.DefaultLangSys.FeatureIndex}
+            manque = {"liga", "frac", "sups", "subs", "numr", "dnom"} - tags
+            if manque:
+                pbs.append(f"GSUB : {', '.join(sorted(manque))} absent(s) de l'ecriture {sr.ScriptTag}")
+
+    cm = f.getBestCmap()
+    absents = [chr(c) for c in SIGNES if c not in cm]
+    if absents:
+        pbs.append(f"signes techniques absents : {' '.join(absents)} (tools/symboles.py)")
     if "GDEF" not in f:
         pbs.append("GDEF absente")
 

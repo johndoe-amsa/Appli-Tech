@@ -1,10 +1,11 @@
 #!/bin/sh
 # Reconstruit la famille Appli-Tec entiere, dans l'ordre.
 #
-# L'ordre compte : le Ø rond, le crenage puis le hinting sont ecrits DANS les
-# fichiers produits par les deux generateurs. Relancer un generateur seul
-# efface les trois pour la graisse concernee - il faut alors repasser
-# diametre.py, appliquer_crenage.py et appliquer_hinting.py dessus.
+# L'ordre compte : le Ø rond, les signes techniques, le crenage puis le
+# hinting sont ecrits DANS les fichiers produits par les deux generateurs.
+# Relancer un generateur seul efface les quatre pour la graisse concernee - il
+# faut alors repasser diametre.py, symboles.py, appliquer_crenage.py et
+# appliquer_hinting.py dessus.
 set -e
 cd "$(dirname "$0")/.."
 
@@ -31,6 +32,9 @@ python3 tools/build.py  1.3333 800 Heavy   Condensed
 
 echo "== signe de diametre (Ø rond) =="
 python3 tools/diametre.py fonts/ttf/*.ttf
+
+echo "== signes techniques (≤ ≈ Ω ₂ ...) =="
+python3 tools/symboles.py fonts/ttf/*.ttf
 
 echo "== crenage =="
 python3 tools/appliquer_crenage.py fonts/ttf/*.ttf

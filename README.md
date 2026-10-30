@@ -171,6 +171,49 @@ Le signe de diamètre du standard, `⌀` (U+2300), pointe sur le même dessin :
 un texte copié depuis un logiciel de DAO s'affiche à l'identique. Le `ø`
 minuscule n'est pas touché.
 
+## Les signes techniques
+
+Une fiche technique écrit « ≤ 0,01 mm », « ≈ 12 kg », « H₂O », « 12 000 min⁻¹ »,
+« Ω », « Δt ». D-DIN n'avait aucun de ces signes : Word et InDesign les allaient
+chercher dans une autre police, d'un autre dessin. `tools/symboles.py` les
+construit graisse par graisse, à partir des signes de la même police, comme le Ø :
+
+| Signes | Construits d'après |
+|---|---|
+| `−` `≤` `≥` `≈` `≠` `∞` `√` | le trait, l'axe et la chasse du `+` et du `=` ; le chevron du `<`, retracé à la hauteur voulue ; deux `~` ; la pente du `/` |
+| `′` `″` | les guillemets droits, couchés (minutes d'angle, pouces) |
+| `←` `→` `↔` `↑` `↓` | la barre du `−`, une pointe ouverte à 45°, aux branches longues et à la pointe vive |
+| `Δ` `Ω` `α` `β` `μ` `π` `σ` `φ` | le `A` fermé, le `O` ouvert en pied, le `q`, les fûts du `n`, la barre du `z`, les rondes du `o` ; `μ` est le `µ` |
+| `⁰` `⁴`…`⁹` `⁺` `⁻` | les chiffres et le `+` d'une graisse plus forte, réduits |
+| `₀`…`₉` | les exposants, descendus sous la ligne |
+| `⁄` | la barre des fractions toutes faites |
+| espaces, `‐` `‑` | demi-cadratin, cadratin, espace de chiffre, espace fine et **espace fine insécable** ; traits d'union |
+
+L'espace fine insécable (U+202F) est celle qu'InDesign pose entre les
+milliers et devant `: ; ? !` en français : sans elle, un « 12 000 » composé en
+DIN Pro afficherait un glyphe manquant une fois passé en Appli-Tec.
+
+`∆` (U+2206) et `Ω` (U+2126), que proposent certains claviers et logiciels,
+pointent sur les mêmes dessins que `Δ` et `Ω` ; `∅` (U+2205), souvent tapé
+pour un diamètre, pointe sur le `Ø` rond, comme `⌀`. Les huit lettres grecques sont
+des symboles techniques : la police ne compose pas un texte en grec.
+
+**Les exposants d'origine ne sont pas des chiffres réduits** — un chiffre
+réduit est trop maigre. Mesure faite, ce sont les chiffres d'une graisse plus
+forte, réduits à 60,5 % : le « 0 » supérieur du Bold est le « 0 » à t = 1,65,
+réduit, à 1,5 % de surface près. Les exposants 5 à 9 sont fabriqués de même,
+avec les réglages relevés sur les exposants 0 à 4 d'origine.
+
+**Les fractions se composent désormais toutes.** La fonctionnalité
+« Fractions » ne connaissait que ½ ¼ ¾ ; elle compose maintenant 3/8, 7/16 ou
+n'importe quelle autre, et « Exposant », « Indice », « Numérateur »,
+« Dénominateur » couvrent les dix chiffres. Toutes sont déclarées pour
+l'écriture `latn`, celle qu'interroge InDesign : D-DIN n'y déclarait ni les
+fractions ni les exposants.
+
+Les glyphes existants, leurs chasses et le crénage des textes existants sont
+inchangés : un document déjà composé ne bouge pas.
+
 ## Organisation du dépôt
 
 ```
@@ -181,6 +224,7 @@ tools/build.py        générateur de graisses romaines
 tools/build_italic.py générateur d'italiques
 tools/harmonize.py    mise en compatibilité des contours
 tools/diametre.py     Ø redessiné en signe de diamètre
+tools/symboles.py     signes techniques : ≤ ≈ ≠ − → Δ Ω μ ₂ ⁵ ⁻ …
 tools/crenage.py      mesure du blanc entre lettres
 tools/appliquer_crenage.py  écriture de la table GPOS
 tools/appliquer_hinting.py  optimisation de l'affichage écran
@@ -248,10 +292,11 @@ python3 tools/build.py 0.3333 500 Medium
 python3 tools/build_italic.py 1.0 700 "Bold Italic"
 ```
 
-**Attention à l'ordre** : le Ø rond, le crénage puis le hinting sont écrits
-*dans* les fichiers produits par les générateurs. Relancer un générateur seul
-efface les trois pour la graisse concernée — il faut repasser `diametre.py`,
-`appliquer_crenage.py` et `appliquer_hinting.py` dessus. Pour tout reconstruire proprement :
+**Attention à l'ordre** : le Ø rond, les signes techniques, le crénage puis le
+hinting sont écrits *dans* les fichiers produits par les générateurs. Relancer
+un générateur seul efface les quatre pour la graisse concernée — il faut
+repasser `diametre.py`, `symboles.py`, `appliquer_crenage.py` et
+`appliquer_hinting.py` dessus. Pour tout reconstruire proprement :
 
 ```bash
 ./tools/tout_construire.sh
@@ -264,6 +309,7 @@ python3 tools/verifier.py
 ```
 
 Balaie les 15 fichiers : hinting, GSUB, GDEF, crénage, écritures déclarées,
+présence des signes techniques,
 drapeaux de style, métriques verticales, marges gauches (la marge de la
 table des chasses doit égaler le bord du dessin, sinon le moteur de rendu
 décale le glyphe), points isolés, progression des fûts, et l'encre de
