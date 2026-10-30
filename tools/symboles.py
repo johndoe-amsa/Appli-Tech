@@ -707,10 +707,14 @@ def d_beta(m):
     delie = m["o_delie"][1] - m["o_delie"][0]
     x0 = m["n_marges"][0]
     ow = m["o_box"][2] - m["o_box"][0]
-    # les panses s'elargissent avec le fut, sans quoi les contreformes se
-    # reduisent a une fente aux graisses fortes
-    xl = x0 + 0.86 * ow + 0.65 * fut
-    xh = x0 + 0.72 * ow + 0.65 * fut
+    # les panses sont reglees par leurs contreformes : celle du bas a la
+    # largeur de celle du o, celle du haut un peu moins ; jamais moins
+    # qu'un fut, sans quoi elles se reduisent a une fente aux graisses fortes
+    flanc = m["o_fut"][1] - m["o_fut"][0]
+    cl = max(ow - 2 * flanc, fut)
+    cu = max(0.82 * cl, 0.9 * fut)
+    xl = x0 + fut + cl + flanc
+    xh = x0 + fut + cu + flanc
     haut = m["asc"] + (m["o_box"][3] - m["x"])          # depassement du o
     bas = m["o_box"][1]
     # la jonction descend a mesure que les delies epaississent : la panse du
@@ -721,7 +725,7 @@ def d_beta(m):
     fut_g = rect(x0, m["desc"], x0 + fut, (ym + haut) / 2)
     p = union(fut_g, panse_h, panse_b)
     # l'attache s'arrete avant le fut : les deux contreformes communiquent
-    jour = 0.5 * fut + 0.06 * ow
+    jour = 0.30 * cu
     p = moins(p, rect(x0 + fut, ym - 1, x0 + fut + jour, ym + delie + 1))
     return [(p, False)], round(xl + m["o_marges"][1])
 
