@@ -508,15 +508,24 @@ def d_second(m):
 
 def _fleche(m, gauche, droite):
     x0, _, x1, _ = m["eq"]
-    w = (x1 - x0) * 1.3
+    ep = m["trait"]
+    # la pointe grandit avec le trait : a taille fixe, ses branches
+    # raccourcissent a mesure qu'elles epaississent, et des le Bold le
+    # chevron se referme en un bloc
+    w = (x1 - x0) * 1.3 + 0.5 * ep
     lsb = x0
     chasse = round(w + 2 * lsb)
     a, b = lsb, lsb + w
     y0, y1 = m["barre_plus"]
     cy = (y0 + y1) / 2
     c = m["chevron"]
-    hh = 0.38 * c["h"]               # demi-hauteur de la pointe
+    hh = 0.28 * c["h"] + 0.9 * ep    # demi-hauteur de la pointe
     L = hh * 1.0                     # branches a 45 degres
+    if gauche and droite:
+        # deux pointes : la fleche s'allonge pour que la tige reste visible
+        w += 0.6 * L
+        chasse = round(w + 2 * lsb)
+        b = lsb + w
     morceaux = []
     fut_a, fut_b = a, b
     if gauche:
