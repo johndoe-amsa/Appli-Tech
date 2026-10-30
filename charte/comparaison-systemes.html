@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Typographie — trois approches</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Planche de comparaison : les memes trois documents composes selon trois
+   approches typographiques. Document de travail, hors charte. */
+@font-face { font-family: "Appli-Tec"; font-weight: 400; src: url(../fonts/woff2/Appli-Tec-Regular.woff2) format("woff2"); }
+@font-face { font-family: "Appli-Tec"; font-weight: 400; font-style: italic; src: url(../fonts/woff2/Appli-Tec-Italic.woff2) format("woff2"); }
+@font-face { font-family: "Appli-Tec"; font-weight: 700; src: url(../fonts/woff2/Appli-Tec-Bold.woff2) format("woff2"); }
+@font-face { font-family: "Appli-Tec"; font-weight: 800; src: url(../fonts/woff2/Appli-Tec-Heavy.woff2) format("woff2"); }
+@font-face { font-family: "Appli-Tec Condensed"; font-weight: 400; src: url(../fonts/woff2/Appli-Tec-Condensed-Regular.woff2) format("woff2"); }
+@font-face { font-family: "Appli-Tec Condensed"; font-weight: 700; src: url(../fonts/woff2/Appli-Tec-Condensed-Bold.woff2) format("woff2"); }
+
+:root {
+  --bleu: #005092; --gris: #c2c0c7; --gris-texte: #9d9d9c; --fond: #f6f6f6;
+  --iso: #c90a22; --vert: #2e8b3a; --rouge: #c90a22;
+  --mont: "Montserrat", Arial, sans-serif;
+  --rob: "Roboto", Arial, sans-serif;
+  --at: "Appli-Tec", Arial, sans-serif;
+  --atc: "Appli-Tec Condensed", Arial, sans-serif;
+}
+@page { size: 297mm 210mm; margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; background: #8a8a8a; font-family: var(--rob); }
+@media screen { body { padding: 12mm 0; } .page { margin: 0 auto 12mm; box-shadow: 0 2px 14px rgba(0,0,0,.35); } }
+.page { position: relative; width: 297mm; height: 210mm; overflow: hidden; background: #fff; break-after: page; }
+.page:last-child { break-after: auto; }
+.titre { position: absolute; left: 15mm; right: 15mm; top: 14mm; margin: 0; font: 800 24pt/1 var(--mont); color: var(--bleu); letter-spacing: -0.01em; }
+.sous { position: absolute; left: 15mm; right: 15mm; top: 24.5mm; font: 400 8.5pt/1.3 var(--rob); color: #3f3f3f; }
+.filet { position: absolute; left: 15mm; right: 15mm; top: 31mm; border-top: .3mm solid var(--gris); }
+.pied { position: absolute; left: 15mm; right: 15mm; top: 192mm; padding-top: 2.5mm; border-top: .3mm solid var(--gris); font: 400 7pt/1 var(--rob); color: var(--gris-texte); display: flex; justify-content: space-between; }
+
+/* page 1 */
+.intro { position: absolute; left: 15mm; right: 15mm; top: 36mm; display: grid; grid-template-columns: 78mm 1fr; gap: 10mm; }
+.intro p { margin: 0 0 2.6mm; font: 400 8.6pt/1.42 var(--rob); text-align: justify; hyphens: auto; }
+.intro h3 { font: 700 8.6pt/1.3 var(--rob); margin: 4mm 0 1mm; }
+.options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+.opt { background: var(--fond); padding: 4mm; }
+.opt .l { font: 800 26pt/1 var(--mont); color: var(--bleu); }
+.opt h4 { font: 700 9.5pt/1.25 var(--rob); margin: 1.5mm 0 2.4mm; }
+.opt table { width: 100%; border-collapse: collapse; font: 400 7pt/1.3 var(--rob); }
+.opt td { padding: 1.2mm 0; border-top: .2mm solid #dedede; vertical-align: top; }
+.opt td:first-child { color: #6a6a6a; width: 23mm; padding-right: 2mm; }
+.opt .reco { margin-top: 3mm; font: 700 7pt/1 var(--rob); color: #fff; background: var(--bleu); display: inline-block; padding: 1.3mm 2mm; letter-spacing: .04em; }
+.note { margin-top: 5mm; font: 400 7.6pt/1.45 var(--rob); color: #3f3f3f; }
+
+/* pages d'option */
+.docs { position: absolute; left: 15mm; top: 40mm; display: flex; gap: 7mm; }
+.doc { width: 66mm; height: 93.4mm; background: #fff; box-shadow: 0 0 0 .25mm #cfcfcf, 0 1.2mm 3mm rgba(0,0,0,.12); padding: 5mm 5mm 4mm; position: relative; overflow: hidden; }
+.wrap .type { position: absolute; left: 0; top: -5.5mm; font: 700 6.5pt/1 var(--rob); letter-spacing: .08em; text-transform: uppercase; color: var(--bleu); }
+.wrap { position: relative; }
+.logo { position: absolute; right: 5mm; top: 4.5mm; border: .25mm dashed var(--gris); font: 400 5.5pt/1 var(--rob); color: var(--gris-texte); padding: 1mm 1.6mm; }
+.doc p { margin: 0 0 1.6mm; font-size: 6.9pt; line-height: 1.42; }
+.doc table { width: 100%; border-collapse: collapse; font: 400 6.3pt/1 var(--atc); margin-top: 1.4mm; }
+.doc th { background: var(--bleu); color: #fff; font-weight: 700; text-align: left; padding: 1.1mm .8mm; }
+.doc td { padding: 1.1mm .8mm; border-bottom: .15mm solid #ddd; }
+.doc th:not(:first-child), .doc td:not(:first-child) { text-align: right; }
+.doc .fam { color: var(--iso); }
+.doc .marque { color: var(--iso); }
+.ana { position: absolute; left: 15mm; right: 15mm; top: 141mm; display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 7mm; }
+.ana h5 { margin: 0 0 1.6mm; font: 700 7pt/1 var(--rob); letter-spacing: .08em; text-transform: uppercase; }
+.ana ul { margin: 0; padding-left: 3.5mm; font: 400 7.3pt/1.42 var(--rob); color: #272727; }
+.ana li { margin-bottom: .9mm; }
+.plus h5 { color: var(--vert); } .moins h5 { color: var(--rouge); } .regle h5 { color: var(--bleu); }
+.regle .box { background: var(--fond); padding: 2.6mm 3mm; font: 400 7.3pt/1.42 var(--rob); }
+.regle .box b { color: var(--bleu); }
+.legende { position: absolute; left: 228mm; top: 40mm; width: 54mm; font: 400 6.8pt/1.4 var(--rob); color: #3f3f3f; }
+.legende div { display: flex; gap: 2mm; align-items: baseline; padding: 1.3mm 0; border-bottom: .2mm solid #e5e5e5; }
+.legende b { font-size: 10pt; width: 22mm; flex: none; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ 1 -->
+<section class="page">
+  <h1 class="titre">Typographie : trois approches</h1>
+  <div class="sous">Document de travail — pour choisir l’organisation des polices avant de finaliser la charte.</div>
+  <div class="filet"></div>
+  <div class="intro">
+    <div>
+      <p>Les quatre polices sont fixées : BankGothic pour le logo, Montserrat, Roboto et Appli-Tec. Ce qui reste à décider, c’est <b>qui fait quoi</b>, et en particulier deux questions :</p>
+      <h3>1. Le nom des familles</h3>
+      <p>ISO-Line, SWITCH-Line, TOP-Watch : gardent-ils toujours la même police, comme une marque, ou suivent-ils la police du document ?</p>
+      <h3>2. Le texte courant</h3>
+      <p>Faut-il une police de texte à part pour les documents commerciaux (Roboto), ou Appli-Tec peut-elle porter tout le texte de l’entreprise ?</p>
+      <h3>Comment lire cette planche</h3>
+      <p>Les pages suivantes composent les trois mêmes documents — une page de catalogue, une page de brochure, une offre — selon chacune des approches. Les textes et les valeurs sont identiques ; seules les polices changent.</p>
+      <p class="note">Une règle plus simple n’est pas forcément moins contraignante : ce qui bloque, en pratique, c’est une règle qui oblige à se demander « dans quel système suis-je ? ». Une règle qui dit « tel élément a toujours telle police » se retient et s’applique sans réfléchir.</p>
+    </div>
+    <div>
+      <div class="options">
+        <div class="opt">
+          <div class="l">A</div>
+          <h4>Deux systèmes séparés</h4>
+          <table>
+            <tr><td>Logique</td><td>Le type de document choisit la police</td></tr>
+            <tr><td>Catalogue</td><td>Appli-Tec seule, noms de familles compris</td></tr>
+            <tr><td>Commercial</td><td>Montserrat + Roboto</td></tr>
+            <tr><td>Familles</td><td>Changent de police selon le document</td></tr>
+            <tr><td>Écart avec aujourd’hui</td><td>Les noms de familles du catalogue changent</td></tr>
+          </table>
+          <div style="font:400 7pt/1.3 var(--rob);margin-top:2.4mm;color:#3f3f3f">C’est la version de la maquette actuelle.</div>
+        </div>
+        <div class="opt">
+          <div class="l">B</div>
+          <h4>Montserrat, signature de la marque</h4>
+          <table>
+            <tr><td>Logique</td><td>Chaque élément a toujours la même police</td></tr>
+            <tr><td>Catalogue</td><td>Appli-Tec, noms de familles en Montserrat</td></tr>
+            <tr><td>Commercial</td><td>Montserrat + Roboto</td></tr>
+            <tr><td>Familles</td><td>Montserrat Bold partout</td></tr>
+            <tr><td>Écart avec aujourd’hui</td><td>Aucun : c’est votre pratique actuelle, mise en règles</td></tr>
+          </table>
+          <div class="reco">RECOMMANDÉE</div>
+        </div>
+        <div class="opt">
+          <div class="l">C</div>
+          <h4>Appli-Tec, voix unique</h4>
+          <table>
+            <tr><td>Logique</td><td>Une police de texte pour toute l’entreprise</td></tr>
+            <tr><td>Catalogue</td><td>Appli-Tec, noms de familles en Montserrat</td></tr>
+            <tr><td>Commercial</td><td>Montserrat + Appli-Tec</td></tr>
+            <tr><td>Familles</td><td>Montserrat Bold partout</td></tr>
+            <tr><td>Écart avec aujourd’hui</td><td>Plus de Roboto : trois polices au lieu de quatre</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pied"><span>Applitec Moutier SA — Charte graphique, document de travail</span><span>1 / 4</span></div>
+</section>
+
+<template id="docs">
+  <div class="docs">
+    <div class="wrap"><div class="type">Page de catalogue</div><div class="doc">
+      <span class="logo">LOGO</span>
+      <div class="fam" data-r="famTitre" style="margin-top:4mm">ISO-Line</div>
+      <div data-r="catTitre" style="margin:1.2mm 0 2.4mm">Plaquettes de tournage</div>
+      <p data-r="catTexte">Plaquettes rectifiées pour l’ébauche et la finition sur tours automatiques. Géométrie positive, arête affûtée pour les petits diamètres.</p>
+      <div data-r="catSous" style="margin:2.4mm 0 .8mm">Dimensions</div>
+      <table>
+        <tr><th>Réf.</th><th>Ø mm</th><th>L mm</th><th>vc m/min</th><th>n min⁻¹</th></tr>
+        <tr><td>7101-0400</td><td>4,00</td><td>22</td><td>80–100</td><td>12 000</td></tr>
+        <tr><td>7101-0600</td><td>6,00</td><td>28</td><td>80–110</td><td>10 000</td></tr>
+        <tr><td>7101-0800</td><td>8,00</td><td>34</td><td>90–120</td><td>8 000</td></tr>
+        <tr><td>7101-1000</td><td>10,00</td><td>38</td><td>90–120</td><td>6 500</td></tr>
+      </table>
+      <p data-r="catTexte" style="margin-top:2.4mm">Voir aussi les porte-outils <span class="marque" data-r="famTexte">SWITCH-Line</span>, compatibles avec toute la gamme.</p>
+    </div></div>
+    <div class="wrap"><div class="type">Page de brochure</div><div class="doc">
+      <span class="logo">LOGO</span>
+      <div data-r="broTitre" style="margin-top:6mm;color:var(--bleu)">La précision suisse, au micron près</div>
+      <div data-r="broSous" style="margin:2.6mm 0 1.2mm">Des outils pour le décolletage</div>
+      <p data-r="broTexte">Depuis Moutier, Applitec conçoit et fabrique des outils de coupe pour les tours automatiques, du prototype à la grande série. Nos équipes accompagnent chaque client dans le choix et le réglage de ses outils.</p>
+      <div class="fam" data-r="famTitre" style="margin-top:3.4mm">ISO-Line</div>
+      <p data-r="broTexte" style="margin-top:1mm">La gamme de plaquettes la plus complète du marché suisse, en stock et livrable en 24 heures.</p>
+      <p data-r="broDonnee" style="margin-top:1.6mm">Ø 4 à 12 mm · ±0,02 mm · Ra ≤ 0,4 µm</p>
+    </div></div>
+    <div class="wrap"><div class="type">Offre (Word)</div><div class="doc">
+      <span class="logo">LOGO</span>
+      <p data-r="ofTexte" style="margin-top:8mm">Moutier, le 30 octobre 2026</p>
+      <div data-r="ofTitre" style="margin:3mm 0 2mm">Offre n° 2026-114</div>
+      <p data-r="ofTexte">Madame, Monsieur,</p>
+      <p data-r="ofTexte">Suite à votre demande, nous avons le plaisir de vous soumettre notre offre pour les plaquettes <span class="marque" data-r="famTexte">ISO-Line</span> de la série 7101, selon les quantités indiquées ci-dessous.</p>
+      <table>
+        <tr><th>Réf.</th><th>Quantité</th><th>Prix CHF</th></tr>
+        <tr><td>7101-0600</td><td>50</td><td>18,40</td></tr>
+        <tr><td>7101-0800</td><td>100</td><td>19,90</td></tr>
+      </table>
+      <p data-r="ofTexte" style="margin-top:2.4mm">Nous restons à votre disposition pour tout renseignement complémentaire et vous prions d’agréer nos salutations distinguées.</p>
+    </div></div>
+  </div>
+</template>
+
+<!-- ============================================================ 2 -->
+<section class="page" data-opt="A">
+  <h1 class="titre">A — Deux systèmes séparés</h1>
+  <div class="sous">Le type de document choisit la police. Le catalogue est entièrement en Appli-Tec, noms de familles compris.</div>
+  <div class="filet"></div>
+  <div class="slot"></div>
+  <div class="legende">
+    <div><b style="font-family:var(--mont);font-weight:800">Montserrat</b><span>titres commerciaux, familles hors catalogue</span></div>
+    <div><b style="font-family:var(--rob)">Roboto</b><span>texte commercial</span></div>
+    <div><b style="font-family:var(--at);font-weight:700">Appli-Tec</b><span>tout le catalogue, données</span></div>
+  </div>
+  <div class="ana">
+    <div class="plus"><h5>Pour</h5><ul>
+      <li>Le catalogue est d’une seule police : très homogène.</li>
+      <li>Règle facile à vérifier sur un document fini.</li>
+    </ul></div>
+    <div class="moins"><h5>Contre</h5><ul>
+      <li>ISO-Line n’a pas le même aspect dans la brochure et dans le catalogue : la gamme se reconnaît moins.</li>
+      <li>Change votre pratique actuelle.</li>
+      <li>Il faut décider pour chaque document de quel « système » il relève : c’est là que la règle bloque.</li>
+    </ul></div>
+    <div class="regle"><h5>La règle en une phrase</h5><div class="box">Un document <b>technique</b> est entièrement en Appli-Tec ; un document <b>commercial</b> en Montserrat et Roboto.</div></div>
+  </div>
+  <div class="pied"><span>Applitec Moutier SA — Charte graphique, document de travail</span><span>2 / 4</span></div>
+</section>
+
+<!-- ============================================================ 3 -->
+<section class="page" data-opt="B">
+  <h1 class="titre">B — Montserrat, signature de la marque</h1>
+  <div class="sous">Chaque élément a toujours la même police, quel que soit le document. Votre pratique actuelle, mise en règles.</div>
+  <div class="filet"></div>
+  <div class="slot"></div>
+  <div class="legende">
+    <div><b style="font-family:var(--mont);font-weight:800">Montserrat</b><span>titres commerciaux et noms de familles, partout</span></div>
+    <div><b style="font-family:var(--rob)">Roboto</b><span>texte commercial</span></div>
+    <div><b style="font-family:var(--at);font-weight:700">Appli-Tec</b><span>catalogue et données, partout</span></div>
+  </div>
+  <div class="ana">
+    <div class="plus"><h5>Pour</h5><ul>
+      <li>ISO-Line est identique partout : le nom de gamme fonctionne comme un logo.</li>
+      <li>Montserrat relie tous les documents, catalogue compris.</li>
+      <li>Rien ne change dans le catalogue actuel.</li>
+      <li>Pas de « système » à choisir : on applique la police de l’élément.</li>
+    </ul></div>
+    <div class="moins"><h5>Contre</h5><ul>
+      <li>Deux polices dans le catalogue. Ce n’est pas un défaut tant que Montserrat n’y sert qu’aux noms de familles, comme un logo de gamme ; ce serait bizarre si elle y servait aussi à d’autres titres ou à du texte.</li>
+    </ul></div>
+    <div class="regle"><h5>La règle en une phrase</h5><div class="box"><b>Montserrat</b> signe la marque (titres commerciaux, noms de familles). <b>Appli-Tec</b> porte le technique. <b>Roboto</b> porte le texte commercial.</div></div>
+  </div>
+  <div class="pied"><span>Applitec Moutier SA — Charte graphique, document de travail</span><span>3 / 4</span></div>
+</section>
+
+<!-- ============================================================ 4 -->
+<section class="page" data-opt="C">
+  <h1 class="titre">C — Appli-Tec, voix unique</h1>
+  <div class="sous">Plus de Roboto : Appli-Tec porte tout le texte de l’entreprise, Montserrat les titres commerciaux et les noms de familles.</div>
+  <div class="filet"></div>
+  <div class="slot"></div>
+  <div class="legende">
+    <div><b style="font-family:var(--mont);font-weight:800">Montserrat</b><span>titres commerciaux et noms de familles, partout</span></div>
+    <div><b style="font-family:var(--at);font-weight:700">Appli-Tec</b><span>tout le texte et toutes les données</span></div>
+  </div>
+  <div class="ana">
+    <div class="plus"><h5>Pour</h5><ul>
+      <li>Trois polices au lieu de quatre ; une seule police de texte dans Word.</li>
+      <li>Appli-Tec, qui est à vous, devient la voix reconnaissable d’Applitec.</li>
+      <li>Une offre et une fiche technique se ressemblent.</li>
+    </ul></div>
+    <div class="moins"><h5>Contre</h5><ul>
+      <li>Ton plus froid et plus technique pour les textes commerciaux et les courriers.</li>
+      <li>Une police étroite de type DIN se lit moins confortablement en textes longs.</li>
+      <li>Appli-Tec n’est pas installée d’office : les offres envoyées s’afficheront plus souvent en police de remplacement.</li>
+    </ul></div>
+    <div class="regle"><h5>La règle en une phrase</h5><div class="box"><b>Montserrat</b> signe la marque. <b>Appli-Tec</b> porte tout le reste.</div></div>
+  </div>
+  <div class="pied"><span>Applitec Moutier SA — Charte graphique, document de travail</span><span>4 / 4</span></div>
+</section>
+
+<script>
+/* Les memes documents, composes selon chaque approche. */
+const R = {
+  common: {
+    catTitre: "800 13.65pt/1 var(--at)", catSous: "700 7.54pt/1.2 var(--at)", catTexte: "400 6.89pt/1.42 var(--at)",
+    broTitre: "800 14.30pt/1.05 var(--mont)", broSous: "700 7.80pt/1.25 var(--mont)", broDonnee: "400 7.28pt/1.4 var(--at)",
+    ofTitre: "700 9.10pt/1.2 var(--mont)",
+  },
+  A: { famTitre: "700 9.10pt/1 var(--mont)", famCat: "700 9.10pt/1 var(--at)", famTexte: "700 1em/1 var(--mont)", famTexteCat: "700 1em/1 var(--at)", broTexte: "400 6.89pt/1.42 var(--rob)", ofTexte: "400 6.89pt/1.42 var(--rob)" },
+  B: { famTitre: "700 9.10pt/1 var(--mont)", famCat: "700 9.10pt/1 var(--mont)", famTexte: "700 1em/1 var(--mont)", famTexteCat: "700 1em/1 var(--mont)", broTexte: "400 6.89pt/1.42 var(--rob)", ofTexte: "400 6.89pt/1.42 var(--rob)" },
+  C: { famTitre: "700 9.10pt/1 var(--mont)", famCat: "700 9.10pt/1 var(--mont)", famTexte: "700 1em/1 var(--mont)", famTexteCat: "700 1em/1 var(--mont)", broTexte: "400 6.89pt/1.42 var(--at)", ofTexte: "400 6.89pt/1.42 var(--at)" },
+};
+const tpl = document.getElementById("docs");
+document.querySelectorAll("section[data-opt]").forEach(sec => {
+  const o = R[sec.dataset.opt];
+  const n = tpl.content.cloneNode(true);
+  const docs = n.querySelectorAll(".doc");
+  docs.forEach((doc, i) => {
+    const cat = i === 0;
+    doc.querySelectorAll("[data-r]").forEach(el => {
+      let r = el.dataset.r;
+      if (cat && r === "famTitre") r = "famCat";
+      if (cat && r === "famTexte") r = "famTexteCat";
+      el.style.font = o[r] || R.common[r];
+    });
+  });
+  sec.querySelector(".slot").replaceWith(n);
+});
+</script>
+</body>
+</html>
