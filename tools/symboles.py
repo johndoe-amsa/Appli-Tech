@@ -379,11 +379,18 @@ def quarts_du_o(f):
     return out       # exterieur, interieur
 
 
-def anneau(m, x0, y0, x1, y1, fut, delie):
-    """Anneau de la DIN dans la boite donnee : futs fut, delies delie."""
+def anneau(m, x0, y0, x1, y1, fut, delie, contre_droit=False):
+    """Anneau de la DIN dans la boite donnee : futs fut, delies delie.
+
+    contre_droit : contreforme a angles droits du cote gauche, contre le
+    fut, comme les panses du B.
+    """
     ext, intr = m["quarts"]
-    return moins(stade(x0, y0, x1, y1, ext),
-                 stade(x0 + fut, y0 + delie, x1 - fut, y1 - delie, intr))
+    cx0, cy0, cx1, cy1 = x0 + fut, y0 + delie, x1 - fut, y1 - delie
+    contre = stade(cx0, cy0, cx1, cy1, intr)
+    if contre_droit:
+        contre = union(contre, rect(cx0, cy0, (cx0 + cx1) / 2, cy1))
+    return moins(stade(x0, y0, x1, y1, ext), contre)
 
 
 # ------------------------------------------------------------- operateurs --
@@ -400,7 +407,7 @@ def _barre_et_chevron(m, vers_gauche):
     x0, _, x1, _ = m["eq"]
     b0, b1 = m["pm_barre"]
     haut = m["pm"][3]
-    ecart = 0.85 * m["trait"]
+    ecart = 0.6 * m["trait"]
     h = haut - (b1 + ecart)
     cy = haut - h / 2
     pts = chevron(m, x0, x1, cy, h) if vers_gauche else chevron(m, x1, x0, cy, h)
@@ -445,12 +452,12 @@ def d_infinity(m):
     ep = m["trait"]
     # plus large et plus haut a mesure que le trait epaissit, pour que les
     # contreformes restent ouvertes
-    w = (x1 - x0) * 1.25 + 0.6 * ep
+    w = (x1 - x0) * 1.25 + 1.0 * ep
     lsb = x0
     chasse = round(w + 2 * lsb)
     cx, cy = chasse / 2, m["axe"]
     a = (w - ep) / 2                 # demi-largeur de la ligne mediane
-    b = 0.20 * w + 0.30 * ep         # demi-hauteur d'une boucle
+    b = 0.20 * w + 0.35 * ep         # demi-hauteur d'une boucle
     xm = 0.52 * a                    # sommet d'une boucle
     k = 1.1 * b / xm                 # pente de la croisee
     # ligne mediane : du centre, la boucle droite dans le sens horaire, puis
@@ -686,11 +693,15 @@ def d_beta(m):
     haut = m["asc"] + (m["o_box"][3] - m["x"])          # depassement du o
     bas = m["o_box"][1]
     ym = round(0.54 * m["asc"])
-    panse_h = anneau(m, x0, ym, xh, haut, fut, delie)
-    panse_b = anneau(m, x0, bas, xl, ym + delie, fut, delie)
+    panse_h = anneau(m, x0, ym, xh, haut, fut, delie, contre_droit=True)
+    panse_b = anneau(m, x0, bas, xl, ym + delie, fut, delie, contre_droit=True)
     # le fut monte jusqu'a l'arrondi du haut : la panse superieure s'y
     # raccorde sans echancrure
-    p = union(rect(x0, m["desc"], x0 + fut, (ym + haut) / 2), panse_h, panse_b)
+    # la barre du milieu part du fut sans encoche : les arrondis exterieurs
+    # des deux panses y laissaient un creux, plus large que le fut aux
+    # graisses maigres
+    milieu = rect(x0, ym, (x0 + xh) / 2, ym + delie)
+    p = union(rect(x0, m["desc"], x0 + fut, (ym + haut) / 2), milieu, panse_h, panse_b)
     return [(p, False)], round(xl + m["o_marges"][1])
 
 
