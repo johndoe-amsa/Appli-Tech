@@ -30,21 +30,25 @@ et les réglages à utiliser dans Word, PowerPoint, InDesign et sur le web.
 
 ## Page 26 — Quatre polices, quatre rôles
 
-Chaque police d'Applitec Moutier SA a un rôle précis. On ne la choisit pas
-selon ses goûts : c'est le document qui décide de la police.
+Chaque police d'Applitec Moutier SA a un rôle fixe, quel que soit le
+document. On ne choisit pas une police selon ses goûts ni selon le support :
+c'est l'élément à composer qui la détermine.
 
-**A. Le système commercial**
-Montserrat pour les titres, Roboto pour le texte. Brochures, présentations,
-courriers, offres, e-mails, site internet, réseaux sociaux.
+**A. Montserrat, la marque**
+Les titres des documents commerciaux, et les noms des familles d'outils dans
+tous les documents, catalogue compris.
 
-**B. Le système technique**
-Appli-Tec seule, pour les titres, le texte et les tableaux. Catalogue, fiches
-techniques, notices et plans.
+**B. Roboto, le texte**
+Le texte courant des brochures, présentations, courriers, offres, e-mails, du
+site internet et des réseaux sociaux.
 
-**C. Une règle**
-Les deux systèmes ne se mélangent jamais dans un même document. Seule
-exception : un tableau de caractéristiques inséré dans un document commercial
-est composé en Appli-Tec, comme un extrait du catalogue.
+**C. Appli-Tec, la technique**
+Tout le catalogue, les fiches techniques et les notices : titres, texte et
+tableaux. Dans un document commercial, les tableaux de données.
+
+Deux limites à retenir : dans le catalogue, Montserrat ne sert qu'aux noms des
+familles ; dans un document commercial, Appli-Tec ne sert qu'aux tableaux de
+données.
 
 Le logo reste en BankGothic Medium dans tous les cas. Il est toujours placé à
 partir du fichier officiel, jamais retapé au clavier.
@@ -57,41 +61,44 @@ un poste où les polices officielles ne sont pas installées (voir page 32).
 | | Police | Rôle |
 |---|---|---|
 | | *(logo, fichier officiel)* | **BankGothic Medium** — Le logo, et rien d'autre. |
-| A. | Montserrat | **Les titres** — Système commercial. |
-| A. | Roboto | **Le texte** — Système commercial. |
-| B. | Appli-Tec | **La technique** — Système technique : titres, texte et tableaux. |
+| A. | Montserrat | **La marque** — Titres commerciaux, noms des familles partout. |
+| B. | Roboto | **Le texte** — Documents commerciaux. |
+| C. | Appli-Tec | **La technique** — Catalogue, fiches techniques, tableaux de données. |
 
 **Visuel, deux exemples :**
 
-- *A. Commercial — exemple* : « La précision suisse » (Montserrat ExtraBold,
+- *Document commercial — exemple* : « La précision suisse » (Montserrat ExtraBold,
   bleu) · « Des outils pour le décolletage » (Montserrat Bold) · « Depuis
   Moutier, Applitec conçoit et fabrique des outils de coupe pour les tours
   automatiques, du prototype à la grande série. » (Roboto) · légende :
   Brochure, présentation, courrier, web.
-- *B. Technique — exemple* : « Plaquettes de tournage » (Appli-Tec Heavy) ·
-  « ISO-Line » (Appli-Tec Bold, couleur de la famille) · « Ø 4 à 12 mm ·
+- *Document technique — exemple* : « Plaquettes de tournage » (Appli-Tec Heavy) ·
+  « ISO-Line » (Montserrat Bold, couleur de la famille) · « Ø 4 à 12 mm ·
   tolérance ±0,02 mm · Ra ≤ 0,4 µm · vc 80 à 120 m/min » (Appli-Tec Regular) ·
   légende : Catalogue, fiche technique, notice.
 
 ---
 
-## Page 27 — Montserrat — les titres
+## Page 27 — Montserrat — la marque
 
-Géométrique et affirmée, Montserrat donne leur voix aux documents
-commerciaux : elle se remarque, elle se reconnaît. Elle ne sert qu'aux titres.
+Géométrique et affirmée, Montserrat est la signature typographique
+d'Applitec Moutier SA : elle se remarque, elle se reconnaît. Elle compose les
+titres des documents commerciaux et les noms des familles d'outils, dans tous
+les documents.
 
 **A. Montserrat ExtraBold**
-Titres principaux et noms des familles d'outils lorsqu'ils sont en titre. En
-couleur principale, ou dans la couleur d'une famille lorsque le titre s'y
-rapporte.
+Titres principaux des documents commerciaux, et noms des familles lorsqu'ils
+sont le titre principal. En couleur principale, ou dans la couleur d'une
+famille lorsque le titre s'y rapporte.
 
 **B. Montserrat Bold**
-Titres secondaires et noms des familles dans le texte. Toutes les couleurs
-principales sont autorisées.
+Titres secondaires des documents commerciaux, et noms des familles partout
+ailleurs : sous-titres, texte courant, tableaux, y compris dans le catalogue.
 
 **C. À ne pas faire**
 Composer un paragraphe en Montserrat, utiliser une autre graisse ou
-l'italique.
+l'italique. Dans le catalogue, l'utiliser pour autre chose qu'un nom de
+famille.
 
 **Encadré :**
 **Remplacement** — Arial Black pour l'ExtraBold, Arial Bold pour le Bold
@@ -100,9 +107,9 @@ l'italique.
 commercial.
 **Téléchargement** — fonts.google.com/specimen/Montserrat
 
-**Visuel :** « Aa » en grand (ExtraBold, bleu) · Montserrat — TITRES ·
-SYSTÈME COMMERCIAL · A. ExtraBold, Titres principaux · B. Bold, Titres
-secondaires · ligne de chiffres et de signes, avec ISO-Line · SWITCH-Line ·
+**Visuel :** « Aa » en grand (ExtraBold, bleu) · Montserrat — TITRES · NOMS
+DES FAMILLES · A. ExtraBold, Titres principaux · B. Bold, Titres secondaires,
+familles · ligne de chiffres et de signes, avec ISO-Line · SWITCH-Line ·
 TOP-Watch.
 
 ---
@@ -111,7 +118,7 @@ TOP-Watch.
 
 Neutre et très lisible, dessinée pour l'écran comme pour l'impression, Roboto
 porte le texte courant sans attirer l'attention sur elle. Elle remplace Arial
-dans tous les documents du système commercial.
+dans tous les documents commerciaux.
 
 **A. Roboto Regular**
 Texte courant, légendes, notes. La couleur principale est le noir ; le blanc
@@ -130,7 +137,7 @@ Citations, termes étrangers, titres d'ouvrages. Avec mesure.
 commercial.
 **Téléchargement** — fonts.google.com/specimen/Roboto
 
-**Visuel :** « Aa » en grand (bleu) · Roboto — TEXTE · SYSTÈME COMMERCIAL ·
+**Visuel :** « Aa » en grand (bleu) · Roboto — TEXTE · DOCUMENTS COMMERCIAUX ·
 A. Regular, Texte courant · B. Bold, Mise en évidence · C. Italic, Citations.
 
 ---
@@ -142,14 +149,15 @@ DIN 1451, le caractère des normes et des plans industriels, et a été mise au
 point pour notre documentation : chiffres nets, signe de diamètre rond,
 signes techniques complets. Elle remplace DIN Pro.
 
-Elle compose seule tout le système technique : catalogue, fiches techniques,
-notices. Six styles sont autorisés.
+Elle compose tout le catalogue, les fiches techniques et les notices — seuls
+les noms des familles y restent en Montserrat — ainsi que les tableaux de
+données des documents commerciaux. Six styles sont autorisés.
 
 **A. Heavy**
 Titres principaux.
 
 **B. Bold**
-Titres secondaires, noms des familles, références, en-têtes et valeurs clés.
+Titres secondaires, références, en-têtes et valeurs clés.
 
 **C. Regular et Italic**
 Texte courant et valeurs ; l'italique pour les remarques et les notes.
@@ -200,10 +208,11 @@ Espacement « Condensé » d'un centième du corps, soit 0,2 pt pour un titre de
 Il est donné en points. Dans Word : Paragraphe › Interligne « Exactement ».
 
 **C. Le catalogue**
-Le catalogue garde ses réglages actuels : seule la police change, selon la
-correspondance de la page 29.
+Le catalogue garde ses réglages actuels : DIN Pro devient Appli-Tec selon la
+correspondance de la page 29, et les noms des familles restent en Montserrat
+Bold.
 
-**Visuel, A. Système commercial :**
+**Visuel, A. Documents commerciaux :**
 
 | Niveau | Police | Corps / interligne | Approche | Couleur |
 |---|---|---|---|---|
@@ -212,11 +221,12 @@ correspondance de la page 29.
 | Texte courant | Roboto Regular | 10 pt / 14 pt | 0 | noir |
 | Légende | Roboto Regular | 8 pt / 10,5 pt | 0 | |
 
-**Visuel, B. Système technique :**
+**Visuel, B. Catalogue et documents techniques :**
 
 | Niveau | Police | Corps / interligne | Approche |
 |---|---|---|---|
 | Titre principal | Appli-Tec Heavy | 20 pt / 20 pt | 0 |
+| Nom de famille | Montserrat Bold, couleur de la famille | corps du niveau où il se trouve | −10 |
 | Titre secondaire | Appli-Tec Bold | 11 pt / 13 pt | 0 |
 | Texte courant | Appli-Tec Regular | 9,5 pt / 12,5 pt | 0 |
 | Tableau | Appli-Tec Condensed Regular, en-tête en Condensed Bold | 8 pt / 10 pt | 0 |
@@ -226,11 +236,11 @@ correspondance de la page 29.
 
 ## Page 31 — Exemple : une fiche technique
 
-Voici une fiche technique composée selon les règles du système technique.
-Tout y est en Appli-Tec, sauf le logo.
+Voici une fiche technique composée selon la charte. Tout y est en Appli-Tec,
+sauf le logo et le nom de la famille.
 
 **A. Nom de la famille**
-Appli-Tec Bold, dans la couleur de la famille.
+Montserrat Bold, dans la couleur de la famille, comme dans tous les documents.
 
 **B. Titre principal**
 Appli-Tec Heavy.
@@ -255,13 +265,20 @@ Appli-Tec Italic.
 ## Page 32 — Règles complémentaires
 
 **A. Noms des familles**
-Ils ont toujours la même écriture : la première partie (ISO, SWITCH, TOP…) en
-majuscules, un trait d'union, la seconde partie (Line, Watch…) avec une
-majuscule initiale. Chaque famille garde, dans la mesure du possible, sa
-couleur ; si le fond ne s'y prête pas, le noir ou le blanc.
+Ils ont toujours la même police et la même écriture, dans tous les documents,
+catalogue compris : Montserrat Bold (ExtraBold lorsqu'ils sont le titre
+principal), la première partie (ISO, SWITCH, TOP…) en majuscules, un trait
+d'union, la seconde partie (Line, Watch…) avec une majuscule initiale.
 
-La police suit le système du document : Montserrat Bold dans le système
-commercial, Appli-Tec Bold dans le système technique.
+Chaque famille garde, dans la mesure du possible, sa couleur ; si le fond ne
+s'y prête pas, le noir ou le blanc. Un nom de famille ne se coupe jamais en fin
+de ligne : dans InDesign comme dans Word, le taper avec le trait d'union
+insécable.
+
+**Visuel, noms des familles :** ISO-Line, SWITCH-Line, TOP-Watch en
+Montserrat Bold et en couleur (« Toujours Montserrat Bold ») ; à côté, deux
+phrases d'exemple, l'une en Roboto, l'autre en Appli-Tec, avec le nom de
+famille en Montserrat Bold (« Dans un texte en Roboto ou en Appli-Tec »).
 
 **B. Polices de remplacement**
 Sur un poste où les polices officielles ne sont pas installées, et en dernier
@@ -292,7 +309,7 @@ Pour le web :
 
 **Visuel, « À éviter » (8 vignettes, croix rouge) :**
 
-1. Mélanger les deux systèmes dans un même document.
+1. Utiliser Montserrat dans le catalogue pour autre chose qu'un nom de famille.
 2. Composer du texte courant en Montserrat.
 3. Déformer une police : utiliser le Condensed ou l'italique d'Appli-Tec.
 4. Remplacer les signes : ≤, Ø et µ existent dans Appli-Tec.

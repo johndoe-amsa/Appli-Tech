@@ -153,7 +153,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   padding: 7mm 7mm 6mm; font-family: var(--at); color: #000; overflow: hidden;
 }
 .fiche .logo-place { position: absolute; right: 7mm; top: 6.5mm; padding: 1.4mm 2.4mm; font-size: 5.5pt; }
-.fiche .fam { font: 700 7.5pt/1 var(--at); color: var(--iso); margin-top: 7mm; }
+.fiche .fam { font: 700 7.5pt/1 var(--mont); color: var(--iso); margin-top: 7mm; }
 .fiche h1 { font: 800 17pt/1 var(--at); margin: 1.6mm 0 3.4mm; }
 .fiche h2 { font: 700 7.4pt/1.2 var(--at); margin: 4.2mm 0 1.4mm; }
 .fiche p { font: 400 6.4pt/1.4 var(--at); margin: 0 0 1.4mm; }
@@ -206,13 +206,14 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   <h1 class="titre">Quatre polices, quatre rôles</h1>
   <div class="filet"></div>
   <div class="gauche">
-    <p>Chaque police d’Applitec Moutier SA a un rôle précis. On ne la choisit pas selon ses goûts&nbsp;: c’est le document qui décide de la police.</p>
-    <h3><b>A.</b>Le système commercial</h3>
-    <p class="ret">Montserrat pour les titres, Roboto pour le texte. Brochures, présentations, courriers, offres, e-mails, site internet, réseaux sociaux.</p>
-    <h3><b>B.</b>Le système technique</h3>
-    <p class="ret">Appli-Tec seule, pour les titres, le texte et les tableaux. Catalogue, fiches techniques, notices et plans.</p>
-    <h3><b>C.</b>Une règle</h3>
-    <p class="ret">Les deux systèmes ne se mélangent jamais dans un même document. Seule exception&nbsp;: un tableau de caractéristiques inséré dans un document commercial est composé en Appli-Tec, comme un extrait du catalogue.</p>
+    <p>Chaque police d’Applitec Moutier SA a un rôle fixe, quel que soit le document. On ne choisit pas une police selon ses goûts ni selon le support&nbsp;: c’est l’élément à composer qui la détermine.</p>
+    <h3><b>A.</b>Montserrat, la marque</h3>
+    <p class="ret">Les titres des documents commerciaux, et les noms des familles d’outils dans tous les documents, catalogue compris.</p>
+    <h3><b>B.</b>Roboto, le texte</h3>
+    <p class="ret">Le texte courant des brochures, présentations, courriers, offres, e-mails, du site internet et des réseaux sociaux.</p>
+    <h3><b>C.</b>Appli-Tec, la technique</h3>
+    <p class="ret">Tout le catalogue, les fiches techniques et les notices&nbsp;: titres, texte et tableaux. Dans un document commercial, les tableaux de données.</p>
+    <p>Deux limites à retenir&nbsp;: dans le catalogue, Montserrat ne sert qu’aux noms des familles&nbsp;; dans un document commercial, Appli-Tec ne sert qu’aux tableaux de données.</p>
     <p>Le logo reste en BankGothic Medium dans tous les cas. Il est toujours placé à partir du fichier officiel, jamais retapé au clavier.</p>
     <p>Arial n’est pas une police de la marque. Elle ne sert qu’en remplacement, sur un poste où les polices officielles ne sont pas installées (voir page 32).</p>
   </div>
@@ -224,28 +225,28 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
 
       <div class="lettre">A.</div>
       <div class="nom" style="font-family:var(--mont);font-weight:800">Montserrat</div>
-      <div class="role"><span><strong>Les titres</strong>Système commercial.</span></div>
-
-      <div class="lettre">A.</div>
-      <div class="nom" style="font-family:var(--rob)">Roboto</div>
-      <div class="role"><span><strong>Le texte</strong>Système commercial.</span></div>
+      <div class="role"><span><strong>La marque</strong>Titres commerciaux, noms des familles partout.</span></div>
 
       <div class="lettre">B.</div>
+      <div class="nom" style="font-family:var(--rob)">Roboto</div>
+      <div class="role"><span><strong>Le texte</strong>Documents commerciaux.</span></div>
+
+      <div class="lettre">C.</div>
       <div class="nom" style="font-family:var(--at);font-weight:800">Appli-Tec</div>
-      <div class="role"><span><strong>La technique</strong>Système technique&nbsp;: titres, texte et tableaux.</span></div>
+      <div class="role"><span><strong>La technique</strong>Catalogue, fiches techniques, tableaux de données.</span></div>
     </div>
     <div class="systemes">
       <div class="sys">
-        <div class="etiq">A. Commercial <span>— exemple</span></div>
+        <div class="etiq">Document commercial <span>— exemple</span></div>
         <h4 style="font:800 14pt/1 var(--mont);letter-spacing:-0.01em;color:var(--bleu)">La précision suisse</h4>
         <h4 style="font:700 8pt/1.3 var(--mont);letter-spacing:-0.01em;margin-top:2.4mm">Des outils pour le décolletage</h4>
         <p style="font-family:var(--rob)">Depuis Moutier, Applitec conçoit et fabrique des outils de coupe pour les tours automatiques, du prototype à la grande série.</p>
         <div class="ou">Brochure, présentation, courrier, web</div>
       </div>
       <div class="sys">
-        <div class="etiq">B. Technique <span>— exemple</span></div>
+        <div class="etiq">Document technique <span>— exemple</span></div>
         <h4 style="font:800 14pt/1 var(--at);color:#000">Plaquettes de tournage</h4>
-        <h4 style="font:700 8pt/1.3 var(--at);margin-top:2.4mm;color:var(--iso)">ISO-Line</h4>
+        <h4 style="font:700 8pt/1.3 var(--mont);letter-spacing:-0.01em;margin-top:2.4mm;color:var(--iso)">ISO-Line</h4>
         <p style="font-family:var(--at);font-size:7.8pt">Ø 4 à 12&nbsp;mm · tolérance ±0,02&nbsp;mm · Ra ≤ 0,4&nbsp;µm · vc 80 à 120&nbsp;m/min</p>
         <div class="ou">Catalogue, fiche technique, notice</div>
       </div>
@@ -256,16 +257,16 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
 
 <!-- ============================================================ 27 -->
 <section class="page">
-  <h1 class="titre">Montserrat — les titres</h1>
+  <h1 class="titre">Montserrat — la marque</h1>
   <div class="filet"></div>
   <div class="gauche">
-    <p>Géométrique et affirmée, Montserrat donne leur voix aux documents commerciaux&nbsp;: elle se remarque, elle se reconnaît. Elle ne sert qu’aux titres.</p>
+    <p>Géométrique et affirmée, Montserrat est la signature typographique d’Applitec Moutier SA&nbsp;: elle se remarque, elle se reconnaît. Elle compose les titres des documents commerciaux et les noms des familles d’outils, dans tous les documents.</p>
     <h3><b>A.</b>Montserrat ExtraBold</h3>
-    <p class="ret">Titres principaux et noms des familles d’outils lorsqu’ils sont en titre. En couleur principale, ou dans la couleur d’une famille lorsque le titre s’y rapporte.</p>
+    <p class="ret">Titres principaux des documents commerciaux, et noms des familles lorsqu’ils sont le titre principal. En couleur principale, ou dans la couleur d’une famille lorsque le titre s’y rapporte.</p>
     <h3><b>B.</b>Montserrat Bold</h3>
-    <p class="ret">Titres secondaires et noms des familles dans le texte. Toutes les couleurs principales sont autorisées.</p>
+    <p class="ret">Titres secondaires des documents commerciaux, et noms des familles partout ailleurs&nbsp;: sous-titres, texte courant, tableaux, y compris dans le catalogue.</p>
     <h3><b>C.</b>À ne pas faire</h3>
-    <p class="ret">Composer un paragraphe en Montserrat, utiliser une autre graisse ou l’italique.</p>
+    <p class="ret">Composer un paragraphe en Montserrat, utiliser une autre graisse ou l’italique. Dans le catalogue, l’utiliser pour autre chose qu’un nom de famille.</p>
     <div class="info">
       <strong>Remplacement</strong> — Arial Black pour l’ExtraBold, Arial Bold pour le Bold (voir page 32).<br>
       <strong>Licence</strong> — SIL Open Font License, gratuite, y compris pour un usage commercial.<br>
@@ -274,10 +275,10 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   </div>
   <div class="droite">
     <div class="aa-grand" style="font-family:var(--mont);font-weight:800;color:var(--bleu)">Aa</div>
-    <div class="carte-nom"><span class="n">Montserrat</span><span class="r">Titres · système commercial</span></div>
+    <div class="carte-nom"><span class="n">Montserrat</span><span class="r">Titres · noms des familles</span></div>
     <div class="graisses">
       <div class="graisse"><div class="g"><span class="lettre">A.</span> <strong>ExtraBold</strong>Titres principaux</div><div class="s" style="font-family:var(--mont);font-weight:800">ABCDEFGHIJKLM abcdefghijklm</div></div>
-      <div class="graisse"><div class="g"><span class="lettre">B.</span> <strong>Bold</strong>Titres secondaires</div><div class="s" style="font-family:var(--mont);font-weight:700">ABCDEFGHIJKLM abcdefghijklm</div></div>
+      <div class="graisse"><div class="g"><span class="lettre">B.</span> <strong>Bold</strong>Titres secondaires, familles</div><div class="s" style="font-family:var(--mont);font-weight:700">ABCDEFGHIJKLM abcdefghijklm</div></div>
     </div>
     <div class="chiffres" style="font-family:var(--mont);font-weight:700">0123456789 &nbsp;àéèçôüß &nbsp;«&nbsp;!&nbsp;? & %&nbsp;» &nbsp;ISO-Line · SWITCH-Line · TOP-Watch</div>
   </div>
@@ -289,7 +290,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   <h1 class="titre">Roboto — le texte</h1>
   <div class="filet"></div>
   <div class="gauche">
-    <p>Neutre et très lisible, dessinée pour l’écran comme pour l’impression, Roboto porte le texte courant sans attirer l’attention sur elle. Elle remplace Arial dans tous les documents du système commercial.</p>
+    <p>Neutre et très lisible, dessinée pour l’écran comme pour l’impression, Roboto porte le texte courant sans attirer l’attention sur elle. Elle remplace Arial dans tous les documents commerciaux.</p>
     <h3><b>A.</b>Roboto Regular</h3>
     <p class="ret">Texte courant, légendes, notes. La couleur principale est le noir&nbsp;; le blanc est toléré si le fond ne permet pas une lecture aisée.</p>
     <h3><b>B.</b>Roboto Bold</h3>
@@ -304,7 +305,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   </div>
   <div class="droite">
     <div class="aa-grand" style="font-family:var(--rob);color:var(--bleu)">Aa</div>
-    <div class="carte-nom"><span class="n">Roboto</span><span class="r">Texte · système commercial</span></div>
+    <div class="carte-nom"><span class="n">Roboto</span><span class="r">Texte · documents commerciaux</span></div>
     <div class="graisses">
       <div class="graisse"><div class="g"><span class="lettre">A.</span> <strong>Regular</strong>Texte courant</div><div class="s" style="font-family:var(--rob)">ABCDEFGHIJKLM abcdefghijklm</div></div>
       <div class="graisse"><div class="g"><span class="lettre">B.</span> <strong>Bold</strong>Mise en évidence</div><div class="s" style="font-family:var(--rob);font-weight:700">ABCDEFGHIJKLM abcdefghijklm</div></div>
@@ -321,11 +322,11 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   <div class="filet"></div>
   <div class="gauche">
     <p>Appli-Tec est la police technique d’Applitec Moutier SA. Elle descend de la DIN 1451, le caractère des normes et des plans industriels, et a été mise au point pour notre documentation&nbsp;: chiffres nets, signe de diamètre rond, signes techniques complets. Elle remplace DIN Pro.</p>
-    <p>Elle compose seule tout le système technique&nbsp;: catalogue, fiches techniques, notices. Six styles sont autorisés.</p>
+    <p>Elle compose tout le catalogue, les fiches techniques et les notices — seuls les noms des familles y restent en Montserrat — ainsi que les tableaux de données des documents commerciaux. Six styles sont autorisés.</p>
     <h3><b>A.</b>Heavy</h3>
     <p class="ret">Titres principaux.</p>
     <h3><b>B.</b>Bold</h3>
-    <p class="ret">Titres secondaires, noms des familles, références, en-têtes et valeurs clés.</p>
+    <p class="ret">Titres secondaires, références, en-têtes et valeurs clés.</p>
     <h3><b>C.</b>Regular et Italic</h3>
     <p class="ret">Texte courant et valeurs&nbsp;; l’italique pour les remarques et les notes.</p>
     <h3><b>D.</b>Condensed Regular et Condensed Bold</h3>
@@ -336,7 +337,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
     <div class="at-haut">
       <div>
         <div class="aa-grand" style="font-family:var(--at);font-weight:800;color:var(--bleu)">Aa</div>
-        <div class="carte-nom"><span class="n">Appli-Tec</span><span class="r">Système technique</span></div>
+        <div class="carte-nom"><span class="n">Appli-Tec</span><span class="r">La technique</span></div>
         <div class="graisses">
           <div class="graisse"><div class="g"><span class="lettre">A.</span> <strong>Heavy</strong></div><div class="s" style="font-family:var(--at);font-weight:800">ABCDEFGHIJK abcdefghijk</div></div>
           <div class="graisse"><div class="g"><span class="lettre">B.</span> <strong>Bold</strong></div><div class="s" style="font-family:var(--at);font-weight:700">ABCDEFGHIJK abcdefghijk</div></div>
@@ -378,12 +379,12 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
     <h3><b>B.</b>L’interligne</h3>
     <p class="ret">Il est donné en points. Dans Word&nbsp;: Paragraphe › Interligne «&nbsp;Exactement&nbsp;».</p>
     <h3><b>C.</b>Le catalogue</h3>
-    <p class="ret">Le catalogue garde ses réglages actuels&nbsp;: seule la police change, selon la correspondance de la page 29.</p>
+    <p class="ret">Le catalogue garde ses réglages actuels&nbsp;: DIN Pro devient Appli-Tec selon la correspondance de la page 29, et les noms des familles restent en Montserrat Bold.</p>
   </div>
   <div class="droite">
     <div class="echelles">
       <div class="echelle">
-        <div class="etiq">A. Système commercial</div>
+        <div class="etiq">A. Documents commerciaux</div>
         <div class="niv"><div class="ap" style="font:800 20pt/18pt var(--mont);letter-spacing:-0.01em;color:var(--bleu)">Titre principal</div>
           <div class="sp mesures"><b>Titre principal</b><span>Montserrat ExtraBold · 20&nbsp;pt / 18&nbsp;pt · approche −10 · bleu ou couleur de famille</span></div></div>
         <div class="niv"><div class="ap" style="font:700 10pt/13pt var(--mont);letter-spacing:-0.01em">Titre secondaire</div>
@@ -394,9 +395,11 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
           <div class="sp mesures"><b>Légende</b><span>Roboto Regular · 8&nbsp;pt / 10,5&nbsp;pt · approche 0</span></div></div>
       </div>
       <div class="echelle">
-        <div class="etiq">B. Système technique</div>
+        <div class="etiq">B. Catalogue et documents techniques</div>
         <div class="niv"><div class="ap" style="font:800 20pt/20pt var(--at)">Titre principal</div>
           <div class="sp mesures"><b>Titre principal</b><span>Appli-Tec Heavy · 20&nbsp;pt / 20&nbsp;pt · approche 0</span></div></div>
+        <div class="niv"><div class="ap" style="font:700 11pt/13pt var(--mont);letter-spacing:-0.01em;color:var(--iso)">ISO-Line</div>
+          <div class="sp mesures"><b>Nom de famille</b><span>Montserrat Bold · corps du niveau où il se trouve · approche −10 · couleur de la famille</span></div></div>
         <div class="niv"><div class="ap" style="font:700 11pt/13pt var(--at)">Titre secondaire</div>
           <div class="sp mesures"><b>Titre secondaire</b><span>Appli-Tec Bold · 11&nbsp;pt / 13&nbsp;pt · approche 0</span></div></div>
         <div class="niv"><div class="ap" style="font:400 9.5pt/12.5pt var(--at)">Texte courant · Ø 8&nbsp;mm ±0,02</div>
@@ -416,9 +419,9 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   <h1 class="titre">Exemple&nbsp;: une fiche technique</h1>
   <div class="filet"></div>
   <div class="gauche">
-    <p>Voici une fiche technique composée selon les règles du système technique. Tout y est en Appli-Tec, sauf le logo.</p>
+    <p>Voici une fiche technique composée selon la charte. Tout y est en Appli-Tec, sauf le logo et le nom de la famille.</p>
     <h3><b>A.</b>Nom de la famille</h3>
-    <p class="ret">Appli-Tec Bold, dans la couleur de la famille.</p>
+    <p class="ret">Montserrat Bold, dans la couleur de la famille, comme dans tous les documents.</p>
     <h3><b>B.</b>Titre principal</h3>
     <p class="ret">Appli-Tec Heavy.</p>
     <h3><b>C.</b>Titre secondaire et texte</h3>
@@ -433,7 +436,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
       <span class="logo-place">LOGO</span>
       <div class="fam" id="cible-a">ISO-Line</div>
       <h1 id="cible-b">Plaquettes de tournage</h1>
-      <p>Plaquettes rectifiées pour l’ébauche et la finition sur tours automatiques à poupée mobile. Géométrie de coupe positive, arête affûtée pour les petits diamètres.</p>
+      <p>Plaquettes rectifiées pour l’ébauche et la finition sur tours automatiques à poupée mobile. Géométrie de coupe positive, arête affûtée pour les petits diamètres. Montage sur les porte-outils <b style="font-family:var(--mont);color:var(--switch);white-space:nowrap">SWITCH-Line</b>.</p>
       <h2 id="cible-c">Caractéristiques</h2>
       <p>Ø de travail 4 à 12&nbsp;mm · tolérance de rectification ±0,02&nbsp;mm · état de surface Ra ≤ 0,4&nbsp;µm · rayon de bec 0,1 à 0,4&nbsp;mm.</p>
       <h2>Dimensions</h2>
@@ -471,8 +474,8 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
   <div class="filet"></div>
   <div class="gauche">
     <h3 style="margin-top:0"><b>A.</b>Noms des familles</h3>
-    <p class="ret">Ils ont toujours la même écriture&nbsp;: la première partie (ISO, SWITCH, TOP…) en majuscules, un trait d’union, la seconde partie (Line, Watch…) avec une majuscule initiale. Chaque famille garde, dans la mesure du possible, sa couleur&nbsp;; si le fond ne s’y prête pas, le noir ou le blanc.</p>
-    <p class="ret">La police suit le système du document&nbsp;: Montserrat Bold dans le système commercial, Appli-Tec Bold dans le système technique.</p>
+    <p class="ret">Ils ont toujours la même police et la même écriture, dans tous les documents, catalogue compris&nbsp;: Montserrat Bold (ExtraBold lorsqu’ils sont le titre principal), la première partie (ISO, SWITCH, TOP…) en majuscules, un trait d’union, la seconde partie (Line, Watch…) avec une majuscule initiale.</p>
+    <p class="ret">Chaque famille garde, dans la mesure du possible, sa couleur&nbsp;; si le fond ne s’y prête pas, le noir ou le blanc. Un nom de famille ne se coupe jamais en fin de ligne&nbsp;: dans InDesign comme dans Word, le taper avec le trait d’union insécable.</p>
     <h3><b>B.</b>Polices de remplacement</h3>
     <p class="ret">Sur un poste où les polices officielles ne sont pas installées, et en dernier recours seulement, Arial les remplace. Toutes les règles de hiérarchie restent valables. Le logo n’a pas de remplacement.</p>
     <p class="ret">Pour un document Word envoyé à l’extérieur&nbsp;: Fichier › Options › Enregistrement › «&nbsp;Incorporer les polices dans le fichier&nbsp;». Les trois polices l’autorisent.</p>
@@ -489,13 +492,12 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
               <div class="f" style="font-family:var(--mont);font-weight:700;color:var(--iso)">ISO-Line</div>
               <div class="f" style="font-family:var(--mont);font-weight:700;color:var(--switch)">SWITCH-Line</div>
               <div class="f" style="font-family:var(--mont);font-weight:700;color:var(--top)">TOP-Watch</div>
-              <div class="t">Système commercial<br>Montserrat Bold</div>
+              <div class="t">Toujours Montserrat Bold</div>
             </div>
-            <div class="col">
-              <div class="f" style="font-family:var(--at);font-weight:700;color:var(--iso)">ISO-Line</div>
-              <div class="f" style="font-family:var(--at);font-weight:700;color:var(--switch)">SWITCH-Line</div>
-              <div class="f" style="font-family:var(--at);font-weight:700;color:var(--top)">TOP-Watch</div>
-              <div class="t">Système technique<br>Appli-Tec Bold</div>
+            <div class="col" style="text-align:left">
+              <div style="font:400 7pt/1.4 var(--rob)">Découvrez la gamme <b style="font-family:var(--mont);color:var(--iso);white-space:nowrap">ISO-Line</b>, en stock et livrable en 24&nbsp;heures.</div>
+              <div style="font:400 7pt/1.4 var(--at);margin-top:2mm">Porte-outils <b style="font-family:var(--mont);color:var(--switch);white-space:nowrap">SWITCH-Line</b> compatibles avec toute la gamme.</div>
+              <div class="t" style="text-align:center;margin-top:2.4mm">Dans un texte en Roboto<br>ou en Appli-Tec</div>
             </div>
           </div>
         </div>
@@ -515,7 +517,7 @@ body { margin: 0; background: #8a8a8a; font-family: var(--rob); color: #000; }
       <div class="bloc">
         <div class="etiq">C. À éviter</div>
         <div class="eviter">
-          <div class="ev"><div class="x"><span style="font:800 9pt/1.1 var(--mont)">Titre</span>&nbsp;<span style="font:400 7pt/1.1 var(--at)">texte</span></div>Mélanger les deux systèmes dans un même document.</div>
+          <div class="ev"><div class="x"><span style="font:700 8pt/1.1 var(--mont)">Dimensions</span>&nbsp;<span style="font:400 7pt/1.1 var(--at);white-space:nowrap">7101-0400</span></div>Utiliser Montserrat dans le catalogue pour autre chose qu’un nom de famille.</div>
           <div class="ev"><div class="x"><span style="font:700 6.5pt/1.25 var(--mont)">Un paragraphe entier en Montserrat.</span></div>Composer du texte courant en Montserrat.</div>
           <div class="ev"><div class="x"><span style="font:400 10pt/1 var(--rob);display:inline-block;transform:scaleX(.72);transform-origin:left">Étiré</span><span style="font:400 10pt/1 var(--rob);display:inline-block;transform:skewX(-14deg)">Penché</span></div>Déformer une police&nbsp;: utiliser le Condensed ou l’italique d’Appli-Tec.</div>
           <div class="ev"><div class="x"><span style="font:400 9pt/1 var(--at)">&lt;= 0,01 &nbsp;O 12 &nbsp;um</span></div>Remplacer les signes&nbsp;: ≤, Ø et µ existent dans Appli-Tec.</div>
